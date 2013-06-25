@@ -17,6 +17,8 @@
 
 #include <botan/bigint.h>
 
+namespace bm {
+
 namespace base58
 {
     /** encode number into base58
@@ -41,5 +43,7 @@ namespace base58
      */
     bool decode(const char* encoded, size_t encoded_len, Botan::BigInt& output);
 }
+
+} // namespace bm
 
 #endif

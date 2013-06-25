@@ -1,3 +1,21 @@
+/*
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+// CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
+// Bob Mottram (bob@robotics.uk.to)
+// Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
+
 #include <botan/botan.h>
 #include <botan/ecdh.h>
 #include <botan/ec_group.h>
@@ -5,6 +23,8 @@
 #include "ecc.h"
 //#include "utils.h"
 //#include "hashes.h"
+
+namespace bm {
 
 /*
 int ECC::decode_pubkey(bytes data)
@@ -35,7 +55,7 @@ int ECC::decode_privkey(string data)
 	return i;
 }
 */
-void ECC::generate_keys()
+void ECC::generateKeys()
 {
     Botan::AutoSeeded_RNG rng;
     Botan::EC_Group group("secp256r1");
@@ -44,7 +64,7 @@ void ECC::generate_keys()
     mPrivateKey = Botan::PKCS8::PEM_encode(key);
 }
 
-void ECC::generate_keys_with_password(const std::string& password)
+void ECC::generateKeysWithPassword(const std::string& password)
 {
     Botan::AutoSeeded_RNG rng;
     Botan::EC_Group group("secp256r1");
@@ -81,3 +101,5 @@ string ECC::get_privkey()
 	return s;
 }
 */
+
+} // namespace bm

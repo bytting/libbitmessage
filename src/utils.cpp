@@ -1,27 +1,30 @@
+/*
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+// CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
+// Bob Mottram (bob@robotics.uk.to)
+// Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
+
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
 #include "exceptions.h"
 #include "utils.h"
 
+namespace bm {
+
 using namespace std;
-
-// integer X to the power Y
-unsigned int utils::ipow(int base, int exponent)
-{
-   unsigned int i; 
-   unsigned int power; 
-
-   i = 1; 
-   power = 1;
-
-   while ( i <= exponent ) 
-   {
-      power *= base;
-      i++;
-   }
-   return power;
-}
 
 /*
 string utils::encodeHex(const string& str)
@@ -317,3 +320,5 @@ template uint8_t utils::unpack(const ByteVector&);
 template uint16_t utils::unpack(const ByteVector&);
 template uint32_t utils::unpack(const ByteVector&);
 template uint64_t utils::unpack(const ByteVector&);
+
+} // namespace bm

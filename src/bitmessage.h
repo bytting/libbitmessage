@@ -1,3 +1,21 @@
+/*
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+// CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
+// Bob Mottram (bob@robotics.uk.to)
+// Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
+
 #ifndef BITMESSAGE_H
 #define BITMESSAGE_H
 
@@ -5,8 +23,10 @@
 #include <string>
 #include "utils.h"
 
+namespace bm {
+
 //pubkey bitfield
-//#define BM_PUBKEY_DOES_ACK 31 // FIXME
+//#define BM_PUBKEY_DOES_ACK 31 // FIXME: what is this
 
 // Message encodings
 enum {
@@ -16,75 +36,78 @@ enum {
 };
 
 // Message header
-struct bm_message_header_struct {
+struct message_header_struct {
     uint32_t magic;
 	char command[12];
     uint32_t length;
     uint32_t checksum;
 };
-typedef struct bm_message_header_struct bm_message_header;
+typedef struct message_header_struct message_header;
 
 // Network address
-struct bm_net_addr_struct {
+struct net_addr_struct {
     uint32_t time;
     uint32_t stream;
     uint64_t services;
     char ip_address[16];
     uint16_t port;
 };
-typedef struct bm_net_addr_struct bm_net_addr;
+typedef struct net_addr_struct net_addr;
 
 // Inventory vector element
-struct bm_inventory_element_struct {
+struct inventory_element_struct {
 	char hash[32];
 };
-typedef struct bm_inventory_element_struct bm_inventory_element;
+typedef struct inventory_element_struct inventory_element;
 
 // Version request
 struct bm_version_header_struct {
     int32_t version;
     uint64_t services;
     int64_t timestamp;
-	bm_net_addr addr_recv;
-	bm_net_addr addr_from;
+    net_addr addr_recv;
+    net_addr addr_from;
     uint64_t nonce;
 };
-typedef struct bm_version_header_struct bm_version_header;
+typedef struct version_header_struct version_header;
 
-class Bitmessage
-{
-    public:
 
-        static ByteVector calculateInventoryHash(const ByteVector& data);
-        static ByteVector getHashString512(const ByteVector& data);
-        static uint64_t getProofOfWorkTrialValue(uint64_t nonce, const ByteVector& initialHash);
+ByteVector calculateInventoryHash(const ByteVector& data);
+uint64_t getProofOfWorkTrialValue(uint64_t nonce, const ByteVector& initialHash);
 
-        template<class T>
-        static std::string encodeVarint(T integer);
+template<class T>
+std::string encodeVarint(T integer);
 
-        static uint64_t decodeVarint(const ByteVector& data, int &nbytes);
+uint64_t decodeVarint(const ByteVector& data, int &nbytes);
 
-        static std::string proofOfWork(uint32_t streamNumber,
-                                  std::string embeddedTime,
-                                  std::string cyphertext,
-                                  uint32_t payloadLengthExtraBytes=14000,
-                                  uint32_t averageProofOfWorkNonceTrialsPerByte=320,
-                                  bool verbose=false);
+std::string proofOfWork(
+        uint32_t streamNumber,
+        std::string embeddedTime,
+        std::string cyphertext,
+        uint32_t payloadLengthExtraBytes=14000,
+        uint32_t averageProofOfWorkNonceTrialsPerByte=320,
+        bool verbose=false
+);
 
-        static bool checkProofOfWork(std::string payload,
-                                     uint32_t payloadLengthExtraBytes=14000,
-                                     uint32_t averageProofOfWorkNonceTrialsPerByte=320);
+bool checkProofOfWork(
+        std::string payload,
+        uint32_t payloadLengthExtraBytes=14000,
+        uint32_t averageProofOfWorkNonceTrialsPerByte=320
+);
+
 /*
-        static string encodeAddress(unsigned int version, unsigned int streamNumber, string ripe);
-        static void decodeAddress(string address,
-                                  string &status,
-                                  string &data,
-                                  unsigned int &version,
-                                  unsigned int &streamNumber);
+string encodeAddress(uint32_t version, uint32_t streamNumber, string ripe);
+void decodeAddress(
+        string address,
+        string &status,
+        string &data,
+        uint32_t &version,
+        uint32_t &streamNumber);
 */
-        static std::string addBMIfNotPresent(std::string address);
 
-        static uint32_t addressStreamNumber(std::string address, std::string &status);
-};
+std::string addBMIfNotPresent(std::string address);
+uint32_t addressStreamNumber(std::string address, std::string &status);
+
+} // namespace bm
 
 #endif

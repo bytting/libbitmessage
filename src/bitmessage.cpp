@@ -1,3 +1,21 @@
+/*
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+// CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
+// Bob Mottram (bob@robotics.uk.to)
+// Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -7,8 +25,11 @@
 #include "hashes.h"
 #include "ecc.h"
 #include "bitmessage.h"
+
+namespace bm {
+
 /*
-string Bitmessage::encodeAddress(unsigned int version, unsigned int streamNumber, string ripe)
+string encodeAddress(uint32_t version, uint32_t streamNumber, string ripe)
 {
     if (version >= 2) {
         if (ripe.length() != 20) {
@@ -42,11 +63,11 @@ string Bitmessage::encodeAddress(unsigned int version, unsigned int streamNumber
 	return address;
 }
 
-void Bitmessage::decodeAddress(string address,
-							   string &status,
-							   string &data,
-							   unsigned int &version,
-							   unsigned int &streamNumber)
+void decodeAddress(string address,
+        string &status,
+        string &data,
+        uint32_t &version,
+        uint32_t &streamNumber)
 {
     //returns (status, address version number, stream number, data (almost certainly a ripe hash))
 	mpz_t integer;
@@ -158,16 +179,16 @@ void Bitmessage::decodeAddress(string address,
 }
 */
 
-ByteVector Bitmessage::calculateInventoryHash(const ByteVector& data)
+ByteVector calculateInventoryHash(const ByteVector& data)
 {    
-    ByteVector sha1 = bm_sha512(data);
-    ByteVector sha2 = bm_sha512(sha1);
+    ByteVector sha1 = sha512(data);
+    ByteVector sha2 = sha512(sha1);
     return ByteVector(&sha2[0], 32);
 }
 
 /*
 template<class T>
-std::string Bitmessage::encodeVarint(T integer)
+std::string encodeVarint(T integer)
 {
     if(integer < 0)
         return ""; // FIXME: throw exception or something
@@ -195,13 +216,13 @@ std::string Bitmessage::encodeVarint(T integer)
 	return result;
 }
 
-template std::string Bitmessage::encodeVarint(unsigned char);
-template std::string Bitmessage::encodeVarint(unsigned short);
-template std::string Bitmessage::encodeVarint(unsigned int);
-template std::string Bitmessage::encodeVarint(unsigned long long);
+template std::string encodeVarint(unsigned char);
+template std::string encodeVarint(unsigned short);
+template std::string encodeVarint(unsigned int);
+template std::string encodeVarint(unsigned long long);
 
 
-unsigned long long Bitmessage::decodeVarint(const ByteArray& data, int &nbytes)
+uint64_t decodeVarint(const ByteArray& data, int &nbytes)
 {
 	unsigned char firstByte;
 
@@ -231,20 +252,7 @@ unsigned long long Bitmessage::decodeVarint(const ByteArray& data, int &nbytes)
 	return 0;
 }
 
-string Bitmessage::getHashString512(string data)
-{
-	char hashStr[SHA512_DIGEST_LENGTH];
-
-	bm_sha512((char*)data.c_str(), hashStr, HASH_DIGEST);
-	string hash = "";
-	for (int i = 0; i < SHA512_DIGEST_LENGTH; i++) {
-		hash += hashStr[i];
-	}
-	return hash;
-}
-
-unsigned long long Bitmessage::getProofOfWorkTrialValue(unsigned long long nonce,
-														string initialHash)
+uint64_t Bitmessage::getProofOfWorkTrialValue(unsigned long long nonce, string initialHash)
 {
 	char str[129];
     string nonce_hash = utils::pack<unsigned long long>(nonce) + initialHash;
@@ -257,17 +265,18 @@ unsigned long long Bitmessage::getProofOfWorkTrialValue(unsigned long long nonce
     return utils::unpack<unsigned long long>(lastBytes);
 }
 
-string Bitmessage::proofOfWork(unsigned int streamNumber,
-							   string embeddedTime,
-							   string cyphertext,
-							   unsigned int payloadLengthExtraBytes,
-							   unsigned int averageProofOfWorkNonceTrialsPerByte,
-							   bool verbose)
+string proofOfWork(
+        uint32_t streamNumber,
+        string embeddedTime,
+        string cyphertext,
+        uint32_t payloadLengthExtraBytes,
+        uint32_t averageProofOfWorkNonceTrialsPerByte,
+        bool verbose)
 {
-	unsigned long long nonce = 0;
+    uint64_t nonce = 0;
 	// the maximum 64bit value
-	unsigned long long trialValue = 18446744073709551615ULL;
-	unsigned long long target;
+    uint64_t trialValue = 18446744073709551615ULL;
+    uint64_t target;
 	clock_t begin_time, end_time;
 	char str[129];
 	string lastBytes;
@@ -284,7 +293,7 @@ string Bitmessage::proofOfWork(unsigned int streamNumber,
 
 	begin_time = clock();
 	string initialHash = getHashString512(payload);
-	unsigned long long best = 0;
+    uint64_t best = 0;
 	while (trialValue > target) {
 		if (nonce == 0) {
 			nonce = 1;
@@ -293,8 +302,8 @@ string Bitmessage::proofOfWork(unsigned int streamNumber,
 			nonce += 32;
 		}
 #pragma omp parallel for
-		for (unsigned long long index = 0; index < 4; index++) {
-			unsigned long long n = getProofOfWorkTrialValue(nonce + index, initialHash);
+        for (uint64_t index = 0; index < 4; index++) {
+            uint64_t n = getProofOfWorkTrialValue(nonce + index, initialHash);
 			if (n <= target) {
 				trialValue = n;
 				best = nonce + index;
@@ -320,9 +329,10 @@ string Bitmessage::proofOfWork(unsigned int streamNumber,
 	return payload;
 }
 
-bool Bitmessage::checkProofOfWork(string payload,
-								  unsigned int payloadLengthExtraBytes,
-								  unsigned int averageProofOfWorkNonceTrialsPerByte)
+bool checkProofOfWork(
+        string payload,
+        uint32_t payloadLengthExtraBytes,
+        uint32_t averageProofOfWorkNonceTrialsPerByte)
 {
 	if (payload.length() <= 8) return false;
 
@@ -341,7 +351,7 @@ bool Bitmessage::checkProofOfWork(string payload,
 	return (getProofOfWorkTrialValue(nonce, initialHash) <= target);
 }
 
-string Bitmessage::addBMIfNotPresent(string address)
+string addBMIfNotPresent(string address)
 {
     if (address.substr(0,3) != "BM-") {
         return "BM-" + address;
@@ -352,7 +362,7 @@ string Bitmessage::addBMIfNotPresent(string address)
 }
 
 // returns the stream number of an address or False if there is a problem with the address.
-unsigned int Bitmessage::addressStreamNumber(string address, string &status)
+unsigned int addressStreamNumber(string address, string &status)
 {
     // check for the BM- at the front of the address. If it isn't there, this address might be for a different version of Bitmessage
 	if (address.substr(0,3) != "BM-") {
@@ -405,3 +415,5 @@ unsigned int Bitmessage::addressStreamNumber(string address, string &status)
     return streamNumber;
 }
 */
+
+} // namespace bm

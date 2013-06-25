@@ -318,7 +318,7 @@ static void test_extract_stream_number()
 	printf("Ok\n");
 }
 
-void bm_run_unit_tests()
+void run_unit_tests()
 {
 	test_hex();
 	test_sha512();

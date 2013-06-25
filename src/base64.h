@@ -17,6 +17,8 @@
 
 #include <cstddef>
 
+namespace bm {
+
 namespace base64
 {
     /** encode data into base64
@@ -43,5 +45,7 @@ namespace base64
      */
     size_t decode(const char* encoded, size_t encoded_len, void* output, size_t output_len);
 }
+
+} // namespace bm
 
 #endif

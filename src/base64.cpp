@@ -16,6 +16,8 @@
 
 #include <cstring>
 
+namespace bm {
+
 namespace
 {
     const char* kPrintableChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; // FIXME: Check this
@@ -143,3 +145,5 @@ namespace base64
         return output_wpos;
     }
 }
+
+} // namespace bm

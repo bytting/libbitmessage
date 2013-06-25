@@ -1,3 +1,21 @@
+/*
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+// CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
+// Bob Mottram (bob@robotics.uk.to)
+// Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
+
 #include <sstream>
 #include <cstdio>
 #include <botan/hash.h>
@@ -9,6 +27,10 @@
 #include <botan/pbkdf2.h>
 #include <botan/symkey.h>
 #include "hashes.h"
+
+namespace bm {
+
+namespace internal {
 
 void makeByteVectorHex(const ByteVector& src, ByteVector& dest)
 {
@@ -23,63 +45,38 @@ void makeByteVectorHex(const ByteVector& src, ByteVector& dest)
 }
 
 template<class T>
-ByteVector bm_hash(const ByteVector& data, DigestFormat fmt)
+ByteVector hash(const ByteVector& data, DigestFormat fmt)
 {
     T hashObject;
     ByteVector bytes = hashObject.process(data);
 
-    if(fmt == DF_HEX)
+    if(fmt == df_hex)
     {
         ByteVector hexBytes;
-        makeByteVectorHex(bytes, hexBytes);
+        internal::makeByteVectorHex(bytes, hexBytes);
         return hexBytes;
     }
     return bytes;
 }
 
-ByteVector bm_ripemd160(const ByteVector& data, DigestFormat fmt)
-{
-    return bm_hash<Botan::RIPEMD_160>(data, fmt);
-}
-
-ByteVector bm_sha256(const ByteVector& data, DigestFormat fmt)
-{
-    return bm_hash<Botan::SHA_256>(data, fmt);
-}
-
-ByteVector bm_sha512(const ByteVector& data, DigestFormat fmt)
-{
-    return bm_hash<Botan::SHA_512>(data, fmt);
-}
-
 template<class T>
-ByteVector bm_hmac_hash(const ByteVector& data, DigestFormat fmt)
+ByteVector hmac_hash(const ByteVector& data, DigestFormat fmt)
 {
     T hashObject;
     Botan::HMAC hmac(&hashObject);
     ByteVector bytes = hmac.process(data);
 
-    if(fmt == DF_HEX)
+    if(fmt == df_hex)
     {
         ByteVector hexBytes;
-        makeByteVectorHex(bytes, hexBytes);
+        internal::makeByteVectorHex(bytes, hexBytes);
         return hexBytes;
     }
     return bytes;
 }
 
-ByteVector bm_hmac_sha256(const ByteVector& data, DigestFormat fmt)
-{
-    return bm_hmac_hash<Botan::SHA_256>(data, fmt);
-}
-
-ByteVector bm_hmac_sha512(const ByteVector& data, DigestFormat fmt)
-{
-    return bm_hmac_hash<Botan::SHA_512>(data, fmt);
-}
-
 template<class T>
-OctetVector bm_pbkdf2_hmac_hash(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
+OctetVector pbkdf2_hmac_hash(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
 {
     T hashObject;
     Botan::HMAC hmac(&hashObject);
@@ -87,12 +84,42 @@ OctetVector bm_pbkdf2_hmac_hash(const std::string& password, const ByteVector& s
     return pbkdf2.derive_key(desiredKeyLength, password, &salt[0], salt.size(), iterations);
 }
 
-OctetVector bm_pbkdf2_hmac_sha256(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
+} // namespace internal
+
+ByteVector ripemd160(const ByteVector& data, DigestFormat fmt)
 {
-    return bm_pbkdf2_hmac_hash<Botan::SHA_256>(password, salt, desiredKeyLength, iterations);
+    return internal::hash<Botan::RIPEMD_160>(data, fmt);
 }
 
-OctetVector bm_pbkdf2_hmac_sha512(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
+ByteVector sha256(const ByteVector& data, DigestFormat fmt)
 {
-    return bm_pbkdf2_hmac_hash<Botan::SHA_512>(password, salt, desiredKeyLength, iterations);
+    return internal::hash<Botan::SHA_256>(data, fmt);
 }
+
+ByteVector sha512(const ByteVector& data, DigestFormat fmt)
+{
+    return internal::hash<Botan::SHA_512>(data, fmt);
+}
+
+ByteVector hmac_sha256(const ByteVector& data, DigestFormat fmt)
+{
+    return internal::hmac_hash<Botan::SHA_256>(data, fmt);
+}
+
+ByteVector hmac_sha512(const ByteVector& data, DigestFormat fmt)
+{
+    return internal::hmac_hash<Botan::SHA_512>(data, fmt);
+}
+
+OctetVector pbkdf2_hmac_sha256(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
+{
+    return internal::pbkdf2_hmac_hash<Botan::SHA_256>(password, salt, desiredKeyLength, iterations);
+}
+
+OctetVector pbkdf2_hmac_sha512(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
+{
+    return internal::pbkdf2_hmac_hash<Botan::SHA_512>(password, salt, desiredKeyLength, iterations);
+}
+
+} // namespace bm
+

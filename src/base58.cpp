@@ -15,7 +15,7 @@
 #include "base58.h"
 #include <cstring>
 
-using namespace Botan;
+namespace bm {
 
 namespace
 {
@@ -66,7 +66,7 @@ namespace
 
 namespace base58
 {
-    size_t encode(BigInt id_num, char* output, size_t output_len)
+    size_t encode(Botan::BigInt id_num, char* output, size_t output_len)
     {
         if (output == 0)
             return 0;
@@ -76,7 +76,7 @@ namespace base58
 
         size_t output_wpos = 0;
 
-        BigInt num;
+        Botan::BigInt num;
         unsigned int remainder;
 
         while (id_num > 0) {
@@ -101,7 +101,7 @@ namespace base58
         return output_wpos;
     }
 
-    bool decode(const char* encoded, size_t encoded_len, BigInt& output)
+    bool decode(const char* encoded, size_t encoded_len, Botan::BigInt& output)
     {
         if (encoded == 0 || encoded_len == 0) 
             return 0;
@@ -112,7 +112,7 @@ namespace base58
         if (encoded_len >= kMaxBase58Length) 
             return 0;        
 
-        BigInt output_num = 0;
+        Botan::BigInt output_num = 0;
 
         size_t unprocessed = encoded_len;
         while (--unprocessed) {
@@ -137,3 +137,5 @@ namespace base58
         return true;
     }
 }
+
+} // namespace bm
