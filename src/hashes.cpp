@@ -14,7 +14,7 @@ void makeByteVectorHex(const ByteVector& src, ByteVector& dest)
 {
     char cbuffer[2];
     dest.clear();
-    for(int i = 0; i < src.size(); ++i)
+    for(size_t i = 0; i < src.size(); ++i)
     {
         sprintf(cbuffer, "%02x", (char)src[i]);
         dest.push_back((Byte)cbuffer[0]);

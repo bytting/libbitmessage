@@ -97,7 +97,7 @@ namespace base64
         if (encoded == 0 || encoded_len == 0)
             return 0;
 
-        if (encoded_len == -1)
+        if (encoded_len == -1) // FIXME: unsigned comparison
             encoded_len = std::strlen(encoded);
 
         if ((encoded_len & 3) != 0 || encoded_len > kMaxCodeLen)
