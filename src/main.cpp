@@ -21,58 +21,15 @@
  * Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
  *
  */
-#include <sstream>
-#include <iostream>
-#include <exception>
-#include <botan/botan.h>
 
-#include "anyoption.h"
-#include "unittests.h"
+#include <exception>
+#include <iostream>
+#include <botan/botan.h>
 #include "config.h"
+#include "unittests.h"
 
 int main(int argc, char* argv[])
 {
-    AnyOption opt;
-
-    // Usage
-    opt.addUsage( LIBRARY_NAME );
-    opt.addUsage( "Run unit tests: " );
-    opt.addUsage( "  libbitmessage -p 8444" );
-    opt.addUsage( " " );
-    opt.addUsage( "Usage: " );
-    opt.addUsage( "" );
-    opt.addUsage( "  -p --port                 Port to listen on");
-    opt.addUsage( "  -V --version              Show version number");
-    opt.addUsage( "     --help                 Show help");
-    opt.addUsage( "" );
-
-    opt.setOption(  "port", 'p' );
-    opt.setFlag(  "version", 'V' );
-    opt.setFlag(  "help" );
-
-    opt.processCommandArgs(argc, argv);
-
-    if ((!opt.hasOptions()) || (opt.getFlag( "help" )))
-    {
-		// print usage if no options
-        opt.printUsage();
-        return 0;
-	}
-
-    if ((opt.getFlag("version")) || (opt.getFlag('V')))
-    {
-        std::cout << "Version " << LIBRARY_VERSION << std::endl;
-        return 0;
-	}
-
-	int port = 8444;
-    if ((opt.getValue("port") != NULL) || (opt.getValue('p')))
-    {
-        std::stringstream ss;
-        ss << opt.getValue("port");
-        ss >> port;
-	}	
-
     try
     {
         Botan::LibraryInitializer init;

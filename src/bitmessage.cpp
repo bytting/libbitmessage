@@ -8,7 +8,7 @@
 #include "ecc.h"
 #include "bitmessage.h"
 /*
-string bitmessage::encodeAddress(unsigned int version, unsigned int streamNumber, string ripe)
+string Bitmessage::encodeAddress(unsigned int version, unsigned int streamNumber, string ripe)
 {
     if (version >= 2) {
         if (ripe.length() != 20) {
@@ -42,7 +42,7 @@ string bitmessage::encodeAddress(unsigned int version, unsigned int streamNumber
 	return address;
 }
 
-void bitmessage::decodeAddress(string address,
+void Bitmessage::decodeAddress(string address,
 							   string &status,
 							   string &data,
 							   unsigned int &version,
@@ -158,16 +158,16 @@ void bitmessage::decodeAddress(string address,
 }
 */
 
-ByteArray bitmessage::calculateInventoryHash(const ByteArray& data)
+ByteVector Bitmessage::calculateInventoryHash(const ByteVector& data)
 {    
-    ByteArray sha1 = bm_sha512(data, dec);
-    ByteArray sha2 = bm_sha512(sha1, dec);
-    return ByteArray(&sha2[0], 32);
+    ByteVector sha1 = bm_sha512(data);
+    ByteVector sha2 = bm_sha512(sha1);
+    return ByteVector(&sha2[0], 32);
 }
 
 /*
 template<class T>
-std::string bitmessage::encodeVarint(T integer)
+std::string Bitmessage::encodeVarint(T integer)
 {
     if(integer < 0)
         return ""; // FIXME: throw exception or something
@@ -195,13 +195,13 @@ std::string bitmessage::encodeVarint(T integer)
 	return result;
 }
 
-template std::string bitmessage::encodeVarint(unsigned char);
-template std::string bitmessage::encodeVarint(unsigned short);
-template std::string bitmessage::encodeVarint(unsigned int);
-template std::string bitmessage::encodeVarint(unsigned long long);
+template std::string Bitmessage::encodeVarint(unsigned char);
+template std::string Bitmessage::encodeVarint(unsigned short);
+template std::string Bitmessage::encodeVarint(unsigned int);
+template std::string Bitmessage::encodeVarint(unsigned long long);
 
 
-unsigned long long bitmessage::decodeVarint(const ByteArray& data, int &nbytes)
+unsigned long long Bitmessage::decodeVarint(const ByteArray& data, int &nbytes)
 {
 	unsigned char firstByte;
 
@@ -231,7 +231,7 @@ unsigned long long bitmessage::decodeVarint(const ByteArray& data, int &nbytes)
 	return 0;
 }
 
-string bitmessage::getHashString512(string data)
+string Bitmessage::getHashString512(string data)
 {
 	char hashStr[SHA512_DIGEST_LENGTH];
 
@@ -243,7 +243,7 @@ string bitmessage::getHashString512(string data)
 	return hash;
 }
 
-unsigned long long bitmessage::getProofOfWorkTrialValue(unsigned long long nonce,
+unsigned long long Bitmessage::getProofOfWorkTrialValue(unsigned long long nonce,
 														string initialHash)
 {
 	char str[129];
@@ -257,7 +257,7 @@ unsigned long long bitmessage::getProofOfWorkTrialValue(unsigned long long nonce
     return utils::unpack<unsigned long long>(lastBytes);
 }
 
-string bitmessage::proofOfWork(unsigned int streamNumber,
+string Bitmessage::proofOfWork(unsigned int streamNumber,
 							   string embeddedTime,
 							   string cyphertext,
 							   unsigned int payloadLengthExtraBytes,
@@ -320,7 +320,7 @@ string bitmessage::proofOfWork(unsigned int streamNumber,
 	return payload;
 }
 
-bool bitmessage::checkProofOfWork(string payload,
+bool Bitmessage::checkProofOfWork(string payload,
 								  unsigned int payloadLengthExtraBytes,
 								  unsigned int averageProofOfWorkNonceTrialsPerByte)
 {
@@ -341,7 +341,7 @@ bool bitmessage::checkProofOfWork(string payload,
 	return (getProofOfWorkTrialValue(nonce, initialHash) <= target);
 }
 
-string bitmessage::addBMIfNotPresent(string address)
+string Bitmessage::addBMIfNotPresent(string address)
 {
     if (address.substr(0,3) != "BM-") {
         return "BM-" + address;
@@ -352,7 +352,7 @@ string bitmessage::addBMIfNotPresent(string address)
 }
 
 // returns the stream number of an address or False if there is a problem with the address.
-unsigned int bitmessage::addressStreamNumber(string address, string &status)
+unsigned int Bitmessage::addressStreamNumber(string address, string &status)
 {
     // check for the BM- at the front of the address. If it isn't there, this address might be for a different version of Bitmessage
 	if (address.substr(0,3) != "BM-") {

@@ -35,7 +35,7 @@ int ECC::decode_privkey(string data)
 	return i;
 }
 */
-int ECC::generate_keys()
+void ECC::generate_keys()
 {
     Botan::AutoSeeded_RNG rng;
     Botan::EC_Group group("secp256r1");
@@ -44,7 +44,7 @@ int ECC::generate_keys()
     mPrivateKey = Botan::PKCS8::PEM_encode(key);
 }
 
-int ECC::generate_keys_with_password(const std::string& password)
+void ECC::generate_keys_with_password(const std::string& password)
 {
     Botan::AutoSeeded_RNG rng;
     Botan::EC_Group group("secp256r1");

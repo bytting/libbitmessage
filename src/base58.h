@@ -39,7 +39,7 @@ namespace base58
      *  @return
      *      true if successful, otherwise, false.
      */
-    bool decode(const char* encoded, size_t encoded_len, Botan::BigInt* output);
+    bool decode(const char* encoded, size_t encoded_len, Botan::BigInt& output);
 }
 
 #endif

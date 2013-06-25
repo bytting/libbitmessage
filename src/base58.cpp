@@ -13,7 +13,7 @@
  */
 
 #include "base58.h"
-#include <string.h>
+#include <cstring>
 
 using namespace Botan;
 
@@ -101,19 +101,16 @@ namespace base58
         return output_wpos;
     }
 
-    bool decode(const char* encoded, size_t encoded_len, BigInt* output)
+    bool decode(const char* encoded, size_t encoded_len, BigInt& output)
     {
         if (encoded == 0 || encoded_len == 0) 
             return 0;
         
         if (encoded_len == -1)
-            encoded_len = strlen(encoded);
+            encoded_len = std::strlen(encoded);
 
         if (encoded_len >= kMaxBase58Length) 
-            return 0;
-
-        if (output == 0)
-            return 0;
+            return 0;        
 
         BigInt output_num = 0;
 
@@ -135,7 +132,7 @@ namespace base58
             return 0;
         }
 
-        *output = output_num + remainder;
+        output = output_num + remainder;
 
         return true;
     }

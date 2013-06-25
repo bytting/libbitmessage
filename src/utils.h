@@ -20,13 +20,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
-#include <string>
-#include <string.h>
-#include <omp.h>
-#include <gmp.h>
+#include <cstdint>
 #include <botan/types.h>
 #include <botan/secmem.h>
 
@@ -51,7 +45,7 @@
 #endif
 
 typedef Botan::byte Byte;
-typedef Botan::SecureVector<Byte> ByteArray;
+typedef Botan::SecureVector<Byte> ByteVector;
 
 class utils
 {
@@ -70,10 +64,10 @@ public:
     //static std::string bytesToBase58(const bytes& encoded);
 
     template<class T>
-    static ByteArray pack(T value);
+    static ByteVector pack(T value);
 
     template<class T>
-    static T unpack(const ByteArray& data);
+    static T unpack(const ByteVector& data);
 };
 
 #endif

@@ -263,9 +263,9 @@ void utils::decodeBase58(const string& encoded, mpz_t &result, const string& alp
 */
 
 template<class T>
-ByteArray utils::pack(T value)
+ByteVector utils::pack(T value)
 {
-    ByteArray b;
+    ByteVector b;
 
     switch(sizeof(value))
     {
@@ -293,13 +293,13 @@ ByteArray utils::pack(T value)
     return b;
 }
 
-template ByteArray utils::pack(unsigned char);
-template ByteArray utils::pack(unsigned short);
-template ByteArray utils::pack(unsigned int);
-template ByteArray utils::pack(unsigned long long);
+template ByteVector utils::pack(uint8_t);
+template ByteVector utils::pack(uint16_t);
+template ByteVector utils::pack(uint32_t);
+template ByteVector utils::pack(uint64_t);
 
 template<class T>
-T utils::unpack(const ByteArray& data)
+T utils::unpack(const ByteVector& data)
 {
     //if(data.length() < sizeof(T)) // FIXME: report error
     T result = 0;
@@ -313,7 +313,7 @@ T utils::unpack(const ByteArray& data)
     return result;
 }
 
-template unsigned char utils::unpack(const ByteArray&);
-template unsigned short utils::unpack(const ByteArray&);
-template unsigned int utils::unpack(const ByteArray&);
-template unsigned long long utils::unpack(const ByteArray&);
+template uint8_t utils::unpack(const ByteVector&);
+template uint16_t utils::unpack(const ByteVector&);
+template uint32_t utils::unpack(const ByteVector&);
+template uint64_t utils::unpack(const ByteVector&);

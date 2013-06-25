@@ -10,7 +10,7 @@
 #include <botan/symkey.h>
 #include "hashes.h"
 
-void _makeByteArrayHex(const ByteArray& src, ByteArray& dest)
+void makeByteVectorHex(const ByteVector& src, ByteVector& dest)
 {
     char cbuffer[2];
     dest.resize(src.size() * 2);
@@ -23,63 +23,63 @@ void _makeByteArrayHex(const ByteArray& src, ByteArray& dest)
 }
 
 template<class T>
-ByteArray bm_hash(const ByteArray& data, DigestBase db)
+ByteVector bm_hash(const ByteVector& data, DigestFormat fmt)
 {
     T hashObject;
-    ByteArray bytes = hashObject.process(data);
+    ByteVector bytes = hashObject.process(data);
 
-    if(db == hex)
+    if(fmt == DF_HEX)
     {
-        ByteArray hexBytes;
-        _makeByteArrayHex(bytes, hexBytes);
+        ByteVector hexBytes;
+        makeByteVectorHex(bytes, hexBytes);
         return hexBytes;
     }
     return bytes;
 }
 
-ByteArray bm_ripemd160(const ByteArray& data, DigestBase db)
+ByteVector bm_ripemd160(const ByteVector& data, DigestFormat fmt)
 {
-    return bm_hash<Botan::RIPEMD_160>(data, db);
+    return bm_hash<Botan::RIPEMD_160>(data, fmt);
 }
 
-ByteArray bm_sha256(const ByteArray& data, DigestBase db)
+ByteVector bm_sha256(const ByteVector& data, DigestFormat fmt)
 {
-    return bm_hash<Botan::SHA_256>(data, db);
+    return bm_hash<Botan::SHA_256>(data, fmt);
 }
 
-ByteArray bm_sha512(const ByteArray& data, DigestBase db)
+ByteVector bm_sha512(const ByteVector& data, DigestFormat fmt)
 {
-    return bm_hash<Botan::SHA_512>(data, db);
+    return bm_hash<Botan::SHA_512>(data, fmt);
 }
 
 template<class T>
-ByteArray bm_hmac(const ByteArray& data, DigestBase db)
+ByteVector bm_hmac_hash(const ByteVector& data, DigestFormat fmt)
 {
     T hashObject;
     Botan::HMAC hmac(&hashObject);
-    ByteArray bytes = hmac.process(data);
+    ByteVector bytes = hmac.process(data);
 
-    if(db == hex)
+    if(fmt == DF_HEX)
     {
-        ByteArray hexBytes;
-        _makeByteArrayHex(bytes, hexBytes);
+        ByteVector hexBytes;
+        makeByteVectorHex(bytes, hexBytes);
         return hexBytes;
     }
     return bytes;
 }
 
-ByteArray bm_hmac_sha256(const ByteArray& data, DigestBase db)
+ByteVector bm_hmac_sha256(const ByteVector& data, DigestFormat fmt)
 {
-    return bm_hmac<Botan::SHA_256>(data, db);
+    return bm_hmac_hash<Botan::SHA_256>(data, fmt);
 }
 
-ByteArray bm_hmac_sha512(const ByteArray& data, DigestBase db)
+ByteVector bm_hmac_sha512(const ByteVector& data, DigestFormat fmt)
 {
-    return bm_hmac<Botan::SHA_512>(data, db);
+    return bm_hmac_hash<Botan::SHA_512>(data, fmt);
 }
 
 template<class T>
-std::string bm_pbkdf2_hmac(const std::string& password, const ByteArray& salt, int desiredKeyLength, DigestBase db, int iterations)
+std::string bm_pbkdf2_hmac_hash(const std::string& password, const ByteVector& salt, int desiredKeyLength, DigestFormat fmt, int iterations)
 {
     T hashObject;
     Botan::HMAC hmac(&hashObject);
@@ -88,7 +88,7 @@ std::string bm_pbkdf2_hmac(const std::string& password, const ByteArray& salt, i
     Botan::OctetString okey = pbkdf2.derive_key(desiredKeyLength, password, &salt[0], salt.size(), iterations);
     std::string key = okey.as_string();
 
-    if(db == hex)
+    if(fmt == DF_HEX)
     {
         std::stringstream ss;
         char cbuffer[2];
@@ -102,23 +102,12 @@ std::string bm_pbkdf2_hmac(const std::string& password, const ByteArray& salt, i
     return key;
 }
 
-std::string bm_pbkdf2_hmac_sha256(const std::string& password, const ByteArray& salt, int desiredKeyLength, DigestBase db, int iterations)
+std::string bm_pbkdf2_hmac_sha256(const std::string& password, const ByteVector& salt, int desiredKeyLength, DigestFormat fmt, int iterations)
 {
-    bm_pbkdf2_hmac<Botan::SHA_256>(password, salt, desiredKeyLength, db, iterations);
+    bm_pbkdf2_hmac_hash<Botan::SHA_256>(password, salt, desiredKeyLength, fmt, iterations);
 }
 
-std::string bm_pbkdf2_hmac_sha512(const std::string& password, const ByteArray& salt, int desiredKeyLength, DigestBase db, int iterations)
+std::string bm_pbkdf2_hmac_sha512(const std::string& password, const ByteVector& salt, int desiredKeyLength, DigestFormat fmt, int iterations)
 {
-    bm_pbkdf2_hmac<Botan::SHA_512>(password, salt, desiredKeyLength, db, iterations);
+    bm_pbkdf2_hmac_hash<Botan::SHA_512>(password, salt, desiredKeyLength, fmt, iterations);
 }
-
-/*
-void bm_doubleSha512(char *string, char outputBuffer[129], int hexdigest)
-{
-    unsigned char hash[SHA512_DIGEST_LENGTH];
-	char buffer[129];
-
-	bm_sha512(string, buffer, 0);
-	bm_sha512((char*)buffer, outputBuffer, hexdigest);
-}
-*/
