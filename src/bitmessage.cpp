@@ -1,0 +1,412 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <time.h>
+//#include <sstream>
+//#include <iostream>
+//#include <openssl/sha.h>
+//#include <openssl/ripemd.h>
+//#include <omp.h>
+//#include <gmp.h>
+#include <botan/hash.h>
+#include <botan/mdx_hash.h>
+#include <botan/sha2_32.h>
+#include <botan/sha2_64.h>
+#include "hashes.h"
+#include "ecc.h"
+#include "bitmessage.h"
+/*
+string bitmessage::encodeAddress(unsigned int version, unsigned int streamNumber, string ripe)
+{
+    if (version >= 2) {
+        if (ripe.length() != 20) {
+            fprintf(stderr,"%s","ERROR: Programming error in encodeAddress: The length of a given ripe hash was not 20.");
+			return "";
+		}
+        if (ripe.substr(ripe.length()-2,2) == "\x00\x00") {
+            ripe = ripe.substr(2);
+		} else {
+			if (ripe.substr(ripe.length()-1,1).c_str()[0] == '\x00') {
+				ripe = ripe.substr(1);
+			}
+		}
+	}
+	string a = encodeVarint(version) + encodeVarint(streamNumber) + ripe;
+    string currentHash = getHashString512(a);
+    string sha = getHashString512(currentHash);
+    string checksum = sha.substr(0,4);
+	mpz_t asInt;
+	mpz_init(asInt);
+	utils::decodeHexInt(utils::encodeHex(a) + utils::encodeHex(checksum), asInt);
+	string address = "BM-" + utils::encodeBase58(asInt);
+
+	if (address.length() < 20) {
+		printf("\nVersion: %d  StreamNumber: %d\n",version,streamNumber);
+		printf("data: %s  a: %s (%d)\n", ripe.c_str(), a.c_str(), (int)a.length());
+		printf("encodeAddress: Address too short %d\n",(int)address.length());
+		address = "";
+	}
+
+	return address;
+}
+
+void bitmessage::decodeAddress(string address,
+							   string &status,
+							   string &data,
+							   unsigned int &version,
+							   unsigned int &streamNumber)
+{
+    //returns (status, address version number, stream number, data (almost certainly a ripe hash))
+	mpz_t integer;
+
+	data = "";
+	version = 0;
+	streamNumber = 0;
+
+	if (address.length()<20) {
+		printf("Address too short %s\n",address.c_str());
+		status = "addresstooshort";
+		return;
+	}
+
+    if (address.substr(0,3) == "BM-") {
+        utils::decodeBase58(address.substr(3), integer);
+	}
+    else {
+        utils::decodeBase58(address, integer);
+	}
+
+    if (mpz_cmp_ui(integer,(unsigned int)0) == 0) {
+        status = "invalidcharacters";
+        return;
+	}
+
+    // after converting to hex, the string will be prepended with a 0x and appended with a L
+	string hexdata = utils::encodeHex(integer);
+
+	if (hexdata.length() % 2 != 0) {
+		hexdata = "0" + hexdata;
+	}
+
+    //print 'hexdata', hexdata
+	data = utils::decodeHex(hexdata);
+	if (data.length() <= 20) {
+		printf("address: %s\n",address.c_str());
+		printf("decodeAddress: data length too short %d/20 hex %d\n",(int)data.length(),(int)hexdata.length());
+		return;
+	}
+    string checksum = data.substr(data.length()-4);
+	string currentHash = getHashString512(data.substr(0,data.length()-4));
+	string sha = getHashString512(currentHash);
+
+    if (checksum != sha.substr(0,4)) {
+        status = "checksumfailed";
+        return;
+	}
+
+	int bytesUsedByVersionNumber=0;
+    version = (unsigned int)decodeVarint(data.substr(0,9), &bytesUsedByVersionNumber);
+
+	//printf("addressVersionNumber %d\n", addressVersionNumber);
+	//printf("bytesUsedByVersionNumber %d\n", bytesUsedByVersionNumber);
+
+    if (version > 2) {
+        printf("cannot decode address version numbers this high\n");
+        status = "versiontoohigh";
+        return;
+	}
+    else {
+		if (version == 0) {
+			printf("cannot decode address version numbers of zero.\n");
+			status = "versiontoohigh\n";
+			return;
+		}
+	}
+
+	int bytesUsedByStreamNumber = 0;
+    streamNumber = (unsigned int)decodeVarint(data.substr(bytesUsedByVersionNumber),&bytesUsedByStreamNumber);
+    status = "success";
+    if (version == 1) {
+		data = data.substr(data.length()-24,20);
+        return;
+	}
+    else {
+		if (version == 2) {
+			string temp_str =
+				data.substr(bytesUsedByVersionNumber + bytesUsedByStreamNumber,
+							data.length() - (4 + bytesUsedByVersionNumber + bytesUsedByStreamNumber));
+			//printf("bytesUsedByStreamNumber %d\n",bytesUsedByStreamNumber);
+			//printf("data.length() %d\n",(int)data.length());
+			//printf("temp_str.length() %d\n",(int)temp_str.length());
+			if (temp_str.length() == 19) {
+				data = "\x00" + temp_str;
+				return;
+			}
+			else if (temp_str.length() == 20) {
+				data = temp_str;
+				return;
+			}
+			else if (temp_str.length() == 18) {
+				data = "\x00\x00" + temp_str;
+				return;
+			}
+			else if (temp_str.length() < 18) {
+				status = "ripetooshort";
+				return;
+			}
+			else if (temp_str.length() > 20) {
+				status = "ripetooshort";
+				return;
+			}
+			else {
+				status = "otherproblem";
+			}
+		}
+	}
+}
+*/
+ByteArray bitmessage::calculateInventoryHash(const ByteArray& data)
+{
+    ByteArray sha1 = bm_hash<Botan::SHA_512>(data, dec);
+    ByteArray sha2 = bm_hash<Botan::SHA_512>(sha1, dec);
+    return ByteArray(&sha2[0], 32);
+}
+
+template<class T>
+std::string bitmessage::encodeVarint(T integer)
+{
+    if(integer < 0)
+        return ""; // FIXME: throw exception or something
+
+    std::string result = "";
+
+    if (integer < 253) {
+        return utils::pack<unsigned char>((unsigned char)integer);
+	}
+    else if ((integer >= 253) && (integer < 65536)) {
+        result = utils::pack<unsigned char>((unsigned char)253);
+        result += utils::pack<unsigned short>((unsigned short)integer);
+		return result;
+	}
+    if ((integer >= 65536) && (integer < 4294967296)) {
+        result = utils::pack<unsigned char>((unsigned char)254);
+        result += utils::pack<unsigned int>((unsigned int)integer);
+		return result;
+	}
+    if (integer >= 4294967296) {
+        result = utils::pack<unsigned char>((unsigned char)255);
+        result += utils::pack<unsigned long long>((unsigned long long)integer);
+		return result;
+	}
+	return result;
+}
+
+template std::string bitmessage::encodeVarint(unsigned char);
+template std::string bitmessage::encodeVarint(unsigned short);
+template std::string bitmessage::encodeVarint(unsigned int);
+template std::string bitmessage::encodeVarint(unsigned long long);
+
+
+unsigned long long bitmessage::decodeVarint(const ByteArray& data, int &nbytes)
+{
+	unsigned char firstByte;
+
+    nbytes = 0;
+    if (data.size() == 0) {
+        return 0;
+	}
+
+    firstByte = utils::unpack<unsigned char>(&data[0]);
+
+    if (firstByte < 253) {
+        nbytes = 1;
+        return firstByte;
+	}
+    if (firstByte == 253) {
+        nbytes = 3;
+        return utils::unpack<unsigned short>(&data[1]);
+	}
+    if (firstByte == 254) {
+        nbytes = 5;
+        return utils::unpack<unsigned int>(&data[1]);
+	}
+    if (firstByte == 255) {
+        nbytes = 9;
+        return utils::unpack<unsigned long long>(&data[1]);
+	}
+	return 0;
+}
+
+string bitmessage::getHashString512(string data)
+{
+	char hashStr[SHA512_DIGEST_LENGTH];
+
+	bm_sha512((char*)data.c_str(), hashStr, HASH_DIGEST);
+	string hash = "";
+	for (int i = 0; i < SHA512_DIGEST_LENGTH; i++) {
+		hash += hashStr[i];
+	}
+	return hash;
+}
+
+unsigned long long bitmessage::getProofOfWorkTrialValue(unsigned long long nonce,
+														string initialHash)
+{
+	char str[129];
+    string nonce_hash = utils::pack<unsigned long long>(nonce) + initialHash;
+	bm_doubleSha512((char*)nonce_hash.c_str(), str, HASH_DIGEST);
+	// take the last 8 bytes of the hash
+	string lastBytes = "";
+	for (int i = 0; i < 8; i++) {
+		lastBytes += str[SHA512_DIGEST_LENGTH-8+i];
+	}
+    return utils::unpack<unsigned long long>(lastBytes);
+}
+
+string bitmessage::proofOfWork(unsigned int streamNumber,
+							   string embeddedTime,
+							   string cyphertext,
+							   unsigned int payloadLengthExtraBytes,
+							   unsigned int averageProofOfWorkNonceTrialsPerByte,
+							   bool verbose)
+{
+	unsigned long long nonce = 0;
+	// the maximum 64bit value
+	unsigned long long trialValue = 18446744073709551615ULL;
+	unsigned long long target;
+	clock_t begin_time, end_time;
+	char str[129];
+	string lastBytes;
+	string encodedStreamNumber = encodeVarint(streamNumber);
+	string payload = embeddedTime + encodedStreamNumber + cyphertext;
+
+	target = 18446744073709551615ULL /
+		((8+payload.length()+payloadLengthExtraBytes) *
+		 averageProofOfWorkNonceTrialsPerByte);
+
+	if (verbose) {
+		printf("(For msg message) Doing proof of work. Target: %lld\n",target);
+	}
+
+	begin_time = clock();
+	string initialHash = getHashString512(payload);
+	unsigned long long best = 0;
+	while (trialValue > target) {
+		if (nonce == 0) {
+			nonce = 1;
+		}
+		else {
+			nonce += 32;
+		}
+#pragma omp parallel for
+		for (unsigned long long index = 0; index < 4; index++) {
+			unsigned long long n = getProofOfWorkTrialValue(nonce + index, initialHash);
+			if (n <= target) {
+				trialValue = n;
+				best = nonce + index;
+			}
+		}
+    }
+	nonce = best;
+	end_time = clock();
+	
+	if (verbose) {
+		printf("(For msg message) Found proof of work %lld", trialValue);
+		printf(" Nonce: %lld\n", nonce);
+		
+		if (end_time>begin_time) {
+			printf("POW took %d seconds.  ",
+				   (int)((end_time-begin_time)/CLOCKS_PER_SEC));
+			printf("%lld nonce trials per second.\n",
+				   nonce / (unsigned long long)((end_time-begin_time)/CLOCKS_PER_SEC));
+		}
+	}
+	// prepend the nonce value.  This can then be used by the receiver to check that the payload is valid
+    payload = utils::pack<unsigned long long>(nonce) + payload;
+	return payload;
+}
+
+bool bitmessage::checkProofOfWork(string payload,
+								  unsigned int payloadLengthExtraBytes,
+								  unsigned int averageProofOfWorkNonceTrialsPerByte)
+{
+	if (payload.length() <= 8) return false;
+
+	const char * payload_str = payload.c_str();
+	char * message_payload = (char*)&payload_str[8];
+	unsigned long long nonce;
+
+	// extract the nonce value from the first 8 bytes
+	memcpy((void*)&nonce,(void*)payload_str,8);
+
+	unsigned long long target = 18446744073709551615ULL /
+		((payload.length()+payloadLengthExtraBytes) *
+		 averageProofOfWorkNonceTrialsPerByte);
+
+	string initialHash = getHashString512(message_payload);
+	return (getProofOfWorkTrialValue(nonce, initialHash) <= target);
+}
+
+string bitmessage::addBMIfNotPresent(string address)
+{
+    if (address.substr(0,3) != "BM-") {
+        return "BM-" + address;
+	}
+    else {
+        return address;
+	}
+}
+
+// returns the stream number of an address or False if there is a problem with the address.
+unsigned int bitmessage::addressStreamNumber(string address, string &status)
+{
+    // check for the BM- at the front of the address. If it isn't there, this address might be for a different version of Bitmessage
+	if (address.substr(0,3) != "BM-") {
+        status = "missingbm";
+		return 0;
+	}
+
+    // here we take off the BM-
+    mpz_t integer;
+	utils::decodeBase58(address.substr(3), integer);
+
+    // after converting to hex, the string will be prepended with a 0x and appended with a L
+	string hexdata = utils::encodeHex(integer);
+
+    if (hexdata.length() % 2 != 0) {
+        hexdata = "0" + hexdata;
+	}
+
+    // print 'hexdata', hexdata
+
+	string data = utils::decodeHex(hexdata);
+	if (data.length() <= 4) {
+		printf("WARNING: data length too short\n");
+		return 0;
+	}
+    string checksum = data.substr(data.length()-4);
+	string currentHash = getHashString512(data.substr(0,data.length()-4));
+	string sha = getHashString512(currentHash);
+
+    if (checksum != sha.substr(0,4)) {
+        status = "checksumfailed";
+        return 0;
+	}
+
+	int bytesUsedByVersionNumber=0;
+	unsigned int version = (unsigned int)decodeVarint(data.substr(0,9), &bytesUsedByVersionNumber);
+
+	if (version < 1) {
+		printf("cannot decode version address version numbers this high\n");
+		status = "versiontoohigh";
+		return 0;
+	}
+
+	int bytesUsedByStreamNumber=0;
+	unsigned int streamNumber =
+		(unsigned int)decodeVarint(data.substr(bytesUsedByVersionNumber,9+bytesUsedByVersionNumber),
+								   &bytesUsedByStreamNumber);
+
+    status = "success";
+    return streamNumber;
+}
