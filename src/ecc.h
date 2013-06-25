@@ -35,8 +35,8 @@ struct ECC
     void generateKeysWithPassword(const std::string& password);
     //unsigned int get_curve_id();
 
-    //std::string get_public_key();
-    //std::string get_private_key();
+    inline std::string getPublicKey() const { return mPublicKey; }
+    inline std::string getPrivateKey() const { return mPrivateKey; }
 
 private:
 

@@ -20,7 +20,7 @@ namespace bm {
 namespace
 {
     //const char* kLessConfusingChars = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
-    const char* kB58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"; // FIXME: Check this
+    const char* kB58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
     const int kMaxBase58Length = 11 + 1; // __int64(-1) => JPwcyDCgEup
     const int kMaxUInt64Length = 20;     // __int64(-1) => 18446744073709551615
 

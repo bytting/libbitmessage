@@ -25,6 +25,9 @@
 
 namespace bm {
 
+#define PAYLOAD_LENGTH_EXTRA_BYTES  14000
+#define AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE 320
+
 //pubkey bitfield
 //#define BM_PUBKEY_DOES_ACK 31 // FIXME: what is this
 
@@ -84,16 +87,14 @@ std::string proofOfWork(
         uint32_t streamNumber,
         std::string embeddedTime,
         std::string cyphertext,
-        uint32_t payloadLengthExtraBytes=14000,
-        uint32_t averageProofOfWorkNonceTrialsPerByte=320,
-        bool verbose=false
-);
+        uint32_t payloadLengthExtraBytes = PAYLOAD_LENGTH_EXTRA_BYTES,
+        uint32_t averageProofOfWorkNonceTrialsPerByte = AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE,
+        bool verbose=false);
 
 bool checkProofOfWork(
         std::string payload,
-        uint32_t payloadLengthExtraBytes=14000,
-        uint32_t averageProofOfWorkNonceTrialsPerByte=320
-);
+        uint32_t payloadLengthExtraBytes = PAYLOAD_LENGTH_EXTRA_BYTES,
+        uint32_t averageProofOfWorkNonceTrialsPerByte = AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
 
 /*
 string encodeAddress(uint32_t version, uint32_t streamNumber, string ripe);

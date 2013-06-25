@@ -50,7 +50,7 @@ ByteVector hash(const ByteVector& data, DigestFormat fmt)
     T hashObject;
     ByteVector bytes = hashObject.process(data);
 
-    if(fmt == df_hex)
+    if(fmt == DM_FORMAT_HEX)
     {
         ByteVector hexBytes;
         internal::makeByteVectorHex(bytes, hexBytes);
@@ -66,7 +66,7 @@ ByteVector hmac_hash(const ByteVector& data, DigestFormat fmt)
     Botan::HMAC hmac(&hashObject);
     ByteVector bytes = hmac.process(data);
 
-    if(fmt == df_hex)
+    if(fmt == DM_FORMAT_HEX)
     {
         ByteVector hexBytes;
         internal::makeByteVectorHex(bytes, hexBytes);

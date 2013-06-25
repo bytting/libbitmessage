@@ -1,12 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 #include <assert.h>
 #include <time.h>
-//#include <gmp.h>
 #include "utils.h"
+#include "ecc.h"
 #include "bitmessage.h"
 #include "unittests.h"
+
+using namespace std;
+
+static void test_ecc_keys()
+{
+    cout << "Test ECC key generator\n" << endl;
+    bm::ECC ecc;
+    ecc.generateKeysWithPassword("qwerty");
+    cout << ecc.getPrivateKey() << "\n\n" << ecc.getPublicKey() << endl;
+    cout << "\n\n";
+    ecc.generateKeys();
+    cout << ecc.getPrivateKey() << "\n\n" << ecc.getPublicKey() << endl;
+}
+
 /*
 static void test_sha512()
 {
@@ -317,18 +332,18 @@ static void test_extract_stream_number()
 
 	printf("Ok\n");
 }
-
+*/
 void run_unit_tests()
 {
-	test_hex();
-	test_sha512();
-	test_double_sha512();
-	test_ripemd160();
-	test_pack();
-	test_encodeVarint();
-	test_base58();
-	test_address_encoding();
-    test_extract_stream_number();
-	test_proofOfWork();    
+    test_ecc_keys();
+    //test_hex();
+    //test_sha512();
+    //test_double_sha512();
+    //test_ripemd160();
+    //test_pack();
+    //test_encodeVarint();
+    //test_base58();
+    //test_address_encoding();
+    //test_extract_stream_number();
+    //test_proofOfWork();
 }
-*/

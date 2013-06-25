@@ -18,11 +18,16 @@
 
 #include <botan/botan.h>
 #include <botan/ecdh.h>
+#include <botan/ecdsa.h>
 #include <botan/ec_group.h>
 #include <botan/rng.h>
+ #include <botan/oids.h>
+#include <botan/gost_3410.h>
 #include "ecc.h"
 //#include "utils.h"
 //#include "hashes.h"
+
+using namespace Botan;
 
 namespace bm {
 
@@ -56,21 +61,22 @@ int ECC::decode_privkey(string data)
 }
 */
 void ECC::generateKeys()
-{
-    Botan::AutoSeeded_RNG rng;
-    Botan::EC_Group group("secp256r1");
-    Botan::ECDH_PrivateKey key(rng, group);
-    mPublicKey = Botan::X509::PEM_encode(key);
-    mPrivateKey = Botan::PKCS8::PEM_encode(key);
+{        
+    AutoSeeded_RNG rng;
+    //EC_Group ecGroup("secp256k1");
+    EC_Group ecGroup("secp256r1");
+    ECDSA_PrivateKey key(rng, ecGroup);
+    mPublicKey = X509::PEM_encode(key);
+    mPrivateKey = PKCS8::PEM_encode(key);
 }
 
 void ECC::generateKeysWithPassword(const std::string& password)
 {
-    Botan::AutoSeeded_RNG rng;
-    Botan::EC_Group group("secp256r1");
-    Botan::ECDH_PrivateKey key(rng, group);
-    mPublicKey = Botan::X509::PEM_encode(key);
-    mPrivateKey = Botan::PKCS8::PEM_encode(key, rng, password.c_str());
+    AutoSeeded_RNG rng;
+    EC_Group group("secp256r1");
+    ECDSA_PrivateKey key(rng, group);
+    mPublicKey = X509::PEM_encode(key);
+    mPrivateKey = PKCS8::PEM_encode(key, rng, password.c_str());
 }
 
 /*

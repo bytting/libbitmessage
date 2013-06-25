@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
     try
     {
         Botan::LibraryInitializer init;
-        //bm_run_unit_tests();
+        run_unit_tests();
     }
     catch(std::exception& ex)
     {

@@ -24,14 +24,17 @@
 
 namespace bm {
 
-enum DigestFormat { df_none, df_hex };
+enum DigestFormat {
+    DM_FORMAT_NONE = 0,
+    DM_FORMAT_HEX
+};
 
-ByteVector ripemd160(const ByteVector& data, DigestFormat fmt = df_none);
-ByteVector sha256(const ByteVector& data, DigestFormat fmt = df_none);
-ByteVector sha512(const ByteVector& data, DigestFormat fmt = df_none);
+ByteVector ripemd160(const ByteVector& data, DigestFormat fmt = DM_FORMAT_NONE);
+ByteVector sha256(const ByteVector& data, DigestFormat fmt = DM_FORMAT_NONE);
+ByteVector sha512(const ByteVector& data, DigestFormat fmt = DM_FORMAT_NONE);
 
-ByteVector hmac_sha256(const ByteVector& data, DigestFormat fmt = df_none);
-ByteVector hmac_sha512(const ByteVector& data, DigestFormat fmt = df_none);
+ByteVector hmac_sha256(const ByteVector& data, DigestFormat fmt = DM_FORMAT_NONE);
+ByteVector hmac_sha512(const ByteVector& data, DigestFormat fmt = DM_FORMAT_NONE);
 
 OctetVector pbkdf2_hmac_sha256(const std::string& password, const ByteVector& salt, int iterations = 10000);
 OctetVector pbkdf2_hmac_sha512(const std::string& password, const ByteVector& salt, int iterations = 10000);

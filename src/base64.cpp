@@ -20,7 +20,8 @@ namespace bm {
 
 namespace
 {
-    const char* kPrintableChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; // FIXME: Check this
+    //const char* kPrintableChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; // FIXME: Check this
+    const char* kB64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; // FIXME: Check this
     const unsigned int kMaxDataLen = 3221225472L; // 3G
     const unsigned int kMaxCodeLen = 4294967295L; // 4G - 1
 
@@ -77,10 +78,10 @@ namespace base64
 
             size_t pos = data_len - unprocessed;
 
-            output[output_wpos+0] = kPrintableChars[(bytes[pos] & 0xFC) >> 2];
-            output[output_wpos+1] = kPrintableChars[((bytes[pos] & 0x03) << 4) + ((unprocessed < 2) ? 0 : ((bytes[pos+1] & 0xF0) >> 4))];
-            output[output_wpos+2] = (unprocessed < 2) ? '=' : kPrintableChars[((bytes[pos+1] & 0x0F) << 2) + ((unprocessed < 3) ? 0 : ((bytes[pos+2] & 0xC0) >> 6))];
-            output[output_wpos+3] = (unprocessed < 3) ? '=' : kPrintableChars[bytes[pos+2] & 0x3F];
+            output[output_wpos+0] = kB64[(bytes[pos] & 0xFC) >> 2];
+            output[output_wpos+1] = kB64[((bytes[pos] & 0x03) << 4) + ((unprocessed < 2) ? 0 : ((bytes[pos+1] & 0xF0) >> 4))];
+            output[output_wpos+2] = (unprocessed < 2) ? '=' : kB64[((bytes[pos+1] & 0x0F) << 2) + ((unprocessed < 3) ? 0 : ((bytes[pos+2] & 0xC0) >> 6))];
+            output[output_wpos+3] = (unprocessed < 3) ? '=' : kB64[bytes[pos+2] & 0x3F];
             output_wpos += 4;
 
             if (unprocessed < 3)
