@@ -7,7 +7,7 @@
 #include "utils.h"
 #include "bitmessage.h"
 #include "unittests.h"
-
+/*
 static void test_sha512()
 {
 	char result[129];
@@ -331,3 +331,4 @@ void bm_run_unit_tests()
     test_extract_stream_number();
 	test_proofOfWork();    
 }
+*/

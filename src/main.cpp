@@ -28,12 +28,14 @@
 
 #include "anyoption.h"
 #include "unittests.h"
+#include "config.h"
 
 int main(int argc, char* argv[])
 {
     AnyOption opt;
 
     // Usage
+    opt.addUsage( LIBRARY_NAME );
     opt.addUsage( "Run unit tests: " );
     opt.addUsage( "  libbitmessage -p 8444" );
     opt.addUsage( " " );
@@ -59,7 +61,7 @@ int main(int argc, char* argv[])
 
     if ((opt.getFlag("version")) || (opt.getFlag('V')))
     {
-        std::cout << "Version " << VERSION << std::endl;
+        std::cout << "Version " << LIBRARY_VERSION << std::endl;
         return 0;
 	}
 
@@ -74,7 +76,7 @@ int main(int argc, char* argv[])
     try
     {
         Botan::LibraryInitializer init;
-        bm_run_unit_tests();
+        //bm_run_unit_tests();
     }
     catch(std::exception& ex)
     {

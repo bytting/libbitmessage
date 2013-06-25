@@ -14,6 +14,8 @@
 
 #include "base64.h"
 
+#include <cstring>
+
 namespace
 {
     const char* kPrintableChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; // FIXME: Check this
@@ -96,7 +98,7 @@ namespace base64
             return 0;
 
         if (encoded_len == -1)
-            encoded_len = strlen(encoded);
+            encoded_len = std::strlen(encoded);
 
         if ((encoded_len & 3) != 0 || encoded_len > kMaxCodeLen)
             return 0;

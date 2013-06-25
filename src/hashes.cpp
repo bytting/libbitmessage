@@ -10,9 +10,6 @@
 #include <botan/symkey.h>
 #include "hashes.h"
 
-namespace // anonymous namespace
-{
-
 void _makeByteArrayHex(const ByteArray& src, ByteArray& dest)
 {
     char cbuffer[2];
@@ -24,8 +21,6 @@ void _makeByteArrayHex(const ByteArray& src, ByteArray& dest)
         dest.push_back((Byte)cbuffer[1]);
     }
 }
-
-} // end anonymous namespace
 
 template<class T>
 ByteArray bm_hash(const ByteArray& data, DigestBase db)
@@ -42,12 +37,23 @@ ByteArray bm_hash(const ByteArray& data, DigestBase db)
     return bytes;
 }
 
-template ByteArray bm_hash<Botan::RIPEMD_160>(const ByteArray&, DigestBase);
-template ByteArray bm_hash<Botan::SHA_256>(const ByteArray&, DigestBase);
-template ByteArray bm_hash<Botan::SHA_512>(const ByteArray&, DigestBase);
+ByteArray bm_ripemd160(const ByteArray& data, DigestBase db)
+{
+    return bm_hash<Botan::RIPEMD_160>(data, db);
+}
+
+ByteArray bm_sha256(const ByteArray& data, DigestBase db)
+{
+    return bm_hash<Botan::SHA_256>(data, db);
+}
+
+ByteArray bm_sha512(const ByteArray& data, DigestBase db)
+{
+    return bm_hash<Botan::SHA_512>(data, db);
+}
 
 template<class T>
-ByteArray bm_hmac_hash(const ByteArray& data, DigestBase db)
+ByteArray bm_hmac(const ByteArray& data, DigestBase db)
 {
     T hashObject;
     Botan::HMAC hmac(&hashObject);
@@ -62,11 +68,18 @@ ByteArray bm_hmac_hash(const ByteArray& data, DigestBase db)
     return bytes;
 }
 
-template ByteArray bm_hmac_hash<Botan::SHA_256>(const ByteArray&, DigestBase);
-template ByteArray bm_hmac_hash<Botan::SHA_512>(const ByteArray&, DigestBase);
+ByteArray bm_hmac_sha256(const ByteArray& data, DigestBase db)
+{
+    return bm_hmac<Botan::SHA_256>(data, db);
+}
+
+ByteArray bm_hmac_sha512(const ByteArray& data, DigestBase db)
+{
+    return bm_hmac<Botan::SHA_512>(data, db);
+}
 
 template<class T>
-std::string bm_pbkdf2_hmac_hash(const std::string& password, const ByteArray& salt, int desiredKeyLength, DigestBase db, int iterations)
+std::string bm_pbkdf2_hmac(const std::string& password, const ByteArray& salt, int desiredKeyLength, DigestBase db, int iterations)
 {
     T hashObject;
     Botan::HMAC hmac(&hashObject);
@@ -89,8 +102,15 @@ std::string bm_pbkdf2_hmac_hash(const std::string& password, const ByteArray& sa
     return key;
 }
 
-template std::string bm_pbkdf2_hmac_hash<Botan::SHA_256>(const std::string&, const ByteArray&, int, DigestBase, int);
-template std::string bm_pbkdf2_hmac_hash<Botan::SHA_512>(const std::string&, const ByteArray&, int, DigestBase, int);
+std::string bm_pbkdf2_hmac_sha256(const std::string& password, const ByteArray& salt, int desiredKeyLength, DigestBase db, int iterations)
+{
+    bm_pbkdf2_hmac<Botan::SHA_256>(password, salt, desiredKeyLength, db, iterations);
+}
+
+std::string bm_pbkdf2_hmac_sha512(const std::string& password, const ByteArray& salt, int desiredKeyLength, DigestBase db, int iterations)
+{
+    bm_pbkdf2_hmac<Botan::SHA_512>(password, salt, desiredKeyLength, db, iterations);
+}
 
 /*
 void bm_doubleSha512(char *string, char outputBuffer[129], int hexdigest)

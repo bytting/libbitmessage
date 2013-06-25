@@ -4,14 +4,6 @@
 #include <time.h>
 //#include <sstream>
 //#include <iostream>
-//#include <openssl/sha.h>
-//#include <openssl/ripemd.h>
-//#include <omp.h>
-//#include <gmp.h>
-#include <botan/hash.h>
-#include <botan/mdx_hash.h>
-#include <botan/sha2_32.h>
-#include <botan/sha2_64.h>
 #include "hashes.h"
 #include "ecc.h"
 #include "bitmessage.h"
@@ -165,13 +157,15 @@ void bitmessage::decodeAddress(string address,
 	}
 }
 */
+
 ByteArray bitmessage::calculateInventoryHash(const ByteArray& data)
-{
-    ByteArray sha1 = bm_hash<Botan::SHA_512>(data, dec);
-    ByteArray sha2 = bm_hash<Botan::SHA_512>(sha1, dec);
+{    
+    ByteArray sha1 = bm_sha512(data, dec);
+    ByteArray sha2 = bm_sha512(sha1, dec);
     return ByteArray(&sha2[0], 32);
 }
 
+/*
 template<class T>
 std::string bitmessage::encodeVarint(T integer)
 {
@@ -410,3 +404,4 @@ unsigned int bitmessage::addressStreamNumber(string address, string &status)
     status = "success";
     return streamNumber;
 }
+*/

@@ -15,6 +15,8 @@
 #ifndef BASE64_H
 #define BASE64_H
 
+#include <cstddef>
+
 namespace base64
 {
     /** encode data into base64
