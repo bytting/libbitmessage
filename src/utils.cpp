@@ -301,7 +301,7 @@ template ByteVector utils::pack(uint64_t);
 template<class T>
 T utils::unpack(const ByteVector& data)
 {
-    //if(data.length() < sizeof(T)) // FIXME: report error
+    //if(data.size() < sizeof(T)) // FIXME: report error
     T result = 0;
     memcpy((void*)&result, (void*)&data[0], sizeof(T));
     switch(sizeof(T))

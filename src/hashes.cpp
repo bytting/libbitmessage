@@ -79,35 +79,20 @@ ByteVector bm_hmac_sha512(const ByteVector& data, DigestFormat fmt)
 }
 
 template<class T>
-std::string bm_pbkdf2_hmac_hash(const std::string& password, const ByteVector& salt, int desiredKeyLength, DigestFormat fmt, int iterations)
+OctetVector bm_pbkdf2_hmac_hash(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
 {
     T hashObject;
     Botan::HMAC hmac(&hashObject);
     Botan::PKCS5_PBKDF2 pbkdf2(&hmac);
-
-    Botan::OctetString okey = pbkdf2.derive_key(desiredKeyLength, password, &salt[0], salt.size(), iterations);
-    std::string key = okey.as_string();
-
-    if(fmt == DF_HEX)
-    {
-        std::stringstream ss;
-        char cbuffer[2];
-        for(int i = 0; i < key.size(); ++i)
-        {
-            sprintf(cbuffer, "%02x", key[i]);
-            ss << cbuffer[0] << cbuffer[1];
-        }
-        return ss.str();
-    }
-    return key;
+    return pbkdf2.derive_key(desiredKeyLength, password, &salt[0], salt.size(), iterations);
 }
 
-std::string bm_pbkdf2_hmac_sha256(const std::string& password, const ByteVector& salt, int desiredKeyLength, DigestFormat fmt, int iterations)
+OctetVector bm_pbkdf2_hmac_sha256(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
 {
-    bm_pbkdf2_hmac_hash<Botan::SHA_256>(password, salt, desiredKeyLength, fmt, iterations);
+    return bm_pbkdf2_hmac_hash<Botan::SHA_256>(password, salt, desiredKeyLength, iterations);
 }
 
-std::string bm_pbkdf2_hmac_sha512(const std::string& password, const ByteVector& salt, int desiredKeyLength, DigestFormat fmt, int iterations)
+OctetVector bm_pbkdf2_hmac_sha512(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
 {
-    bm_pbkdf2_hmac_hash<Botan::SHA_512>(password, salt, desiredKeyLength, fmt, iterations);
+    return bm_pbkdf2_hmac_hash<Botan::SHA_512>(password, salt, desiredKeyLength, iterations);
 }

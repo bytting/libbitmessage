@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <botan/types.h>
 #include <botan/secmem.h>
+#include <botan/symkey.h>
 
 #if defined(__linux__)
 #include <endian.h>
@@ -46,6 +47,7 @@
 
 typedef Botan::byte Byte;
 typedef Botan::SecureVector<Byte> ByteVector;
+typedef Botan::OctetString OctetVector;
 
 class utils
 {
