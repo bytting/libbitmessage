@@ -30,6 +30,8 @@
 
 int main(int argc, char* argv[])
 {
+    std::cout << LIBRARY_NAME << " " << LIBRARY_VERSION << std::endl;
+
     try
     {
         Botan::LibraryInitializer init;
