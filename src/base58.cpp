@@ -109,8 +109,8 @@ namespace base58
         if (encoded_len == -1) // FIXME: unsigned comparison
             encoded_len = std::strlen(encoded);
 
-        if (encoded_len >= kMaxBase58Length) 
-            return 0;        
+        if (encoded_len >= kMaxBase58Length)
+            return 0;
 
         Botan::BigInt output_num = 0;
 

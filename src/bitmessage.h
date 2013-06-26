@@ -19,9 +19,8 @@
 #ifndef BITMESSAGE_H
 #define BITMESSAGE_H
 
-#include <cstdint>
 #include <string>
-#include "utils.h"
+#include "btypes.h"
 
 namespace bm {
 

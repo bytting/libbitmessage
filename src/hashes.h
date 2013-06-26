@@ -20,7 +20,7 @@
 #define BM_HASHES_H
 
 #include <string>
-#include "utils.h"
+#include "btypes.h"
 
 namespace bm {
 

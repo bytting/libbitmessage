@@ -264,7 +264,7 @@ void utils::decodeBase58(const string& encoded, mpz_t &result, const string& alp
 	mpz_add(result,result,num);
 }
 */
-
+/*
 template<class T>
 ByteVector utils::pack(T value)
 {
@@ -320,5 +320,5 @@ template uint8_t utils::unpack(const ByteVector&);
 template uint16_t utils::unpack(const ByteVector&);
 template uint32_t utils::unpack(const ByteVector&);
 template uint64_t utils::unpack(const ByteVector&);
-
+*/
 } // namespace bm

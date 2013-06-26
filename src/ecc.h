@@ -19,9 +19,9 @@
 #ifndef BM_ECC_H
 #define BM_ECC_H
 
-#include <cstdint>
 #include <string>
 #include <map>
+#include "btypes.h"
 
 namespace bm {
 
