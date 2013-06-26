@@ -29,12 +29,12 @@ using namespace Botan;
 
 namespace bm {
 
-void ECC::setCurve(const std::string& curve)
+void ECC::set_curve(const std::string& curve)
 {
     std::map<std::string, uint16_t>::const_iterator it = curves.find(curve);
     if(it == curves.end())
         throw RangeException(__FILE__, __LINE__, "ECC::setCurve: curve not found");
-    mCurve = curve;
+    m_curve = curve;
 }
 
 /*
@@ -66,31 +66,26 @@ int ECC::decode_privkey(string data)
 	return i;
 }
 */
-void ECC::generateKeys()
+void ECC::generate_keys()
 {        
     // secp256k1, secp256r1
     AutoSeeded_RNG rng;
-    EC_Group group(mCurve);
+    EC_Group group(m_curve);
     ECDSA_PrivateKey key(rng, group);
-    mPublicKey = X509::PEM_encode(key);
-    mPrivateKey = PKCS8::PEM_encode(key);
+    m_public_key = X509::PEM_encode(key);
+    m_private_key = PKCS8::PEM_encode(key);
 }
 
-void ECC::generateKeysWithPassword(const std::string& password)
+void ECC::generate_keys_with_password(const std::string& password)
 {
     AutoSeeded_RNG rng;
-    EC_Group group(mCurve);
+    EC_Group group(m_curve);
     ECDSA_PrivateKey key(rng, group);
-    mPublicKey = X509::PEM_encode(key);
-    mPrivateKey = PKCS8::PEM_encode(key, rng, password.c_str());
+    m_public_key = X509::PEM_encode(key);
+    m_private_key = PKCS8::PEM_encode(key, rng, password.c_str());
 }
 
 /*
-unsigned int ECC::get_curve_id()
-{
-	return curve_id;
-}
-
 string ECC::get_pubkey()
 {
 	//High level function which returns :
@@ -113,5 +108,11 @@ string ECC::get_privkey()
 	return s;
 }
 */
+
+void ECC::clear()
+{
+    m_private_key = m_public_key = "";
+    m_curve = "secp256k1";
+}
 
 } // namespace bm

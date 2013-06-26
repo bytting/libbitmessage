@@ -22,6 +22,7 @@
 #include <time.h>
 //#include <sstream>
 //#include <iostream>
+#include "exceptions.h"
 #include "hashes.h"
 #include "ecc.h"
 #include "bitmessage.h"
@@ -183,6 +184,8 @@ ByteVector calculateInventoryHash(const ByteVector& data)
 {    
     ByteVector sha1 = sha512(data);
     ByteVector sha2 = sha512(sha1);
+    if(sha2.size() < 32)
+        throw RangeException(__FILE__, __LINE__, "calculateInventoryHash: Hash size is less than 32");
     return ByteVector(&sha2[0], 32);
 }
 

@@ -29,7 +29,7 @@ class ECC
 {
 public:
 
-    ECC() : mCurve("secp256k1") {}
+    ECC() : m_curve("secp256k1") {}
 
     const std::map<std::string, uint16_t> curves = {
         { "secp224r1", 713 },
@@ -37,24 +37,27 @@ public:
         //{ "sect283r1", 730 }
     };
 
-    void setCurve(const std::string& curve);
-    inline std::string getCurve() const { return mCurve; }
-    inline uint16_t getCurveId() const { return curves.at(mCurve) ; }
+    void set_curve(const std::string& curve);
+    inline std::string get_curve() const { return m_curve; }
+    inline uint16_t get_curve_id() const { return curves.at(m_curve) ; }
 
-    inline std::string getPublicKey() const { return mPublicKey; }
-    inline std::string getPrivateKey() const { return mPrivateKey; }
+    inline bool has_keys() const { return m_private_key.length() > 0; }
+    inline std::string get_public_key() const { return m_public_key; }
+    inline std::string get_private_key() const { return m_private_key; }
 
-    void generateKeys();
-    void generateKeysWithPassword(const std::string& password);
+    void generate_keys();
+    void generate_keys_with_password(const std::string& password);
 
     //int decode_pubkey(bytes data);
     //int decode_privkey(bytes data);
 
+    inline void clear();
+
 private:
 
-    std::string mPublicKey;
-    std::string mPrivateKey;
-    std::string mCurve;
+    std::string m_public_key;
+    std::string m_private_key;
+    std::string m_curve;
 };
 
 } // namespace bm

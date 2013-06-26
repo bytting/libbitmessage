@@ -23,20 +23,21 @@
 #include "unittests.h"
 
 int main(int argc, char* argv[])
-{
-    std::cout << LIBRARY_NAME << " " << LIBRARY_VERSION << std::endl;
-
+{    
     try
     {
+        std::cout << LIBRARY_NAME << " " << LIBRARY_VERSION << std::endl;
+
         Botan::LibraryInitializer init;
+
         run_unit_tests();
     }
-    catch(bm::Exception& bx)
+    catch(bm::Exception& bmex)
     {
-        std::cerr << bx.file() << " : " << bx.line() << " : " << bx.what() << std::endl;
+        std::cerr << bmex.file() << " : " << bmex.line() << " : " << bmex.what() << std::endl;
     }
-    catch(std::exception& ex)
+    catch(std::exception& stdex)
     {
-        std::cerr << ex.what() << std::endl;
+        std::cerr << stdex.what() << std::endl;
     }
 }
