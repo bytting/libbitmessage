@@ -25,16 +25,17 @@
 namespace bm {
 
 enum DigestFormat {
-    DM_FORMAT_NONE = 0,
-    DM_FORMAT_HEX
+    FORMAT_NONE = 0,
+    FORMAT_HEX
 };
 
-ByteVector ripemd160(const ByteVector& data, DigestFormat fmt = DM_FORMAT_NONE);
-ByteVector sha256(const ByteVector& data, DigestFormat fmt = DM_FORMAT_NONE);
-ByteVector sha512(const ByteVector& data, DigestFormat fmt = DM_FORMAT_NONE);
-
-ByteVector hmac_sha256(const ByteVector& data, DigestFormat fmt = DM_FORMAT_NONE);
-ByteVector hmac_sha512(const ByteVector& data, DigestFormat fmt = DM_FORMAT_NONE);
+ByteVector ripemd160(const ByteVector& data, DigestFormat fmt = FORMAT_NONE);
+ByteVector sha256(const ByteVector& data, DigestFormat fmt = FORMAT_NONE);
+ByteVector sha256(const std::string& data, DigestFormat fmt = FORMAT_NONE);
+ByteVector sha512(const ByteVector& data, DigestFormat fmt = FORMAT_NONE);
+ByteVector sha512(const std::string& data, DigestFormat fmt = FORMAT_NONE);
+ByteVector hmac_sha256(const ByteVector& data, DigestFormat fmt = FORMAT_NONE);
+ByteVector hmac_sha512(const ByteVector& data, DigestFormat fmt = FORMAT_NONE);
 
 OctetVector pbkdf2_hmac_sha256(const std::string& password, const ByteVector& salt, int iterations = 10000);
 OctetVector pbkdf2_hmac_sha512(const std::string& password, const ByteVector& salt, int iterations = 10000);

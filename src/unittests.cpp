@@ -1,11 +1,12 @@
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 #include <string.h>
 #include <iostream>
 #include <assert.h>
-#include <time.h>
+#include <ctime>
 #include "utils.h"
 #include "ecc.h"
+#include "hashes.h"
 #include "bitmessage.h"
 #include "unittests.h"
 
@@ -13,40 +14,46 @@ using namespace std;
 
 static void test_ecc_keys()
 {
-    cout << "Test ECC key generator\n" << endl;
+    cout << "=== TEST ECC ===" << endl;
     bm::ECC ecc;
     ecc.generateKeysWithPassword("qwerty");
-    cout << ecc.getPrivateKey() << "\n\n" << ecc.getPublicKey() << endl;
+    cout << ecc.getPrivateKey() << "\n" << ecc.getPublicKey() << endl;
     cout << "\n\n";
     ecc.generateKeys();
-    cout << ecc.getPrivateKey() << "\n\n" << ecc.getPublicKey() << endl;
+    cout << ecc.getPrivateKey() << "\n" << ecc.getPublicKey() << endl;
+    cout << "ECC Ok..." << endl;
 }
 
-/*
+static void test_sha256()
+{
+    cout << "=== TEST SHA256 ===" << endl;
+    string str = "This is a string"; // 4E9518575422C9087396887CE20477AB5F550A4AA3D161C5C22A996B0ABB8B35
+    bm::ByteVector v1 = bm::sha256(str);
+    bm::ByteVector v2 = bm::sha256(str);
+    assert(v1 == v2);
+    assert(v1[0] == 0x4E);
+    assert(v1.size() == 32);
+    assert(v1[31] == 0x35);
+    cout << "SHA256 Ok..." << endl;
+
+    // FIXME: Test hex format
+}
+
 static void test_sha512()
 {
-	char result[129];
-	int retval=-1;
+    cout << "=== TEST SHA512 ===" << endl;
+    string str = "This is a string"; // F4D54D32E3523357FF023903EABA2721E8C8CFC7702663782CB3E52FAF2C56C002CC3096B5F2B6DF870BE665D0040E9963590EB02D03D166E52999CD1C430DB1
+    bm::ByteVector v1 = bm::sha512(str);
+    bm::ByteVector v2 = bm::sha512(str);
+    assert(v1 == v2);
+    assert(v1[0] == 0xF4);
+    assert(v1.size() == 64);
+    assert(v1[63] == 0xB1);
+    cout << "SHA512 Ok..." << endl;
 
-	printf("test_sha512...");
-
-	bm_sha512((char*)"hello",result, 1);	
-	retval =
-		strncmp(result,
-				"9b71d224bd62f3785d96d46ad3ea3d73319bfbc2890caa" \
-				"dae2dff72519673ca72323c3d99ba5c11d7c7acc6e14b8" \
-				"c5da0c4663475c2e5c3adef46f73bcdec043",128);
-	if (retval != 0) {
-		printf("Target:\n9b71d224bd62f3785d96d46ad3ea3d73319bfb" \
-			   "c2890caadae2dff72519673ca72323c3d99ba5c11d7c7ac" \
-			   "c6e14b8c5da0c4663475c2e5c3adef46f73bcdec043\n");
-		printf("Actual:\n%s\n", (char*)result);
-	}
-	assert(retval == 0);
-
-	printf("Ok\n");
+    // FIXME: Test hex format
 }
-
+/*
 static void test_double_sha512()
 {
 	char result[129];
@@ -336,8 +343,9 @@ static void test_extract_stream_number()
 void run_unit_tests()
 {
     test_ecc_keys();
+    test_sha256();
+    test_sha512();
     //test_hex();
-    //test_sha512();
     //test_double_sha512();
     //test_ripemd160();
     //test_pack();

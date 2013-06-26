@@ -16,11 +16,10 @@
 // Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-
-#include <exception>
 #include <iostream>
 #include <botan/botan.h>
 #include "config.h"
+#include "exceptions.h"
 #include "unittests.h"
 
 int main(int argc, char* argv[])
@@ -31,6 +30,10 @@ int main(int argc, char* argv[])
     {
         Botan::LibraryInitializer init;
         run_unit_tests();
+    }
+    catch(bm::Exception& bx)
+    {
+        std::cerr << bx.file() << " : " << bx.line() << " : " << bx.what() << std::endl;
     }
     catch(std::exception& ex)
     {

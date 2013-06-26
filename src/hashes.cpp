@@ -44,13 +44,13 @@ void makeByteVectorHex(const ByteVector& src, ByteVector& dest)
     }
 }
 
-template<class T>
-ByteVector hash(const ByteVector& data, DigestFormat fmt)
+template<class T, class H>
+ByteVector hash(const T& data, DigestFormat fmt)
 {
-    T hashObject;
+    H hashObject;
     ByteVector bytes = hashObject.process(data);
 
-    if(fmt == DM_FORMAT_HEX)
+    if(fmt == FORMAT_HEX)
     {
         ByteVector hexBytes;
         internal::makeByteVectorHex(bytes, hexBytes);
@@ -66,7 +66,7 @@ ByteVector hmac_hash(const ByteVector& data, DigestFormat fmt)
     Botan::HMAC hmac(&hashObject);
     ByteVector bytes = hmac.process(data);
 
-    if(fmt == DM_FORMAT_HEX)
+    if(fmt == FORMAT_HEX)
     {
         ByteVector hexBytes;
         internal::makeByteVectorHex(bytes, hexBytes);
@@ -88,17 +88,27 @@ OctetVector pbkdf2_hmac_hash(const std::string& password, const ByteVector& salt
 
 ByteVector ripemd160(const ByteVector& data, DigestFormat fmt)
 {
-    return internal::hash<Botan::RIPEMD_160>(data, fmt);
+    return internal::hash<ByteVector, Botan::RIPEMD_160>(data, fmt);
 }
 
 ByteVector sha256(const ByteVector& data, DigestFormat fmt)
 {
-    return internal::hash<Botan::SHA_256>(data, fmt);
+    return internal::hash<ByteVector, Botan::SHA_256>(data, fmt);
+}
+
+ByteVector sha256(const std::string& data, DigestFormat fmt)
+{
+    return internal::hash<std::string, Botan::SHA_256>(data, fmt);
 }
 
 ByteVector sha512(const ByteVector& data, DigestFormat fmt)
 {
-    return internal::hash<Botan::SHA_512>(data, fmt);
+    return internal::hash<ByteVector, Botan::SHA_512>(data, fmt);
+}
+
+ByteVector sha512(const std::string& data, DigestFormat fmt)
+{
+    return internal::hash<std::string, Botan::SHA_512>(data, fmt);
 }
 
 ByteVector hmac_sha256(const ByteVector& data, DigestFormat fmt)
