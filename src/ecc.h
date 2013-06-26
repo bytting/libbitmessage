@@ -21,28 +21,40 @@
 
 #include <cstdint>
 #include <string>
+#include <map>
 
 namespace bm {
 
-const uint16_t Secp256K1 = 714;
-const uint16_t Sect283r1 = 730;
-
-struct ECC
+class ECC
 {
-    //int decode_pubkey(bytes data);
-    //int decode_privkey(bytes data);
-    void generateKeys();
-    void generateKeysWithPassword(const std::string& password);
-    //unsigned int get_curve_id();
+public:
+
+    ECC() : mCurve("secp256k1") {}
+
+    const std::map<std::string, uint16_t> curves = {
+        { "secp224r1", 713 },
+        { "secp256k1", 714 },
+        //{ "sect283r1", 730 }
+    };
+
+    void setCurve(const std::string& curve);
+    inline std::string getCurve() const { return mCurve; }
+    inline uint16_t getCurveId() const { return curves.at(mCurve) ; }
 
     inline std::string getPublicKey() const { return mPublicKey; }
     inline std::string getPrivateKey() const { return mPrivateKey; }
+
+    void generateKeys();
+    void generateKeysWithPassword(const std::string& password);
+
+    //int decode_pubkey(bytes data);
+    //int decode_privkey(bytes data);
 
 private:
 
     std::string mPublicKey;
     std::string mPrivateKey;
-    //unsigned int curve_id;
+    std::string mCurve;
 };
 
 } // namespace bm

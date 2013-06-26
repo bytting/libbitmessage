@@ -4,6 +4,8 @@
 
 #include <exception>
 
+namespace bm {
+
 class Exception : public std::exception
 {
 public:
@@ -28,13 +30,15 @@ private:
     int m_line;
 };
 
-class Exception_PostFence : public Exception
+class RangeException : public Exception
 {
 public:
 
-    explicit Exception_PostFence(const char* file, int line, const char* message) throw()
+    explicit RangeException(const char* file, int line, const char* message) throw()
         : Exception(file, line, message) {}
-    virtual ~Exception_PostFence() throw() {}
+    virtual ~RangeException() throw() {}
 };
+
+} // namespace bm
 
 #endif

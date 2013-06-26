@@ -17,19 +17,25 @@
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
 #include <botan/botan.h>
-#include <botan/ecdh.h>
 #include <botan/ecdsa.h>
 #include <botan/ec_group.h>
 #include <botan/rng.h>
- #include <botan/oids.h>
-#include <botan/gost_3410.h>
 #include "ecc.h"
+#include "exceptions.h"
 //#include "utils.h"
 //#include "hashes.h"
 
 using namespace Botan;
 
 namespace bm {
+
+void ECC::setCurve(const std::string& curve)
+{
+    std::map<std::string, uint16_t>::const_iterator it = curves.find(curve);
+    if(it == curves.end())
+        throw RangeException(__FILE__, __LINE__, "ECC::setCurve: curve not found");
+    mCurve = curve;
+}
 
 /*
 int ECC::decode_pubkey(bytes data)
@@ -62,10 +68,10 @@ int ECC::decode_privkey(string data)
 */
 void ECC::generateKeys()
 {        
+    // secp256k1, secp256r1
     AutoSeeded_RNG rng;
-    //EC_Group ecGroup("secp256k1");
-    EC_Group ecGroup("secp256r1");
-    ECDSA_PrivateKey key(rng, ecGroup);
+    EC_Group group(mCurve);
+    ECDSA_PrivateKey key(rng, group);
     mPublicKey = X509::PEM_encode(key);
     mPrivateKey = PKCS8::PEM_encode(key);
 }
@@ -73,7 +79,7 @@ void ECC::generateKeys()
 void ECC::generateKeysWithPassword(const std::string& password)
 {
     AutoSeeded_RNG rng;
-    EC_Group group("secp256r1");
+    EC_Group group(mCurve);
     ECDSA_PrivateKey key(rng, group);
     mPublicKey = X509::PEM_encode(key);
     mPrivateKey = PKCS8::PEM_encode(key, rng, password.c_str());

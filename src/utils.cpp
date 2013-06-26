@@ -103,7 +103,7 @@ static bytes utils::base58ToBytes(const string& encoded)
             mpz_add_ui(big, big, B58[*it]);
         }
         else
-            throw Exception_PostFence(__FILE__, __LINE__, "Base58 character out of bounds");
+            throw RangeException(__FILE__, __LINE__, "utils::base58ToBytes: invalid offset");
     }
 
     // convert integer to char array
