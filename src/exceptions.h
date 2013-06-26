@@ -27,18 +27,18 @@ class Exception : public std::exception
 public:
 
     explicit Exception(const char* file, int line, const char* message) throw()
-        : mFile(file), mMessage(message), mLine(line) {}
+        : m_file(file), m_message(message), m_line(line) {}
 
     virtual ~Exception() throw() {}
 
-    virtual const char* file() const throw() { return mFile; }
-    virtual int line() const throw() { return mLine; }
-    virtual const char* what() const throw() { return mMessage; }
+    virtual const char* file() const throw() { return m_file; }
+    virtual int line() const throw() { return m_line; }
+    virtual const char* what() const throw() { return m_message; }
 
 private:
 
-    const char *mFile, *mMessage;
-    int mLine;
+    const char *m_file, *m_message;
+    int m_line;
 };
 
 class RangeException : public Exception
