@@ -9,6 +9,7 @@
 #include "utils.h"
 #include "ecc.h"
 #include "hashes.h"
+#include "address.h"
 #include "bitmessage.h"
 #include "unittests.h"
 
@@ -90,51 +91,13 @@ static void test_hmac_sha512()
     cout << "\n=== TEST HMAC_SHA512 OK ===\n" << endl;
 }
 
+static void test_addresses()
+{
+    cout << "\n=== TEST addresses ===\n";
+    bm::create_random_address();
+}
+
 /*
-static void test_double_sha512()
-{
-	char result[129];
-	int retval=-1;
-
-	printf("test_double_sha512...");
-
-	bm_doubleSha512((char*)"hello",result, 1);	
-	retval =
-		strncmp(result,
-				"0592a10584ffabf96539f3d780d776828c67da1ab5b169" \
-				"e9e8aed838aaecc9ed36d49ff1423c55f019e050c66c63" \
-				"24f53588be88894fef4dcffdb74b98e2b200", 128);
-	if (retval != 0) {
-		printf("Target:\n0592a10584ffabf96539f3d780d776828c67da" \
-			   "1ab5b169e9e8aed838aaecc9ed36d49ff1423c55f019e05" \
-			   "0c66c6324f53588be88894fef4dcffdb74b98e2b200\n");
-		printf("Actual:\n%s\n", (char*)result);
-	}
-	assert(retval == 0);
-
-	printf("Ok\n");
-}
-
-static void test_ripemd160()
-{
-	char result1[129],result2[41];
-	int retval=-1;
-
-	printf("test_ripemd160...");
-
-	bm_sha512((char*)"hello",result1, 0);
-	bm_ripemd160((char*)result1, result2, 1);
-	retval =
-		strncmp(result2,"79a324faeebcbf9849f310545ed531556882487e",40);
-	if (retval != 0) {
-		printf("Target:\n79a324faeebcbf9849f310545ed531556882487e\n");
-		printf("Actual:\n%s\n", (char*)result2);
-	}
-	assert(retval == 0);
-
-	printf("Ok\n");
-}
-
 static void test_pack()
 {	
 	string packed;
@@ -385,9 +348,8 @@ void run_unit_tests()
     test_sha512();
     test_hmac_sha256();
     test_hmac_sha512();
-    //test_hex();
-    //test_double_sha512();
-    //test_ripemd160();
+    test_addresses();
+    //test_hex();    
     //test_pack();
     //test_encodeVarint();
     //test_base58();

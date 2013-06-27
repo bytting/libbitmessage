@@ -19,29 +19,19 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <stdint.h>
+#include <string>
+#include "btypes.h"
+
 namespace bm {
 
-class utils
-{
-public:
+namespace utils {
 
-    //static std::string encodeHex(const std::string& buf);
-    //static std::string decodeHex(const std::string& hex);
-    //static unsigned long long decodeHexInt(const std::string& hex);
-    //static std::string encodeHex(unsigned int value);
+ByteVector random_bytes(uint32_t count);
+uint32_t seconds_since_epoc();
+std::string encode_hex(const ByteVector& v);
 
-    //static std::string encodeHex(mpz_t value);
-    //static void decodeHexInt(const std::string& hex, mpz_t& result);
-
-    //static bytes base58ToBytes(const std::string& encoded);
-    //static std::string bytesToBase58(const bytes& encoded);
-
-    /*template<class T>
-    static ByteVector pack(T value);
-
-    template<class T>
-    static T unpack(const ByteVector& data);*/
-};
+} //namespace utils
 
 } //namespace bm
 

@@ -50,6 +50,15 @@ public:
     virtual ~RangeException() throw() {}
 };
 
+class SizeException : public Exception
+{
+public:
+
+    explicit SizeException(const char* file, int line, const char* message) throw()
+        : Exception(file, line, message) {}
+    virtual ~SizeException() throw() {}
+};
+
 } // namespace bm
 
 #endif

@@ -26,16 +26,11 @@
 namespace bm {
 
 class ECC
-{
+{    
+
 public:
 
     ECC() : m_curve("secp256k1") {}
-
-    const std::map<std::string, uint16_t> curves = {
-        { "secp224r1", 713 },
-        { "secp256k1", 714 },
-        //{ "sect283r1", 730 }
-    };
 
     void set_curve(const std::string& curve);
     inline std::string get_curve() const { return m_curve; }
@@ -58,6 +53,42 @@ private:
     std::string m_public_key;
     std::string m_private_key;
     std::string m_curve;
+
+    typedef std::map<std::string, uint16_t> CurveMap;
+
+    const CurveMap curves = {
+        { "secp112r1", 704 },
+        { "secp112r2", 705 },
+        { "secp128r1", 706 },
+        { "secp128r2", 707 },
+        { "secp160k1", 708 },
+        { "secp160r1", 709 },
+        { "secp160r2", 710 },
+        { "secp192k1", 711 },
+        { "secp224k1", 712 },
+        { "secp224r1", 713 },
+        { "secp256k1", 714 },
+        { "secp384r1", 715 },
+        { "secp521r1", 716 },
+        { "sect113r1", 717 },
+        { "sect113r2", 718 },
+        { "sect131r1", 719 },
+        { "sect131r2", 720 },
+        { "sect163k1", 721 },
+        { "sect163r1", 722 },
+        { "sect163r2", 723 },
+        { "sect193r1", 724 },
+        { "sect193r2", 725 },
+        { "sect233k1", 726 },
+        { "sect233r1", 727 },
+        { "sect239k1", 728 },
+        { "sect283k1", 729 },
+        { "sect283r1", 730 },
+        { "sect409k1", 731 },
+        { "sect409r1", 732 },
+        { "sect571k1", 733 },
+        { "sect571r1", 734 }
+    };
 };
 
 } // namespace bm

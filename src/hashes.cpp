@@ -26,6 +26,7 @@
 #include <botan/hmac.h>
 #include <botan/pbkdf2.h>
 #include <botan/symkey.h>
+#include <botan/pipe.h>
 #include <botan/filters.h>
 #include "hashes.h"
 

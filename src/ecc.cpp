@@ -31,7 +31,7 @@ namespace bm {
 
 void ECC::set_curve(const std::string& curve)
 {
-    std::map<std::string, uint16_t>::const_iterator it = curves.find(curve);
+    CurveMap::const_iterator it = curves.find(curve);
     if(it == curves.end())
         throw RangeException(__FILE__, __LINE__, "ECC::setCurve: curve not supported");
     m_curve = curve;
