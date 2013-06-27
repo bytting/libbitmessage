@@ -30,6 +30,8 @@ namespace utils {
 ByteVector random_bytes(uint32_t count);
 uint32_t seconds_since_epoc();
 std::string encode_hex(const ByteVector& v);
+ByteVector encode_varint(uint64_t integer);
+std::string encode_address(uint64_t version, uint64_t stream, const ByteVector& ripe);
 
 } //namespace utils
 
