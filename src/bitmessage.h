@@ -75,6 +75,7 @@ typedef struct version_header_struct version_header;
 
 
 ByteVector calculateInventoryHash(const ByteVector& data);
+
 uint64_t getProofOfWorkTrialValue(uint64_t nonce, const ByteVector& initialHash);
 
 std::string proofOfWork(

@@ -28,129 +28,13 @@
 #include "bitmessage.h"
 
 namespace bm {
-/*
-void decodeAddress(string address,
-        string &status,
-        string &data,
-        uint32_t &version,
-        uint32_t &streamNumber)
-{
-    //returns (status, address version number, stream number, data (almost certainly a ripe hash))
-	mpz_t integer;
-
-	data = "";
-	version = 0;
-	streamNumber = 0;
-
-	if (address.length()<20) {
-		printf("Address too short %s\n",address.c_str());
-		status = "addresstooshort";
-		return;
-	}
-
-    if (address.substr(0,3) == "BM-") {
-        utils::decodeBase58(address.substr(3), integer);
-	}
-    else {
-        utils::decodeBase58(address, integer);
-	}
-
-    if (mpz_cmp_ui(integer,(unsigned int)0) == 0) {
-        status = "invalidcharacters";
-        return;
-	}
-
-    // after converting to hex, the string will be prepended with a 0x and appended with a L
-	string hexdata = utils::encodeHex(integer);
-
-	if (hexdata.length() % 2 != 0) {
-		hexdata = "0" + hexdata;
-	}
-
-    //print 'hexdata', hexdata
-	data = utils::decodeHex(hexdata);
-	if (data.length() <= 20) {
-		printf("address: %s\n",address.c_str());
-		printf("decodeAddress: data length too short %d/20 hex %d\n",(int)data.length(),(int)hexdata.length());
-		return;
-	}
-    string checksum = data.substr(data.length()-4);
-	string currentHash = getHashString512(data.substr(0,data.length()-4));
-	string sha = getHashString512(currentHash);
-
-    if (checksum != sha.substr(0,4)) {
-        status = "checksumfailed";
-        return;
-	}
-
-	int bytesUsedByVersionNumber=0;
-    version = (unsigned int)decodeVarint(data.substr(0,9), &bytesUsedByVersionNumber);
-
-	//printf("addressVersionNumber %d\n", addressVersionNumber);
-	//printf("bytesUsedByVersionNumber %d\n", bytesUsedByVersionNumber);
-
-    if (version > 2) {
-        printf("cannot decode address version numbers this high\n");
-        status = "versiontoohigh";
-        return;
-	}
-    else {
-		if (version == 0) {
-			printf("cannot decode address version numbers of zero.\n");
-			status = "versiontoohigh\n";
-			return;
-		}
-	}
-
-	int bytesUsedByStreamNumber = 0;
-    streamNumber = (unsigned int)decodeVarint(data.substr(bytesUsedByVersionNumber),&bytesUsedByStreamNumber);
-    status = "success";
-    if (version == 1) {
-		data = data.substr(data.length()-24,20);
-        return;
-	}
-    else {
-		if (version == 2) {
-			string temp_str =
-				data.substr(bytesUsedByVersionNumber + bytesUsedByStreamNumber,
-							data.length() - (4 + bytesUsedByVersionNumber + bytesUsedByStreamNumber));
-			//printf("bytesUsedByStreamNumber %d\n",bytesUsedByStreamNumber);
-			//printf("data.length() %d\n",(int)data.length());
-			//printf("temp_str.length() %d\n",(int)temp_str.length());
-			if (temp_str.length() == 19) {
-				data = "\x00" + temp_str;
-				return;
-			}
-			else if (temp_str.length() == 20) {
-				data = temp_str;
-				return;
-			}
-			else if (temp_str.length() == 18) {
-				data = "\x00\x00" + temp_str;
-				return;
-			}
-			else if (temp_str.length() < 18) {
-				status = "ripetooshort";
-				return;
-			}
-			else if (temp_str.length() > 20) {
-				status = "ripetooshort";
-				return;
-			}
-			else {
-				status = "otherproblem";
-			}
-		}
-	}
-}
-*/
 
 ByteVector calculateInventoryHash(const ByteVector& data)
 {    
     ByteVector sha1 = hash::sha512(data);
     ByteVector sha2 = hash::sha512(sha1);
     if(sha2.size() < 32)
-        throw RangeException(__FILE__, __LINE__, "calculateInventoryHash: Hash size is less than 32");
+        throw SizeException(__FILE__, __LINE__, "calculateInventoryHash: Hash size is less than 32");
     return ByteVector(&sha2[0], 32);
 }
 
