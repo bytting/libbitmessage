@@ -16,61 +16,89 @@
 
 using namespace std;
 
+static void test_encode_hex()
+{
+    cout << "\n=== TEST ENCODE HEX ===\n\n";
+
+    bm::ByteVector v;
+    v.push_back(0x01);
+    v.push_back(0x02);
+    v.push_back(0x03);
+    string s = bm::utils::encode_hex(v);
+    cout << "123 as hex: " << s << "\n";
+    assert(s == "010203");
+
+    cout << "\n=== OK ===\n" << endl;
+}
+
 static void test_ecc_keys()
 {
-    cout << "\n=== TEST ECC ===\n";
-    cout << "\n=== Using password...\n";
+    cout << "\n=== TEST ECC ===\n\n";
+
+    cout << "=== Using password...\n";
     bm::ECC ecc;
     ecc.generate_keys_with_password("qwerty");
-    cout << ecc.get_private_key() << "\n" << ecc.get_public_key();
-    cout << "\n=== Without password...\n";
+    cout << ecc.get_private_key() << "\n" << ecc.get_public_key() << "\n";
+
+    cout << "=== Without password...\n";
     ecc.generate_keys();
     cout << ecc.get_private_key() << "\n" << ecc.get_public_key();
-    cout << "\n=== TEST ECC OK ===" << endl;
+
+    cout << "\n=== OK ===" << endl;
 }
 
 static void test_ripemd160()
 {
-    cout << "\n=== TEST RIPEMD160 ===\n";
+    cout << "\n=== TEST RIPEMD160 ===\n\n";
+
     string str = "This is a string"; // 291850ad6a9a191487f01b5fbe19c215de1a5d67
     bm::ByteVector v1 = bm::ripemd160(str);
-    bm::ByteVector v2 = bm::ripemd160(str);
+    bm::ByteVector v2 = bm::ripemd160(str);    
+    cout << bm::utils::encode_hex(v1) << "\n";
     assert(v1.size() == 20);
     assert(v1 == v2);
     assert(v1[0] == 0x29);
     assert(v1[19] == 0x67);
-    cout << "\n=== TEST RIPEMD160 OK ===" << endl;
+
+    cout << "\n=== OK ===" << endl;
 }
 
 static void test_sha256()
 {
-    cout << "\n=== TEST SHA256 ===\n";
+    cout << "\n=== TEST SHA256 ===\n\n";
+
     string str = "This is a string"; // 4E9518575422C9087396887CE20477AB5F550A4AA3D161C5C22A996B0ABB8B35
     bm::ByteVector v1 = bm::sha256(str);
     bm::ByteVector v2 = bm::sha256(str);
+    cout << bm::utils::encode_hex(v1) << "\n";
     assert(v1.size() == 32);
     assert(v1 == v2);
     assert(v1[0] == 0x4E);    
     assert(v1[31] == 0x35);
-    cout << "\n=== TEST SHA256 OK ===" << endl;
+
+    cout << "\n=== OK ===" << endl;
 }
 
 static void test_sha512()
 {
-    cout << "\n=== TEST SHA512 ===\n";
+    cout << "\n=== TEST SHA512 ===\n\n";
+
     string str = "This is a string"; // F4D54D32E3523357FF023903EABA2721E8C8CFC7702663782CB3E52FAF2C56C002CC3096B5F2B6DF870BE665D0040E9963590EB02D03D166E52999CD1C430DB1
     bm::ByteVector v1 = bm::sha512(str);
     bm::ByteVector v2 = bm::sha512(str);
+    cout << bm::utils::encode_hex(v1) << "\n";
     assert(v1.size() == 64);
     assert(v1 == v2);
     assert(v1[0] == 0xF4);    
     assert(v1[63] == 0xB1);
-    cout << "\n=== TEST SHA512 OK ===\n" << endl;
+
+    cout << "\n=== OK ===\n" << endl;
 }
 
 static void test_hmac_sha256()
 {
-    cout << "\n=== TEST HMAC_SHA256 ===\n";
+    cout << "\n=== TEST HMAC_SHA256 ===\n\n";
+
     Botan::AutoSeeded_RNG rng;
     bm::ByteVector key = rng.random_vec(32);
     bm::ByteVector data = rng.random_vec(1024);
@@ -78,12 +106,14 @@ static void test_hmac_sha256()
     bm::OctetVector ostr(mac);
     cout << ostr.as_string() << endl;
     // FIXME: Sanity checks
-    cout << "\n=== TEST HMAC_SHA256 OK ===\n" << endl;
+
+    cout << "\n=== OK ===\n" << endl;
 }
 
 static void test_hmac_sha512()
 {
-    cout << "\n=== TEST HMAC_SHA512 ===\n";
+    cout << "\n=== TEST HMAC_SHA512 ===\n\n";
+
     Botan::AutoSeeded_RNG rng;
     bm::ByteVector key = rng.random_vec(32);
     bm::ByteVector data = rng.random_vec(1024);
@@ -91,12 +121,13 @@ static void test_hmac_sha512()
     bm::OctetVector ostr(mac);
     cout << ostr.as_string() << endl;
     // FIXME: Sanity checks
-    cout << "\n=== TEST HMAC_SHA512 OK ===\n" << endl;
+
+    cout << "\n=== OK ===\n" << endl;
 }
 
 static void test_encode_varint()
 {
-    cout << "\n=== TEST ENCODE VARINT ===\n";
+    cout << "\n=== TEST ENCODE VARINT ===\n\n";
 
     uint64_t integer = 123;
     string s = bm::utils::encode_hex(bm::utils::encode_varint(integer));
@@ -118,26 +149,29 @@ static void test_encode_varint()
     cout << "4595967296: " << bm::utils::encode_hex(bm::utils::encode_varint(integer)) << "\n";
     assert(s == "FF0000000111F0E540");
 
-    cout << "\n=== TEST ENCODE VARINT OK ===\n" << endl;
+    cout << "\n=== OK ===\n" << endl;
 }
 
 static void test_addresses()
 {
-    cout << "\n=== TEST ADDRESSES ===\n";
+    cout << "\n=== TEST ADDRESSES ===\n\n";
+
     std::string addr = bm::create_random_address();
-    cout << "Address: " << addr;
+    cout << "Random address: " << addr << "\n";
     // FIXME: Sanity checks
-    cout << "\n=== TEST ADDRESSES OK ===\n" << endl;
+
+    cout << "\n=== OK ===\n" << endl;
 }
 
 void run_unit_tests()
 {
+    test_encode_hex();
     test_ecc_keys();
     test_ripemd160();
     test_sha256();
     test_sha512();
     test_hmac_sha256();
-    test_hmac_sha512();
+    test_hmac_sha512();    
     test_encode_varint();
     test_addresses();
 }
