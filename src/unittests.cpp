@@ -13,7 +13,6 @@
 #include "address.h"
 #include "bitmessage.h"
 #include "unittests.h"
-#include "base58.h"
 
 using namespace std;
 

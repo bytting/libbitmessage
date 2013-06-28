@@ -18,6 +18,7 @@
 
 #include <sstream>
 #include <chrono>
+#include <cmath>
 #include <botan/botan.h>
 #include <botan/rng.h>
 #include <botan/pipe.h>
@@ -25,7 +26,6 @@
 #include "utils.h"
 #include "exceptions.h"
 #include "hashes.h"
-#include "base58.h"
 
 namespace bm {
 
@@ -33,8 +33,8 @@ namespace utils {
 
 namespace internal {
 
-const char* BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-
+const std::string BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+/*
 int decode_char(unsigned char ch)
 {
     if (ch >= '1' && ch <= '9')
@@ -57,7 +57,7 @@ int decode_char(unsigned char ch)
 
     return -1;
 }
-
+*/
 } // namespace internal
 
 ByteVector random_bytes(uint32_t count)
@@ -148,27 +148,32 @@ uint64_t decode_varint(const ByteVector& data, int &nbytes)
         nbytes = 9;
         uint64_t ui64;
         memcpy(&ui64, &data[1], 8);
-        ui64 = big_to_host_32(ui64);
+        ui64 = big_to_host_64(ui64);
         result = ui64;
     }
 
     return result;
 }
 
-std::string encode_base58(const Botan::BigInt& src)
+std::string encode_base58(const Botan::BigInt& num)
 {
     std::stringstream ss;
-    Botan::BigInt num, id_num = src;
-    uint32_t remainder;
+    Botan::BigInt n = num;
+    uint32_t r, base = 58;
 
-    while (id_num > 0) {
+    if(num == 0)
+    {
+        std::stringstream str;
+        str << internal::BASE58[0];
+        return str.str();
+    }
 
-        num = id_num / 58;
-        remainder = id_num % 58;
+    while (n > 0)
+    {
+        r = n % base;
+        n = n / base;
 
-        ss << internal::BASE58[remainder];
-
-        id_num = num;
+        ss << internal::BASE58[r];
     }
 
     std::string output = ss.str();
@@ -182,25 +187,19 @@ Botan::BigInt decode_base58(const std::string& encoded)
     if(encoded.empty())
         throw SizeException(__FILE__, __LINE__, "decode_base58: encoded string is empty");
 
-    Botan::BigInt output_num = 0;
+    Botan::BigInt num = 0;
+    uint32_t base = 58;
+    uint32_t len = encoded.length();
 
-    size_t unprocessed = encoded.length();
-    while (--unprocessed) {
-
-        int idx = encoded.length() - unprocessed - 1;
-        int num = internal::decode_char(encoded[idx]);
-        if (num == -1)
-            throw RangeException(__FILE__, __LINE__, "decode_base58: character not within base58");
-
-        output_num += num;
-        output_num *= 58;
+    uint32_t power = len - 1;
+    for(std::string::const_iterator it = encoded.begin(); it != encoded.end(); ++it)
+    {
+        uint32_t pos = internal::BASE58.find_first_of(*it);
+        num += pos * (uint32_t)std::pow((double)base, (double)power);
+        power -= 1;
     }
 
-    int remainder = internal::decode_char(encoded[encoded.length() - 1]);
-    if (remainder == -1)
-        throw RangeException(__FILE__, __LINE__, "decode_base58: character not within base58");
-
-    return output_num + remainder;
+    return num;
 }
 
 std::string encode_base64(const ByteVector& data)
