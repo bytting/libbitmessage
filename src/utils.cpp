@@ -55,33 +55,30 @@ std::string encode_hex(const ByteVector& v)
 ByteVector encode_varint(uint64_t integer)
 {
     ByteVector v;
+
     if (integer < 253)
     {
         v.resize(1);
-        uint8_t ui8 = (uint8_t)integer;
-        memcpy(&v[0], &ui8, 1);
+        v[0] = (uint8_t)integer;
     }
     else if (integer >= 253 && integer < 65536)
     {
         v.resize(3);
-        uint8_t ui8 = (uint8_t)253;
-        memcpy(&v[0], &ui8, 1);
+        v[0] = (uint8_t)253;
         uint16_t ui16 = host_to_big_16((uint16_t)integer);
         memcpy(&v[1], &ui16, 2);
     }
     if (integer >= 65536 && integer < 4294967296)
     {
         v.resize(5);
-        uint8_t ui8 = (uint8_t)254;
-        memcpy(&v[0], &ui8, 1);
+        v[0] = (uint8_t)254;
         uint32_t ui32 = host_to_big_32((uint32_t)integer);
         memcpy(&v[1], &ui32, 4);
     }
     if (integer >= 4294967296)
     {
         v.resize(9);
-        uint8_t ui8 = (uint8_t)255;
-        memcpy(&v[0], &ui8, 1);
+        v[0] = (uint8_t)255;
         uint64_t ui64 = host_to_big_64((uint64_t)integer);
         memcpy(&v[1], &ui64, 8);
     }
@@ -100,7 +97,7 @@ std::string encode_address(uint64_t version, uint64_t stream, const ByteVector& 
         ByteVector tmp(&r[2], r.size() - 2);
         r = tmp;
     }
-    else if(ripe[0] == 0x00)
+    else if(r[0] == 0x00)
     {
         ByteVector tmp(&r[1], r.size() - 1);
         r = tmp;
