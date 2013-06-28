@@ -25,6 +25,40 @@
 
 namespace bm {
 
+std::string encode_address(uint64_t version, uint64_t stream, const ByteVector& ripe)
+{
+    if(ripe.size() != 20)
+        throw SizeException(__FILE__, __LINE__, "create_random_address: The ripe length is not 20");
+
+    ByteVector r = ripe;
+    if(r[0] == 0x00 && r[1] == 0x00)
+    {
+        ByteVector tmp(&r[2], r.size() - 2);
+        r = tmp;
+    }
+    else if(r[0] == 0x00)
+    {
+        ByteVector tmp(&r[1], r.size() - 1);
+        r = tmp;
+    }
+
+    ByteVector v = utils::encode_varint(version);
+    v += utils::encode_varint(stream);
+    v += r;
+
+    ByteVector sha1 = sha512(v);
+    ByteVector sha2 = sha512(sha1);
+    ByteVector checksum(&sha2[0], 4);
+
+    v += checksum;
+    Botan::BigInt bi(&v[0], v.size());
+    std::string address = utils::encode_base58(bi);
+
+    add_bm_prefix(address);
+
+    return address;
+}
+
 std::string create_random_address()
 {
     // FIXME: set these correctly
@@ -52,7 +86,7 @@ std::string create_random_address()
 
     // FIXME: Only address version 3
 
-    return utils::encode_address(address_version, stream, ripe);
+    return encode_address(address_version, stream, ripe);
 
     /*
      * FIXME

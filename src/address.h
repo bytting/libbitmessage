@@ -23,6 +23,7 @@
 
 namespace bm {
 
+std::string encode_address(uint64_t version, uint64_t stream, const ByteVector& ripe);
 std::string create_random_address();
 void add_bm_prefix(std::string& address);
 

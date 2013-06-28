@@ -126,25 +126,29 @@ uint64_t decode_varint(const ByteVector& data, int &nbytes)
 
     first_byte = data[0];
 
-    if (first_byte < 253) {
+    if (first_byte < 253)
+    {
         nbytes = 1;
         return first_byte;
     }
-    else if (first_byte == 253) {
+    else if (first_byte == 253)
+    {
         nbytes = 3;
         uint16_t ui16;
         memcpy(&ui16, &data[1], 2);
         ui16 = big_to_host_16(ui16);
         result = ui16;
     }
-    else if (first_byte == 254) {
+    else if (first_byte == 254)
+    {
         nbytes = 5;
         uint32_t ui32;
         memcpy(&ui32, &data[1], 4);
         ui32 = big_to_host_32(ui32);
         result = ui32;
     }
-    else {
+    else
+    {
         nbytes = 9;
         uint64_t ui64;
         memcpy(&ui64, &data[1], 8);
@@ -214,38 +218,6 @@ ByteVector decode_base64(const std::string& encoded)
     Botan::Pipe pipe(new Botan::Base64_Decoder());
     pipe.process_msg(encoded);
     return pipe.read_all();
-}
-
-std::string encode_address(uint64_t version, uint64_t stream, const ByteVector& ripe)
-{
-    if(ripe.size() != 20)
-        throw SizeException(__FILE__, __LINE__, "create_random_address: The ripe length is not 20");
-
-    ByteVector r = ripe;
-    if(r[0] == 0x00 && r[1] == 0x00)
-    {
-        ByteVector tmp(&r[2], r.size() - 2);
-        r = tmp;
-    }
-    else if(r[0] == 0x00)
-    {
-        ByteVector tmp(&r[1], r.size() - 1);
-        r = tmp;
-    }
-
-    ByteVector v = encode_varint(version);
-    v += encode_varint(stream);
-    v += r;
-
-    ByteVector sha1 = sha512(v);
-    ByteVector sha2 = sha512(sha1);
-    ByteVector checksum(&sha2[0], 4);
-
-    v += checksum;
-    Botan::BigInt bi(&v[0], v.size());
-    std::string s = utils::encode_base58(bi);
-
-    return "BM-" + s;
 }
 
 } // namespace utils
