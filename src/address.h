@@ -25,15 +25,15 @@ namespace bm {
 
 namespace address {
 
+std::string create();
+void add_prefix(std::string& address);
+void remove_prefix(std::string& address);
+
 namespace internal {
 
 std::string encode(uint64_t version, uint64_t stream, const ByteVector& ripe);
 
 } // namespace internal
-
-std::string create();
-void add_prefix(std::string& address);
-void remove_prefix(std::string& address);
 
 } // namespace address
 

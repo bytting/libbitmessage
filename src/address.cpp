@@ -27,44 +27,6 @@ namespace bm {
 
 namespace address {
 
-namespace internal {
-
-std::string encode(uint64_t version, uint64_t stream, const ByteVector& ripe)
-{
-    if(ripe.size() != 20)
-        throw SizeException(__FILE__, __LINE__, "create_random_address: The ripe length is not 20");
-
-    ByteVector r = ripe;
-    if(r[0] == 0x00 && r[1] == 0x00)
-    {
-        ByteVector tmp(&r[2], r.size() - 2);
-        r = tmp;
-    }
-    else if(r[0] == 0x00)
-    {
-        ByteVector tmp(&r[1], r.size() - 1);
-        r = tmp;
-    }
-
-    ByteVector v = utils::serialize_varint(version);
-    v += utils::serialize_varint(stream);
-    v += r;
-
-    ByteVector sha1 = hash::sha512(v);
-    ByteVector sha2 = hash::sha512(sha1);
-    ByteVector checksum(&sha2[0], 4);
-
-    v += checksum;
-    Botan::BigInt bi(&v[0], v.size());
-    std::string address = utils::encode_base58(bi);
-
-    add_prefix(address);
-
-    return address;
-}
-
-} // namespace internal
-
 std::string create()
 {
     // FIXME: set these correctly
@@ -158,6 +120,44 @@ void remove_prefix(std::string& address)
     if(address.substr(0, 3) == "BM-")
         address = address.substr(3, address.length() - 3);
 }
+
+namespace internal {
+
+std::string encode(uint64_t version, uint64_t stream, const ByteVector& ripe)
+{
+    if(ripe.size() != 20)
+        throw SizeException(__FILE__, __LINE__, "create_random_address: The ripe length is not 20");
+
+    ByteVector r = ripe;
+    if(r[0] == 0x00 && r[1] == 0x00)
+    {
+        ByteVector tmp(&r[2], r.size() - 2);
+        r = tmp;
+    }
+    else if(r[0] == 0x00)
+    {
+        ByteVector tmp(&r[1], r.size() - 1);
+        r = tmp;
+    }
+
+    ByteVector v = utils::serialize_varint(version);
+    v += utils::serialize_varint(stream);
+    v += r;
+
+    ByteVector sha1 = hash::sha512(v);
+    ByteVector sha2 = hash::sha512(sha1);
+    ByteVector checksum(&sha2[0], 4);
+
+    v += checksum;
+    Botan::BigInt bi(&v[0], v.size());
+    std::string address = utils::encode_base58(bi);
+
+    add_prefix(address);
+
+    return address;
+}
+
+} // namespace internal
 
 } // namespace address
 
