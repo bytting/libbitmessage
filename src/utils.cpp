@@ -22,6 +22,7 @@
 #include <botan/rng.h>
 #include <botan/pipe.h>
 #include <botan/filters.h>
+#include <botan/bigint.h>
 #include "utils.h"
 #include "exceptions.h"
 #include "hashes.h"
