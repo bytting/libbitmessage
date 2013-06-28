@@ -42,8 +42,8 @@ std::string encode_address(uint64_t version, uint64_t stream, const ByteVector& 
         r = tmp;
     }
 
-    ByteVector v = utils::encode_varint(version);
-    v += utils::encode_varint(stream);
+    ByteVector v = utils::serialize_varint(version);
+    v += utils::serialize_varint(stream);
     v += r;
 
     ByteVector sha1 = sha512(v);

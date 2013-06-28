@@ -32,15 +32,16 @@ ByteVector random_bytes(uint32_t count);
 uint32_t seconds_since_epoc();
 
 std::string encode_hex(const ByteVector& v);
-
-ByteVector encode_varint(uint64_t integer);
-uint64_t decode_varint(const ByteVector& data, int &nbytes);
+ByteVector decode_hex(const std::string& encoded);
 
 std::string encode_base58(const Botan::BigInt& src);
 Botan::BigInt decode_base58(const std::string& encoded);
 
 std::string encode_base64(const ByteVector& data);
 ByteVector decode_base64(const std::string& encoded);
+
+ByteVector serialize_varint(uint64_t integer);
+uint64_t deserialize_varint(const ByteVector& data, int &nbytes);
 
 } //namespace utils
 

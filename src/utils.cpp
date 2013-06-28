@@ -58,7 +58,76 @@ std::string encode_hex(const ByteVector& v)
     return pipe.read_all_as_string();
 }
 
-ByteVector encode_varint(uint64_t integer)
+ByteVector decode_hex(const std::string& encoded)
+{
+    Botan::Pipe pipe(new Botan::Hex_Decoder());
+    pipe.process_msg(encoded);
+    return pipe.read_all();
+}
+
+std::string encode_base58(const Botan::BigInt& num)
+{
+    std::stringstream ss;
+
+    if(num == 0)
+    {
+        ss << internal::BASE58[0];
+        return ss.str();
+    }
+
+    Botan::BigInt n = num;
+    uint32_t r, base = 58;
+
+    while (n > 0)
+    {
+        r = n % base;
+        n = n / base;
+
+        ss << internal::BASE58[r];
+    }
+
+    std::string output = ss.str();
+    std::reverse(output.begin(), output.end());
+
+    return output;
+}
+
+Botan::BigInt decode_base58(const std::string& encoded)
+{
+    if(encoded.empty())
+        throw SizeException(__FILE__, __LINE__, "decode_base58: encoded string is empty");
+
+    Botan::BigInt num = 0;
+    uint32_t base = 58;
+    uint32_t exp = encoded.length() - 1;
+
+    for(std::string::const_iterator it = encoded.begin(); it != encoded.end(); ++it, exp--)
+    {
+        uint64_t pos = internal::BASE58.find_first_of(*it);
+        if(it == internal::BASE58.end())
+            throw RangeException(__FILE__, __LINE__, "decode_base58: encoded character not in base58");
+
+        num += pos * (uint64_t)std::pow((double)base, (double)exp);
+    }
+
+    return num;
+}
+
+std::string encode_base64(const ByteVector& data)
+{
+    Botan::Pipe pipe(new Botan::Base64_Encoder());
+    pipe.process_msg(data);
+    return pipe.read_all_as_string();
+}
+
+ByteVector decode_base64(const std::string& encoded)
+{
+    Botan::Pipe pipe(new Botan::Base64_Decoder());
+    pipe.process_msg(encoded);
+    return pipe.read_all();
+}
+
+ByteVector serialize_varint(uint64_t integer)
 {
     ByteVector v;
 
@@ -92,7 +161,7 @@ ByteVector encode_varint(uint64_t integer)
     return v;
 }
 
-uint64_t decode_varint(const ByteVector& data, int &nbytes)
+uint64_t deserialize_varint(const ByteVector& data, int &nbytes)
 {
     if (data.size() == 0)
         throw SizeException(__FILE__, __LINE__, "decode_varint: data buffer is empty");
@@ -134,69 +203,6 @@ uint64_t decode_varint(const ByteVector& data, int &nbytes)
     }
 
     return result;
-}
-
-std::string encode_base58(const Botan::BigInt& num)
-{
-    std::stringstream ss;
-    Botan::BigInt n = num;
-    uint32_t r, base = 58;
-
-    if(num == 0)
-    {
-        std::stringstream str;
-        str << internal::BASE58[0];
-        return str.str();
-    }
-
-    while (n > 0)
-    {
-        r = n % base;
-        n = n / base;
-
-        ss << internal::BASE58[r];
-    }
-
-    std::string output = ss.str();
-    std::reverse(output.begin(), output.end());
-
-    return output;
-}
-
-Botan::BigInt decode_base58(const std::string& encoded)
-{
-    if(encoded.empty())
-        throw SizeException(__FILE__, __LINE__, "decode_base58: encoded string is empty");
-
-    Botan::BigInt num = 0;
-    uint32_t base = 58;
-    uint32_t len = encoded.length();
-
-    uint32_t power = len - 1;
-    for(std::string::const_iterator it = encoded.begin(); it != encoded.end(); ++it)
-    {
-        uint64_t pos = internal::BASE58.find_first_of(*it);
-        if(it == internal::BASE58.end())
-            throw RangeException(__FILE__, __LINE__, "decode_base58: encoded character not in base58");
-        num += pos * (uint64_t)std::pow((double)base, (double)power);
-        power -= 1;
-    }
-
-    return num;
-}
-
-std::string encode_base64(const ByteVector& data)
-{
-    Botan::Pipe pipe(new Botan::Base64_Encoder());
-    pipe.process_msg(data);
-    return pipe.read_all_as_string();
-}
-
-ByteVector decode_base64(const std::string& encoded)
-{
-    Botan::Pipe pipe(new Botan::Base64_Decoder());
-    pipe.process_msg(encoded);
-    return pipe.read_all();
 }
 
 } // namespace utils

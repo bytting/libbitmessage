@@ -20,13 +20,17 @@ static void test_encode_hex()
 {
     cout << "\n=== TEST ENCODE HEX ===\n\n";
 
-    bm::ByteVector v;
-    v.push_back(0x01);
-    v.push_back(0x02);
-    v.push_back(0x03);
-    string s = bm::utils::encode_hex(v);
-    cout << "123 as hex: " << s << "\n";
-    assert(s == "010203");
+    bm::ByteVector v1;
+    v1.push_back(0x01);
+    v1.push_back(0x02);
+    v1.push_back(0x03);
+    string hex = bm::utils::encode_hex(v1);
+    cout << "123 as hex: " << hex << "\n";
+    assert(hex == "010203");
+    bm::ByteVector v2 = bm::utils::decode_hex(hex);
+    assert(v2[0] == 0x01);
+    assert(v2[1] == 0x02);
+    assert(v2[2] == 0x03);
 
     cout << "\n=== OK ===\n" << endl;
 }
@@ -154,29 +158,39 @@ static void test_hmac_sha512()
     cout << "\n=== OK ===\n" << endl;
 }
 
-static void test_encode_varint()
+static void test_serialize_varint()
 {
     cout << "\n=== TEST ENCODE VARINT ===\n\n";
 
-    uint64_t integer = 123;
-    string s = bm::utils::encode_hex(bm::utils::encode_varint(integer));
-    cout << "123: " << s << "\n";
+    int nb;
+    uint64_t i1 = 123;
+    bm::ByteVector v1 = bm::utils::serialize_varint(i1);
+    string s = bm::utils::encode_hex(v1);
+    cout << "123 (encoded): " << s << "\n";
+    uint64_t i2 = bm::utils::deserialize_varint(v1, nb);
+    cout << "123 (decoded): " << i2 << "\n";
     assert(s == "7B");
+    assert(i1 == i2);
 
-    integer = 1234;
-    s = bm::utils::encode_hex(bm::utils::encode_varint(integer));
+    i1 = 1234;
+    s = bm::utils::encode_hex(bm::utils::serialize_varint(i1));
     cout << "1234: " << s << "\n";
     assert(s == "FD04D2");
 
-    integer = 66666;
-    s = bm::utils::encode_hex(bm::utils::encode_varint(integer));
-    cout << "66666: " << bm::utils::encode_hex(bm::utils::encode_varint(integer)) << "\n";
+    i1 = 66666;
+    s = bm::utils::encode_hex(bm::utils::serialize_varint(i1));
+    cout << "66666: " << bm::utils::encode_hex(bm::utils::serialize_varint(i1)) << "\n";
     assert(s == "FE0001046A");
 
-    integer = 4595967296;
-    s = bm::utils::encode_hex(bm::utils::encode_varint(integer));
-    cout << "4595967296: " << bm::utils::encode_hex(bm::utils::encode_varint(integer)) << "\n";
+    // FIXME: encode_hex is slow
+    i1 = 4595967296;
+    v1 = bm::utils::serialize_varint(i1);
+    s = bm::utils::encode_hex(v1);
+    cout << "4595967296 (encoded): " << s << "\n";
+    i2 = bm::utils::deserialize_varint(v1, nb);
+    cout << "4595967296 (decoded): " << i2 << "\n";
     assert(s == "FF0000000111F0E540");
+    assert(i1 == i2);
 
     cout << "\n=== OK ===\n" << endl;
 }
@@ -203,6 +217,6 @@ void run_unit_tests()
     test_sha512();
     test_hmac_sha256();
     test_hmac_sha512();    
-    test_encode_varint();
+    test_serialize_varint();
     test_addresses();
 }
