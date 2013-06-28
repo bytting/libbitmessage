@@ -23,9 +23,19 @@
 
 namespace bm {
 
-std::string encode_address(uint64_t version, uint64_t stream, const ByteVector& ripe);
-std::string create_random_address();
-void add_bm_prefix(std::string& address);
+namespace address {
+
+namespace internal {
+
+std::string encode(uint64_t version, uint64_t stream, const ByteVector& ripe);
+
+} // namespace internal
+
+std::string create();
+void add_prefix(std::string& address);
+void remove_prefix(std::string& address);
+
+} // namespace address
 
 } // namespace bm
 

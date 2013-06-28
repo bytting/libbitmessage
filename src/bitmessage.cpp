@@ -147,8 +147,8 @@ void decodeAddress(string address,
 
 ByteVector calculateInventoryHash(const ByteVector& data)
 {    
-    ByteVector sha1 = sha512(data);
-    ByteVector sha2 = sha512(sha1);
+    ByteVector sha1 = hash::sha512(data);
+    ByteVector sha2 = hash::sha512(sha1);
     if(sha2.size() < 32)
         throw RangeException(__FILE__, __LINE__, "calculateInventoryHash: Hash size is less than 32");
     return ByteVector(&sha2[0], 32);

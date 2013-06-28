@@ -32,6 +32,8 @@
 
 namespace bm {
 
+namespace hash {
+
 namespace internal {
 
 template<class T, class H>
@@ -109,6 +111,8 @@ OctetVector pbkdf2_hmac_sha512(const std::string& password, const ByteVector& sa
 {
     return internal::pbkdf2_hmac_hash<Botan::SHA_512>(password, salt, desiredKeyLength, iterations);
 }
+
+} // namespace hash
 
 } // namespace bm
 

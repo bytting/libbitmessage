@@ -24,6 +24,8 @@
 
 namespace bm {
 
+namespace hash {
+
 ByteVector ripemd160(const ByteVector& data);
 ByteVector ripemd160(const std::string& data);
 ByteVector sha256(const ByteVector& data);
@@ -34,6 +36,8 @@ ByteVector hmac_sha256(const ByteVector& data, const ByteVector& key);
 ByteVector hmac_sha512(const ByteVector& data, const ByteVector& key);
 OctetVector pbkdf2_hmac_sha256(const std::string& password, const ByteVector& salt, int iterations = 10000);
 OctetVector pbkdf2_hmac_sha512(const std::string& password, const ByteVector& salt, int iterations = 10000);
+
+} // namespace hash
 
 } // namespace bm
 

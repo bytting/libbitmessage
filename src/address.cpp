@@ -25,7 +25,11 @@
 
 namespace bm {
 
-std::string encode_address(uint64_t version, uint64_t stream, const ByteVector& ripe)
+namespace address {
+
+namespace internal {
+
+std::string encode(uint64_t version, uint64_t stream, const ByteVector& ripe)
 {
     if(ripe.size() != 20)
         throw SizeException(__FILE__, __LINE__, "create_random_address: The ripe length is not 20");
@@ -46,20 +50,22 @@ std::string encode_address(uint64_t version, uint64_t stream, const ByteVector& 
     v += utils::serialize_varint(stream);
     v += r;
 
-    ByteVector sha1 = sha512(v);
-    ByteVector sha2 = sha512(sha1);
+    ByteVector sha1 = hash::sha512(v);
+    ByteVector sha2 = hash::sha512(sha1);
     ByteVector checksum(&sha2[0], 4);
 
     v += checksum;
     Botan::BigInt bi(&v[0], v.size());
     std::string address = utils::encode_base58(bi);
 
-    add_bm_prefix(address);
+    add_prefix(address);
 
     return address;
 }
 
-std::string create_random_address()
+} // namespace internal
+
+std::string create()
 {
     // FIXME: set these correctly
     bool eighteen_byte_ripe = false;
@@ -74,8 +80,8 @@ std::string create_random_address()
         ECC encryption_keys;
         encryption_keys.generate_keys();
 
-        ByteVector sha = sha512(encryption_keys.get_private_key());
-        ripe = ripemd160(sha);
+        ByteVector sha = hash::sha512(encryption_keys.get_private_key());
+        ripe = hash::ripemd160(sha);
 
         if(eighteen_byte_ripe)
         {
@@ -91,7 +97,7 @@ std::string create_random_address()
 
     // FIXME: Only address version 3
 
-    return encode_address(address_version, stream, ripe);
+    return internal::encode(address_version, stream, ripe);
 
     /*
      * FIXME
@@ -141,10 +147,18 @@ std::string create_random_address()
     */
 }
 
-void add_bm_prefix(std::string& address)
+void add_prefix(std::string& address)
 {
     if(address.substr(0, 3) != "BM-")
         address = "BM-" + address;
 }
+
+void remove_prefix(std::string& address)
+{
+    if(address.substr(0, 3) == "BM-")
+        address = address.substr(3, address.length() - 3);
+}
+
+} // namespace address
 
 } // namespace bm
