@@ -34,30 +34,7 @@ namespace utils {
 namespace internal {
 
 const std::string BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-/*
-int decode_char(unsigned char ch)
-{
-    if (ch >= '1' && ch <= '9')
-        return ch - '1';
 
-    if (ch >= 'a' && ch <= 'k')
-        return ch - 'a' + 9;
-
-    if (ch >= 'm' && ch <= 'z')
-        return ch - 'm' + 20;
-
-    if (ch >= 'A' && ch <= 'H')
-        return ch - 'A' + 34;
-
-    if (ch >= 'J' && ch <= 'N')
-        return ch - 'J' + 42;
-
-    if (ch >= 'P' && ch <= 'Z')
-        return ch - 'P' + 47;
-
-    return -1;
-}
-*/
 } // namespace internal
 
 ByteVector random_bytes(uint32_t count)
@@ -97,14 +74,14 @@ ByteVector encode_varint(uint64_t integer)
         uint16_t ui16 = host_to_big_16((uint16_t)integer);
         memcpy(&v[1], &ui16, 2);
     }
-    if (integer >= 65536 && integer < 4294967296)
+    else if (integer >= 65536 && integer < 4294967296)
     {
         v.resize(5);
         v[0] = (uint8_t)254;
         uint32_t ui32 = host_to_big_32((uint32_t)integer);
         memcpy(&v[1], &ui32, 4);
     }
-    if (integer >= 4294967296)
+    else
     {
         v.resize(9);
         v[0] = (uint8_t)255;
