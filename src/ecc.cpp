@@ -29,17 +29,18 @@ using namespace Botan;
 
 namespace bm {
 
-void ECC::set_curve(const std::string& curve)
+uint16_t ECC::get_curve_id() const
 {
-    CurveMap::const_iterator it = curves.find(curve);
+    CurveMap::const_iterator it = curves.find(m_curve);
     if(it == curves.end())
-        throw RangeException(__FILE__, __LINE__, "ECC::setCurve: curve not supported");
-    m_curve = curve;
+        throw RangeException(__FILE__, __LINE__, "ECC::get_curve_id: curve not found or not supported");
+    return curves.at(m_curve) ;
 }
 
-void ECC::generate_keys()
+void ECC::generate_keys(const std::string& curve)
 {        
     // secp256k1, secp256r1
+    set_curve(curve);
     AutoSeeded_RNG rng;
     EC_Group group(m_curve);
     ECDSA_PrivateKey key(rng, group);
@@ -50,13 +51,28 @@ void ECC::generate_keys()
     //key.public_point().get_affine_x()
 }
 
-void ECC::generate_keys_with_password(const std::string& password)
+void ECC::generate_keys_with_password(const std::string& password, const std::string& curve)
 {
+    set_curve(curve);
     AutoSeeded_RNG rng;
     EC_Group group(m_curve);
     ECDSA_PrivateKey key(rng, group);
     m_public_key = X509::PEM_encode(key);
     m_private_key = PKCS8::PEM_encode(key, rng, password.c_str());
+}
+
+void ECC::set_curve(const std::string& curve)
+{
+    CurveMap::const_iterator it = curves.find(curve);
+    if(it == curves.end())
+        throw RangeException(__FILE__, __LINE__, "ECC::setCurve: curve not supported");
+    m_curve = curve;
+}
+
+void ECC::clear()
+{
+    m_private_key = m_public_key = "";
+    m_curve = "secp256k1";
 }
 
 /*
@@ -110,11 +126,5 @@ int ECC::decode_privkey(string data)
     return i;
 }
 */
-
-void ECC::clear()
-{
-    m_private_key = m_public_key = "";
-    m_curve = "secp256k1";
-}
 
 } // namespace bm

@@ -28,24 +28,24 @@ namespace bm {
 class ECC
 {    
 
-public:
-
-    ECC() : m_curve("secp256k1") {}
-
-    void set_curve(const std::string& curve);
-    inline std::string get_curve() const { return m_curve; }
-    inline uint16_t get_curve_id() const { return curves.at(m_curve) ; }
+public:           
 
     inline bool has_keys() const { return m_private_key.length() > 0; }
+
+    inline std::string get_curve() const { return m_curve; }
+    inline uint16_t get_curve_id() const;
+
     inline std::string get_public_key() const { return m_public_key; }
     inline std::string get_private_key() const { return m_private_key; }
 
-    void generate_keys();
-    void generate_keys_with_password(const std::string& password);
+    void generate_keys(const std::string& curve = "secp256k1");
+    void generate_keys_with_password(const std::string& password, const std::string& curve = "secp256k1");
 
     inline void clear();
 
 private:
+
+    void set_curve(const std::string& curve);
 
     std::string m_public_key;
     std::string m_private_key;
