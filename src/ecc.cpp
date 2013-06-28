@@ -37,35 +37,6 @@ void ECC::set_curve(const std::string& curve)
     m_curve = curve;
 }
 
-/*
-int ECC::decode_pubkey(bytes data)
-{
-	int i = 0;
-    curve_id = utils::unpack<unsigned short>(data[i]);
-	i += 2;
-    unsigned int tmplen = utils::unpack<unsigned short>(data[i]);
-	i += 2;
-	public_key_x = data.substr(i,tmplen);
-	i += tmplen;
-    tmplen = utils::unpack<unsigned short>(data.substr(i,2));
-	i += 2;
-    public_key_y = data.substr(i, tmplen);
-	i += tmplen;
-	return i;
-}
-
-int ECC::decode_privkey(string data)
-{
-	int i = 0;
-    curve_id = utils::unpack<unsigned int>(data.substr(i,2));
-	i += 2;
-    unsigned int tmplen = utils::unpack<unsigned int>(data.substr(i,2));
-	i += 2;
-	private_key = data.substr(i,tmplen);
-	i += tmplen;
-	return i;
-}
-*/
 void ECC::generate_keys()
 {        
     // secp256k1, secp256r1
@@ -74,6 +45,9 @@ void ECC::generate_keys()
     ECDSA_PrivateKey key(rng, group);
     m_public_key = X509::PEM_encode(key);
     m_private_key = PKCS8::PEM_encode(key);
+    // FIXME
+    //key.pkcs8_private_key()
+    //key.public_point().get_affine_x()
 }
 
 void ECC::generate_keys_with_password(const std::string& password)
@@ -106,6 +80,34 @@ string ECC::get_privkey()
     s += utils::pack<unsigned short>(private_key.length());
 	s += private_key;
 	return s;
+}
+
+int ECC::decode_pubkey(bytes data)
+{
+    int i = 0;
+    curve_id = utils::unpack<unsigned short>(data[i]);
+    i += 2;
+    unsigned int tmplen = utils::unpack<unsigned short>(data[i]);
+    i += 2;
+    public_key_x = data.substr(i,tmplen);
+    i += tmplen;
+    tmplen = utils::unpack<unsigned short>(data.substr(i,2));
+    i += 2;
+    public_key_y = data.substr(i, tmplen);
+    i += tmplen;
+    return i;
+}
+
+int ECC::decode_privkey(string data)
+{
+    int i = 0;
+    curve_id = utils::unpack<unsigned int>(data.substr(i,2));
+    i += 2;
+    unsigned int tmplen = utils::unpack<unsigned int>(data.substr(i,2));
+    i += 2;
+    private_key = data.substr(i,tmplen);
+    i += tmplen;
+    return i;
 }
 */
 

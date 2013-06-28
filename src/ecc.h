@@ -43,9 +43,6 @@ public:
     void generate_keys();
     void generate_keys_with_password(const std::string& password);
 
-    //int decode_pubkey(bytes data);
-    //int decode_privkey(bytes data);
-
     inline void clear();
 
 private:

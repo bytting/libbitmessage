@@ -46,8 +46,7 @@ ByteVector hmac_hash(const ByteVector& data, const ByteVector& key, const std::s
     OctetVector okey(key);
     Botan::Pipe pipe(new Botan::MAC_Filter(hmac_name, okey));
     pipe.process_msg(data);
-    ByteVector mac = pipe.read_all();
-    return mac;
+    return pipe.read_all();
 }
 
 template<class T>

@@ -175,8 +175,10 @@ Botan::BigInt decode_base58(const std::string& encoded)
     uint32_t power = len - 1;
     for(std::string::const_iterator it = encoded.begin(); it != encoded.end(); ++it)
     {
-        uint32_t pos = internal::BASE58.find_first_of(*it);
-        num += pos * (uint32_t)std::pow((double)base, (double)power);
+        uint64_t pos = internal::BASE58.find_first_of(*it);
+        if(it == internal::BASE58.end())
+            throw RangeException(__FILE__, __LINE__, "decode_base58: encoded character not in base58");
+        num += pos * (uint64_t)std::pow((double)base, (double)power);
         power -= 1;
     }
 
