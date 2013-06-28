@@ -77,10 +77,16 @@ std::string create_random_address()
         ByteVector sha = sha512(encryption_keys.get_private_key());
         ripe = ripemd160(sha);
 
-        if(eighteen_byte_ripe && ripe[0] == 0x00 && ripe[1] == 0x00)
-            break;
-        else if(ripe[0] == 0x00)
-            break;
+        if(eighteen_byte_ripe)
+        {
+            if(ripe[0] == 0x00 && ripe[1] == 0x00)
+                break;
+        }
+        else
+        {
+            if(ripe[0] == 0x00)
+                break;
+        }
     }
 
     // FIXME: Only address version 3
