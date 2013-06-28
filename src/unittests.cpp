@@ -97,15 +97,27 @@ static void test_hmac_sha512()
 static void test_encode_varint()
 {
     cout << "\n=== TEST ENCODE VARINT ===\n";
+
     uint64_t integer = 123;
-    cout << "123: " << bm::utils::encode_hex(bm::utils::encode_varint(integer)) << "\n";
+    string s = bm::utils::encode_hex(bm::utils::encode_varint(integer));
+    cout << "123: " << s << "\n";
+    assert(s == "7B");
+
     integer = 1234;
-    cout << "1234: " << bm::utils::encode_hex(bm::utils::encode_varint(integer)) << "\n";
+    s = bm::utils::encode_hex(bm::utils::encode_varint(integer));
+    cout << "1234: " << s << "\n";
+    assert(s == "FD04D2");
+
     integer = 66666;
+    s = bm::utils::encode_hex(bm::utils::encode_varint(integer));
     cout << "66666: " << bm::utils::encode_hex(bm::utils::encode_varint(integer)) << "\n";
+    assert(s == "FE0001046A");
+
     integer = 4595967296;
+    s = bm::utils::encode_hex(bm::utils::encode_varint(integer));
     cout << "4595967296: " << bm::utils::encode_hex(bm::utils::encode_varint(integer)) << "\n";
-    // FIXME: Sanity checks
+    assert(s == "FF0000000111F0E540");
+
     cout << "\n=== TEST ENCODE VARINT OK ===\n" << endl;
 }
 
