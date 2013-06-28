@@ -76,8 +76,8 @@ static void test_base58()
 
     Botan::BigInt bi1(1234567890);
     string s = bm::utils::encode_base58(bi1);
-    cout << "Encoded (Base58): " << s << "\n";
-    Botan::BigInt bi2 = bm::utils::decode_base58(s);
+    cout << "1234567890 (encoded): " << s << "\n";
+    Botan::BigInt bi2 = bm::utils::decode_base58(s);    
     assert(bi1 == bi2);
 
     cout << "\n=== OK ===\n" << endl;
@@ -90,7 +90,7 @@ static void test_base64()
     string s = "This is a string"; // VGhpcyBpcyBhIHN0cmluZw==
     bm::ByteVector v1((unsigned char*)&s.c_str()[0], s.length());
     string str = bm::utils::encode_base64(v1);
-    cout << "Encoded (Base64): " << str << "\n";
+    cout << "\"This is a string\" (encoded): " << str << "\n";
     assert(str == "VGhpcyBpcyBhIHN0cmluZw==");
     bm::ByteVector v2 = bm::utils::decode_base64(str);
     assert(v1 == v2);
@@ -199,14 +199,17 @@ static void test_addresses()
     std::string addr = bm::address::create();
     cout << "Random address: " << addr << "\n";
     bm::address::remove_prefix(addr);
-    cout << "Without prefix 1: " << addr << "\n";
-    bm::address::remove_prefix(addr);
+    string test = addr;
+    cout << "Without prefix 1: " << addr << "\n";    
+    bm::address::remove_prefix(addr);    
     cout << "Without prefix 2: " << addr << "\n";
+    assert(test == addr);
     bm::address::add_prefix(addr);
+    test = addr;
     cout << "With prefix 1: " << addr << "\n";
     bm::address::add_prefix(addr);
     cout << "With prefix 2: " << addr << "\n";
-    // FIXME: Sanity checks
+    assert(test == addr);
 
     cout << "\n=== OK ===\n" << endl;
 }
