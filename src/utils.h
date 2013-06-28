@@ -21,6 +21,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <botan/bigint.h>
 #include "btypes.h"
 
 namespace bm {
@@ -31,6 +32,11 @@ ByteVector random_bytes(uint32_t count);
 uint32_t seconds_since_epoc();
 std::string encode_hex(const ByteVector& v);
 ByteVector encode_varint(uint64_t integer);
+uint64_t decode_varint(const ByteVector& data, int &nbytes);
+std::string encode_base58(const Botan::BigInt& src);
+Botan::BigInt decode_base58(const std::string& encoded);
+std::string encode_base64(const ByteVector& data);
+ByteVector decode_base64(const std::string& encoded);
 std::string encode_address(uint64_t version, uint64_t stream, const ByteVector& ripe);
 
 } //namespace utils

@@ -13,6 +13,7 @@
 #include "address.h"
 #include "bitmessage.h"
 #include "unittests.h"
+#include "base58.h"
 
 using namespace std;
 
@@ -27,6 +28,35 @@ static void test_encode_hex()
     string s = bm::utils::encode_hex(v);
     cout << "123 as hex: " << s << "\n";
     assert(s == "010203");
+
+    cout << "\n=== OK ===\n" << endl;
+}
+
+static void test_base58()
+{
+    cout << "\n=== TEST BASE58 ===\n\n";
+
+    Botan::BigInt bi1(1234567890);
+    string s = bm::utils::encode_base58(bi1);
+    cout << "Encoded (Base58): " << s << "\n";
+    Botan::BigInt bi2 = bm::utils::decode_base58(s);
+    assert(bi1 == bi2);
+    // FIXME: Sanity checks
+
+    cout << "\n=== OK ===\n" << endl;
+}
+
+static void test_base64()
+{
+    cout << "\n=== TEST BASE64 ===\n\n";
+
+    string s = "This is a string"; // VGhpcyBpcyBhIHN0cmluZw==
+    bm::ByteVector v1((unsigned char*)&s.c_str()[0], s.length());
+    string str = bm::utils::encode_base64(v1);
+    cout << "Encoded (Base64): " << str << "\n";
+    assert(str == "VGhpcyBpcyBhIHN0cmluZw==");
+    bm::ByteVector v2 = bm::utils::decode_base64(str);
+    assert(v1 == v2);
 
     cout << "\n=== OK ===\n" << endl;
 }
@@ -166,6 +196,8 @@ static void test_addresses()
 void run_unit_tests()
 {
     test_encode_hex();
+    test_base58();
+    test_base64();
     test_ecc_keys();
     test_ripemd160();
     test_sha256();

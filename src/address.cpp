@@ -31,12 +31,10 @@ std::string create_random_address()
     bool eighteen_byte_ripe = false;
     uint64_t address_version = 3, stream = 1;
 
-    //uint32_t start_time = utils::seconds_since_epoc();
     ECC signing_keys;
     signing_keys.generate_keys();
     ByteVector ripe;
-    uint32_t tries_before_correct_prefix = 0;
-    while(++tries_before_correct_prefix)
+    while(true)
     {
         ECC encryption_keys;
         encryption_keys.generate_keys();
@@ -51,10 +49,6 @@ std::string create_random_address()
                 break;
         }
     }
-
-    /*std::string s = utils::encode_hex(ripe);
-    std::cout << s << std::endl;
-    std::cout << "size: " << s.length() << " tries: " << addresses_before_correct_prefix << std::endl;*/
 
     // FIXME: Only address version 3
 
@@ -106,6 +100,12 @@ std::string create_random_address()
     shared.workerQueue.put((
         'doPOWForMyV3Pubkey', ripe.digest()))
     */
+}
+
+void add_bm_prefix(std::string& address)
+{
+    if(address.substr(0, 3) != "BM-")
+        address = "BM-" + address;
 }
 
 } // namespace bm

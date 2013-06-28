@@ -77,11 +77,6 @@ typedef struct version_header_struct version_header;
 ByteVector calculateInventoryHash(const ByteVector& data);
 uint64_t getProofOfWorkTrialValue(uint64_t nonce, const ByteVector& initialHash);
 
-template<class T>
-std::string encodeVarint(T integer);
-
-uint64_t decodeVarint(const ByteVector& data, int &nbytes);
-
 std::string proofOfWork(
         uint32_t streamNumber,
         std::string embeddedTime,
@@ -95,17 +90,6 @@ bool checkProofOfWork(
         uint32_t payloadLengthExtraBytes = PAYLOAD_LENGTH_EXTRA_BYTES,
         uint32_t averageProofOfWorkNonceTrialsPerByte = AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
 
-/*
-string encodeAddress(uint32_t version, uint32_t streamNumber, string ripe);
-void decodeAddress(
-        string address,
-        string &status,
-        string &data,
-        uint32_t &version,
-        uint32_t &streamNumber);
-*/
-
-std::string addBMIfNotPresent(std::string address);
 uint32_t addressStreamNumber(std::string address, std::string &status);
 
 } // namespace bm

@@ -24,6 +24,7 @@
 namespace bm {
 
 std::string create_random_address();
+void add_bm_prefix(std::string& address);
 
 } // namespace bm
 

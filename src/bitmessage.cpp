@@ -28,42 +28,7 @@
 #include "bitmessage.h"
 
 namespace bm {
-
 /*
-string encodeAddress(uint32_t version, uint32_t streamNumber, string ripe)
-{
-    if (version >= 2) {
-        if (ripe.length() != 20) {
-            fprintf(stderr,"%s","ERROR: Programming error in encodeAddress: The length of a given ripe hash was not 20.");
-			return "";
-		}
-        if (ripe.substr(ripe.length()-2,2) == "\x00\x00") {
-            ripe = ripe.substr(2);
-		} else {
-			if (ripe.substr(ripe.length()-1,1).c_str()[0] == '\x00') {
-				ripe = ripe.substr(1);
-			}
-		}
-	}
-	string a = encodeVarint(version) + encodeVarint(streamNumber) + ripe;
-    string currentHash = getHashString512(a);
-    string sha = getHashString512(currentHash);
-    string checksum = sha.substr(0,4);
-	mpz_t asInt;
-	mpz_init(asInt);
-	utils::decodeHexInt(utils::encodeHex(a) + utils::encodeHex(checksum), asInt);
-	string address = "BM-" + utils::encodeBase58(asInt);
-
-	if (address.length() < 20) {
-		printf("\nVersion: %d  StreamNumber: %d\n",version,streamNumber);
-		printf("data: %s  a: %s (%d)\n", ripe.c_str(), a.c_str(), (int)a.length());
-		printf("encodeAddress: Address too short %d\n",(int)address.length());
-		address = "";
-	}
-
-	return address;
-}
-
 void decodeAddress(string address,
         string &status,
         string &data,
@@ -190,71 +155,6 @@ ByteVector calculateInventoryHash(const ByteVector& data)
 }
 
 /*
-template<class T>
-std::string encodeVarint(T integer)
-{
-    if(integer < 0)
-        return ""; // FIXME: throw exception or something
-
-    std::string result = "";
-
-    if (integer < 253) {
-        return utils::pack<unsigned char>((unsigned char)integer);
-	}
-    else if ((integer >= 253) && (integer < 65536)) {
-        result = utils::pack<unsigned char>((unsigned char)253);
-        result += utils::pack<unsigned short>((unsigned short)integer);
-		return result;
-	}
-    if ((integer >= 65536) && (integer < 4294967296)) {
-        result = utils::pack<unsigned char>((unsigned char)254);
-        result += utils::pack<unsigned int>((unsigned int)integer);
-		return result;
-	}
-    if (integer >= 4294967296) {
-        result = utils::pack<unsigned char>((unsigned char)255);
-        result += utils::pack<unsigned long long>((unsigned long long)integer);
-		return result;
-	}
-	return result;
-}
-
-template std::string encodeVarint(unsigned char);
-template std::string encodeVarint(unsigned short);
-template std::string encodeVarint(unsigned int);
-template std::string encodeVarint(unsigned long long);
-
-
-uint64_t decodeVarint(const ByteArray& data, int &nbytes)
-{
-	unsigned char firstByte;
-
-    nbytes = 0;
-    if (data.size() == 0) {
-        return 0;
-	}
-
-    firstByte = utils::unpack<unsigned char>(&data[0]);
-
-    if (firstByte < 253) {
-        nbytes = 1;
-        return firstByte;
-	}
-    if (firstByte == 253) {
-        nbytes = 3;
-        return utils::unpack<unsigned short>(&data[1]);
-	}
-    if (firstByte == 254) {
-        nbytes = 5;
-        return utils::unpack<unsigned int>(&data[1]);
-	}
-    if (firstByte == 255) {
-        nbytes = 9;
-        return utils::unpack<unsigned long long>(&data[1]);
-	}
-	return 0;
-}
-
 uint64_t Bitmessage::getProofOfWorkTrialValue(unsigned long long nonce, string initialHash)
 {
 	char str[129];
@@ -352,16 +252,6 @@ bool checkProofOfWork(
 
 	string initialHash = getHashString512(message_payload);
 	return (getProofOfWorkTrialValue(nonce, initialHash) <= target);
-}
-
-string addBMIfNotPresent(string address)
-{
-    if (address.substr(0,3) != "BM-") {
-        return "BM-" + address;
-	}
-    else {
-        return address;
-	}
 }
 
 // returns the stream number of an address or False if there is a problem with the address.
