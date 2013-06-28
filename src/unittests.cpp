@@ -3,8 +3,6 @@
 #include <iostream>
 #include <assert.h>
 #include <ctime>
-#include <botan/botan.h>
-#include <botan/rng.h>
 #include "utils.h"
 #include "ecc.h"
 #include "hashes.h"
@@ -57,7 +55,6 @@ static void test_serialize_varint()
     cout << "66666: " << bm::utils::encode_hex(bm::utils::serialize_varint(i1)) << "\n";
     assert(s == "FE0001046A");
 
-    // FIXME: encode_hex is slow
     i1 = 4595967296;
     v1 = bm::utils::serialize_varint(i1);
     s = bm::utils::encode_hex(v1);
@@ -74,10 +71,10 @@ static void test_base58()
 {
     cout << "\n=== TEST BASE58 ===\n\n";
 
-    Botan::BigInt bi1(1234567890);
+    bm::BigInt bi1(1234567890);
     string s = bm::utils::encode_base58(bi1);
     cout << "1234567890 (encoded): " << s << "\n";
-    Botan::BigInt bi2 = bm::utils::decode_base58(s);    
+    bm::BigInt bi2 = bm::utils::decode_base58(s);
     assert(bi1 == bi2);
 
     cout << "\n=== OK ===\n" << endl;
@@ -166,9 +163,8 @@ static void test_hmac_sha256()
 {
     cout << "\n=== TEST HMAC_SHA256 ===\n\n";
 
-    Botan::AutoSeeded_RNG rng;
-    bm::ByteVector key = rng.random_vec(32);
-    bm::ByteVector data = rng.random_vec(1024);
+    bm::ByteVector key = bm::utils::random_bytes(32);
+    bm::ByteVector data = bm::utils::random_bytes(1024);
     bm::ByteVector mac = bm::hash::hmac_sha256(data, key); // FIXME: Make a _real_ test
     bm::OctetVector ostr(mac);
     cout << ostr.as_string() << endl;
@@ -181,9 +177,8 @@ static void test_hmac_sha512()
 {
     cout << "\n=== TEST HMAC_SHA512 ===\n\n";
 
-    Botan::AutoSeeded_RNG rng;
-    bm::ByteVector key = rng.random_vec(32);
-    bm::ByteVector data = rng.random_vec(1024);
+    bm::ByteVector key = bm::utils::random_bytes(32);
+    bm::ByteVector data = bm::utils::random_bytes(1024);
     bm::ByteVector mac = bm::hash::hmac_sha512(data, key); // FIXME: Make a _real_ test
     bm::OctetVector ostr(mac);
     cout << ostr.as_string() << endl;
@@ -199,16 +194,14 @@ static void test_addresses()
     std::string addr = bm::address::create();
     cout << "Random address: " << addr << "\n";
     bm::address::remove_prefix(addr);
+    cout << "Without prefix: " << addr << "\n";
     string test = addr;
-    cout << "Without prefix 1: " << addr << "\n";    
-    bm::address::remove_prefix(addr);    
-    cout << "Without prefix 2: " << addr << "\n";
+    bm::address::remove_prefix(addr);        
     assert(test == addr);
     bm::address::add_prefix(addr);
+    cout << "With prefix: " << addr << "\n";
     test = addr;
-    cout << "With prefix 1: " << addr << "\n";
-    bm::address::add_prefix(addr);
-    cout << "With prefix 2: " << addr << "\n";
+    bm::address::add_prefix(addr);    
     assert(test == addr);
 
     cout << "\n=== OK ===\n" << endl;

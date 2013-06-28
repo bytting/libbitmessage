@@ -35,12 +35,20 @@ namespace internal {
 
 const std::string BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
+struct RandomNumberGeneratorAutoSeeded
+{
+    static Botan::AutoSeeded_RNG& instance()
+    {
+        static Botan::AutoSeeded_RNG generator;
+        return generator;
+    }
+};
+
 } // namespace internal
 
 ByteVector random_bytes(uint32_t count)
-{
-    Botan::AutoSeeded_RNG rng;
-    return rng.random_vec(count);
+{    
+    return internal::RandomNumberGeneratorAutoSeeded::instance().random_vec(count);
 }
 
 uint32_t seconds_since_epoc()

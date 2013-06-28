@@ -27,14 +27,15 @@ namespace bm {
 
 class ECC
 {    
+    typedef std::map<std::string, uint16_t> CurveMap;
 
-public:           
+public:               
 
-    inline bool has_keys() const { return m_private_key.length() > 0; }
-
+    inline bool curve_exists(const std::string& curve) const  { return curves.find(curve) != curves.end(); }
     inline std::string get_curve() const { return m_curve; }
     inline uint16_t get_curve_id() const;
 
+    inline bool has_keys() const { return m_private_key.length() > 0; }
     inline std::string get_public_key() const { return m_public_key; }
     inline std::string get_private_key() const { return m_private_key; }
 
@@ -49,9 +50,7 @@ private:
 
     std::string m_public_key;
     std::string m_private_key;
-    std::string m_curve;
-
-    typedef std::map<std::string, uint16_t> CurveMap;
+    std::string m_curve;    
 
     const CurveMap curves = {        
         { "secp224r1", 713 },

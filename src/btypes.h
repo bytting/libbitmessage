@@ -20,6 +20,7 @@
 
 #include <cstdint>
 #include <botan/types.h>
+#include <botan/bigint.h>
 #include <botan/secmem.h>
 #include <botan/symkey.h>
 
@@ -48,6 +49,7 @@ namespace bm {
 typedef Botan::byte Byte;
 typedef Botan::SecureVector<Byte> ByteVector;
 typedef Botan::OctetString OctetVector;
+typedef Botan::BigInt BigInt;
 
 } // namespace bm
 
