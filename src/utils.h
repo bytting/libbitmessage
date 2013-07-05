@@ -21,6 +21,8 @@
 
 #include <stdint.h>
 #include <string>
+#include <botan/botan.h>
+#include <botan/rng.h>
 #include <botan/bigint.h>
 #include "btypes.h"
 
@@ -28,10 +30,13 @@ namespace bm {
 
 namespace utils {
 
+Botan::AutoSeeded_RNG& random_number_generator();
+
 ByteVector random_bytes(uint32_t count);
 uint32_t seconds_since_epoc();
 
 std::string encode_hex(const ByteVector& v);
+std::string encode_hex(const std::vector<Byte>& v);
 ByteVector decode_hex(const std::string& encoded);
 
 std::string encode_base58(const Botan::BigInt& src);

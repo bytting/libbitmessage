@@ -99,14 +99,16 @@ static void test_ecc_keys()
 {
     cout << "\n=== TEST ECC ===\n\n";
 
-    cout << "=== Using password...\n";
     bm::ECC ecc;
-    ecc.generate_keys_with_password("qwerty");
-    cout << ecc.get_private_key() << "\n" << ecc.get_public_key() << "\n";
-
-    cout << "=== Without password...\n";
     ecc.generate_keys();
-    cout << ecc.get_private_key() << "\n" << ecc.get_public_key();
+    cout << "hex encoded private key: " << bm::utils::encode_hex(ecc.get_private_key()) << "\n"
+         << "hex encoded public key: " << bm::utils::encode_hex(ecc.get_public_key()) << "\n\n";
+
+    cout << "=== PEM encoded...\n";
+    cout << ecc.get_private_key_pem_encoded() << "\n" << ecc.get_public_key_pem_encoded() << "\n";
+
+    cout << "=== PEM encoded encrypted...\n";
+    cout << ecc.get_private_key_pem_encoded_encrypted("qwerty");
 
     cout << "\n=== OK ===" << endl;
 }
@@ -191,18 +193,11 @@ static void test_addresses()
 {
     cout << "\n=== TEST ADDRESSES ===\n\n";
 
-    std::string addr = bm::address::create();
-    cout << "Random address: " << addr << "\n";
-    bm::address::remove_prefix(addr);
-    cout << "Without prefix: " << addr << "\n";
-    string test = addr;
-    bm::address::remove_prefix(addr);        
-    assert(test == addr);
-    bm::address::add_prefix(addr);
-    cout << "With prefix: " << addr << "\n";
-    test = addr;
-    bm::address::add_prefix(addr);    
-    assert(test == addr);
+    bm::Address bm_addr;
+    bm_addr.generate_address();
+
+    std::string addr = bm_addr.get_address_with_prefix();
+    cout << "Random address: " << addr << "\n";    
 
     cout << "\n=== OK ===\n" << endl;
 }

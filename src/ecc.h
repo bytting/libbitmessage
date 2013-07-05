@@ -19,44 +19,41 @@
 #ifndef BM_ECC_H
 #define BM_ECC_H
 
+#include <vector>
 #include <string>
-#include <map>
+#include <botan/botan.h>
+#include <botan/ecdsa.h>
 #include "btypes.h"
 
 namespace bm {
 
 class ECC
-{    
-    typedef std::map<std::string, uint16_t> CurveMap;
+{        
+public:
 
-public:               
+    ECC();
+    ~ECC();
 
-    inline bool curve_exists(const std::string& curve) const  { return curves.find(curve) != curves.end(); }
-    inline std::string get_curve() const { return m_curve; }
-    inline uint16_t get_curve_id() const;
+    void generate_keys();
 
-    inline bool has_keys() const { return m_private_key.length() > 0; }
-    inline std::string get_public_key() const { return m_public_key; }
-    inline std::string get_private_key() const { return m_private_key; }
+    ByteVector get_public_key() const;
+    ByteVector get_private_key() const;
 
-    void generate_keys(const std::string& curve = "secp256k1");
-    void generate_keys_with_password(const std::string& password, const std::string& curve = "secp256k1");
+    std::string get_public_key_pem_encoded() const;
+    std::string get_private_key_pem_encoded() const;
+    std::string get_private_key_pem_encoded_encrypted(const std::string& password) const;
 
-    inline void clear();
+    uint16_t get_curve_id() const;
 
-private:
+private:    
 
-    void set_curve(const std::string& curve);
+    Botan::ECDSA_PrivateKey* m_key;
+    ByteVector m_public_key;
+    ByteVector m_private_key;
 
-    std::string m_public_key;
-    std::string m_private_key;
-    std::string m_curve;    
-
-    const CurveMap curves = {        
-        { "secp224r1", 713 },
-        { "secp256k1", 714 },        
-        { "sect283r1", 730 }
-    };
+    // secp224r1 : 713
+    // secp256k1 : 714
+    // sect283r1 : 730
 };
 
 } // namespace bm

@@ -23,19 +23,24 @@
 
 namespace bm {
 
-namespace address {
+class Address
+{
+public:
 
-std::string create();
-void add_prefix(std::string& address);
-void remove_prefix(std::string& address);
+    Address() {}
+    ~Address() {}
 
-namespace internal {
+    void generate_address();
 
-std::string encode(uint64_t version, uint64_t stream, const ByteVector& ripe);
+    std::string get_address() const { return m_address; }
+    std::string get_address_with_prefix() const { return "BM-" + m_address; }
 
-} // namespace internal
+private:
 
-} // namespace address
+    std::string m_address;
+
+    void encode(uint64_t version, uint64_t stream, const ByteVector& ripe);
+};
 
 } // namespace bm
 

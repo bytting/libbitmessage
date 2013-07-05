@@ -21,13 +21,9 @@
 #include "hashes.h"
 #include "ecc.h"
 
-#include <iostream> // FIXME: remove this
-
 namespace bm {
 
-namespace address {
-
-std::string create()
+void Address::generate_address()
 {
     // FIXME: set these correctly
     bool eighteen_byte_ripe = false;
@@ -58,8 +54,7 @@ std::string create()
     }
 
     // FIXME: Only address version 3
-
-    return internal::encode(address_version, stream, ripe);
+    encode(address_version, stream, ripe);
 
     /*
      * FIXME
@@ -109,21 +104,7 @@ std::string create()
     */
 }
 
-void add_prefix(std::string& address)
-{
-    if(address.substr(0, 3) != "BM-")
-        address = "BM-" + address;
-}
-
-void remove_prefix(std::string& address)
-{
-    if(address.substr(0, 3) == "BM-")
-        address = address.substr(3, address.length() - 3);
-}
-
-namespace internal {
-
-std::string encode(uint64_t version, uint64_t stream, const ByteVector& ripe)
+void Address::encode(uint64_t version, uint64_t stream, const ByteVector& ripe)
 {
     if(ripe.size() != 20)
         throw SizeException(__FILE__, __LINE__, "create_random_address: The ripe length is not 20");
@@ -150,15 +131,7 @@ std::string encode(uint64_t version, uint64_t stream, const ByteVector& ripe)
 
     v += checksum;
     Botan::BigInt bi(&v[0], v.size());
-    std::string address = utils::encode_base58(bi);
-
-    add_prefix(address);
-
-    return address;
+    m_address = utils::encode_base58(bi);
 }
-
-} // namespace internal
-
-} // namespace address
 
 } // namespace bm

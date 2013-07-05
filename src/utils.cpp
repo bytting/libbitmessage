@@ -19,8 +19,6 @@
 #include <sstream>
 #include <chrono>
 #include <cmath>
-#include <botan/botan.h>
-#include <botan/rng.h>
 #include <botan/pipe.h>
 #include <botan/filters.h>
 #include "utils.h"
@@ -46,6 +44,11 @@ struct RandomNumberGeneratorAutoSeeded
 
 } // namespace internal
 
+Botan::AutoSeeded_RNG& random_number_generator()
+{
+    return internal::RandomNumberGeneratorAutoSeeded::instance();
+}
+
 ByteVector random_bytes(uint32_t count)
 {    
     return internal::RandomNumberGeneratorAutoSeeded::instance().random_vec(count);
@@ -63,6 +66,13 @@ std::string encode_hex(const ByteVector& v)
 {
     Botan::Pipe pipe(new Botan::Hex_Encoder());
     pipe.process_msg(v);
+    return pipe.read_all_as_string();
+}
+
+std::string encode_hex(const std::vector<Byte>& v)
+{
+    Botan::Pipe pipe(new Botan::Hex_Encoder());
+    pipe.process_msg(&v[0], v.size());
     return pipe.read_all_as_string();
 }
 
