@@ -23,12 +23,12 @@
 
 namespace bm {
 
-class Address
+class address_type
 {
 public:
 
-    Address() {}
-    ~Address() {}
+    address_type() {}
+    ~address_type() {}
 
     void generate_address();
 

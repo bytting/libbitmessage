@@ -27,14 +27,14 @@
 
 namespace bm {
 
-class ECC
+class ecc_type
 {        
 public:
 
-    ECC();
-    ECC(const big_integer_type& value);
-    ECC(const std::string& wif);
-    ~ECC();    
+    ecc_type();
+    ecc_type(const big_integer_type& value);
+    ecc_type(const std::string& wif);
+    ~ecc_type();
 
     std::string get_wallet_import_format() const;
 

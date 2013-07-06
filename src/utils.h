@@ -39,14 +39,15 @@ std::string encode_hex(const std::vector<byte_type>& v);
 byte_vector_type decode_hex(const std::string& encoded);
 
 std::string encode_base58(const big_integer_type& src);
+std::string encode_base58(const byte_vector_type& src);
 big_integer_type decode_base58(const std::string& encoded);
 byte_vector_type decode_base58v(const std::string& encoded);
 
 std::string encode_base64(const byte_vector_type& data);
 byte_vector_type decode_base64(const std::string& encoded);
 
-byte_vector_type serialize_varint(uint64_t integer);
-uint64_t deserialize_varint(const byte_vector_type& data, int &nbytes);
+byte_vector_type encode_varint(uint64_t integer);
+uint64_t decode_varint(const byte_vector_type& data, int &nbytes);
 
 } //namespace utils
 

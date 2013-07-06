@@ -110,10 +110,16 @@ std::string encode_base58(const big_integer_type& num)
     return output;
 }
 
+std::string encode_base58(const byte_vector_type& src)
+{
+    big_integer_type bit(&src[0], src.size());
+    return encode_base58(bit);
+}
+
 big_integer_type decode_base58(const std::string& encoded)
 {
     if(encoded.empty())
-        throw SizeException(__FILE__, __LINE__, "decode_base58: encoded string is empty");
+        throw size_exception(__FILE__, __LINE__, "decode_base58: encoded string is empty");
 
     big_integer_type num = 0;
     uint32_t base = 58;
@@ -123,7 +129,7 @@ big_integer_type decode_base58(const std::string& encoded)
     {
         uint64_t pos = internal::BASE58.find_first_of(*it);
         if(it == internal::BASE58.end())
-            throw RangeException(__FILE__, __LINE__, "decode_base58: encoded character not in base58");
+            throw range_exception(__FILE__, __LINE__, "decode_base58: encoded character not in base58");
 
         num += pos * (uint64_t)std::pow((double)base, (double)exp);
     }
@@ -143,7 +149,7 @@ byte_vector_type decode_base58v(const std::string& encoded)
     {
         uint64_t pos = internal::BASE58.find_first_of(*it);
         if(it == internal::BASE58.end())
-            throw RangeException(__FILE__, __LINE__, "decode_base58: encoded character not in base58");
+            throw range_exception(__FILE__, __LINE__, "decode_base58v: encoded character not in base58");
 
         bn = bn * base;
         bn += pos;
@@ -187,7 +193,7 @@ byte_vector_type decode_base64(const std::string& encoded)
     return pipe.read_all();
 }
 
-byte_vector_type serialize_varint(uint64_t integer)
+byte_vector_type encode_varint(uint64_t integer)
 {
     byte_vector_type v;
 
@@ -221,10 +227,10 @@ byte_vector_type serialize_varint(uint64_t integer)
     return v;
 }
 
-uint64_t deserialize_varint(const byte_vector_type& data, int &nbytes)
+uint64_t decode_varint(const byte_vector_type& data, int &nbytes)
 {
     if (data.size() == 0)
-        throw SizeException(__FILE__, __LINE__, "decode_varint: data buffer is empty");
+        throw size_exception(__FILE__, __LINE__, "decode_varint: data buffer is empty");
 
     uint8_t first_byte;
     uint64_t result;

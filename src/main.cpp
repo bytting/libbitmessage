@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 
         run_unit_tests();
     }
-    catch(bm::Exception& bmex)
+    catch(bm::base_exception& bmex)
     {
         std::cerr << bmex.file() << " : " << bmex.line() << " : " << bmex.what() << std::endl;
     }

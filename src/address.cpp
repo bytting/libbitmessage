@@ -23,21 +23,20 @@
 
 namespace bm {
 
-void Address::generate_address()
+void address_type::generate_address()
 {
     // FIXME: set these correctly
     bool eighteen_byte_ripe = false;
     uint64_t address_version = 3, stream = 1;
 
-    ECC signing_keys;
+    ecc_type signing_keys;
     byte_vector_type ripe;
 
     while(true)
     {
-        ECC encryption_keys;        
+        ecc_type encryption_keys;
 
-        byte_vector_type sha = hash::sha512(encryption_keys.get_private_key());
-        ripe = hash::ripemd160(sha);
+        ripe = hash::ripemd160(hash::sha512(encryption_keys.get_private_key()));
 
         if(eighteen_byte_ripe)
         {
@@ -55,34 +54,27 @@ void Address::generate_address()
     encode(address_version, stream, ripe);
 }
 
-void Address::encode(uint64_t version, uint64_t stream, const byte_vector_type& ripe)
+void address_type::encode(uint64_t version, uint64_t stream, const byte_vector_type& ripe)
 {
     if(ripe.size() != 20)
-        throw SizeException(__FILE__, __LINE__, "create_random_address: The ripe length is not 20");
+        throw size_exception(__FILE__, __LINE__, "address_type::encode: The ripe length is not 20");
 
     byte_vector_type r = ripe;
-    if(r[0] == 0x00 && r[1] == 0x00)
-    {
-        byte_vector_type tmp(&r[2], r.size() - 2);
-        r = tmp;
-    }
-    else if(r[0] == 0x00)
-    {
-        byte_vector_type tmp(&r[1], r.size() - 1);
-        r = tmp;
-    }
 
-    byte_vector_type v = utils::serialize_varint(version);
-    v += utils::serialize_varint(stream);
+    if(r[0] == 0x00 && r[1] == 0x00)    
+        r.copy(2, r, r.size() - 2);
+    else if(r[0] == 0x00)    
+        r.copy(1, r, r.size() - 1);
+
+    byte_vector_type v = utils::encode_varint(version);
+    v += utils::encode_varint(stream);
     v += r;
 
-    byte_vector_type sha1 = hash::sha512(v);
-    byte_vector_type sha2 = hash::sha512(sha1);
-    byte_vector_type checksum(&sha2[0], 4);
+    byte_vector_type sha = hash::sha512(hash::sha512(v));
+    byte_vector_type checksum(&sha[0], 4);
 
-    v += checksum;
-    big_integer_type bi(&v[0], v.size());
-    m_address = utils::encode_base58(bi);
+    v += checksum;    
+    m_address = utils::encode_base58(v);
 }
 
 } // namespace bm

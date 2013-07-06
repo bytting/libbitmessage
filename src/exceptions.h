@@ -22,14 +22,14 @@
 
 namespace bm {
 
-class Exception : public std::exception
+class base_exception : public std::exception
 {
 public:
 
-    explicit Exception(const char* file, int line, const char* message) throw()
+    explicit base_exception(const char* file, int line, const char* message) throw()
         : m_file(file), m_message(message), m_line(line) {}
 
-    virtual ~Exception() throw() {}
+    virtual ~base_exception() throw() {}
 
     virtual const char* file() const throw() { return m_file; }
     virtual int line() const throw() { return m_line; }
@@ -41,22 +41,22 @@ private:
     int m_line;
 };
 
-class RangeException : public Exception
+class range_exception : public base_exception
 {
 public:
 
-    explicit RangeException(const char* file, int line, const char* message) throw()
-        : Exception(file, line, message) {}
-    virtual ~RangeException() throw() {}
+    explicit range_exception(const char* file, int line, const char* message) throw()
+        : base_exception(file, line, message) {}
+    virtual ~range_exception() throw() {}
 };
 
-class SizeException : public Exception
+class size_exception : public base_exception
 {
 public:
 
-    explicit SizeException(const char* file, int line, const char* message) throw()
-        : Exception(file, line, message) {}
-    virtual ~SizeException() throw() {}
+    explicit size_exception(const char* file, int line, const char* message) throw()
+        : base_exception(file, line, message) {}
+    virtual ~size_exception() throw() {}
 };
 
 } // namespace bm

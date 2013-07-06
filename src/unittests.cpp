@@ -37,29 +37,29 @@ static void test_serialize_varint()
 
     int nb;
     uint64_t i1 = 123;
-    bm::byte_vector_type v1 = bm::utils::serialize_varint(i1);
+    bm::byte_vector_type v1 = bm::utils::encode_varint(i1);
     string s = bm::utils::encode_hex(v1);
     cout << "123 encoded: " << s << "\n";
-    uint64_t i2 = bm::utils::deserialize_varint(v1, nb);
+    uint64_t i2 = bm::utils::decode_varint(v1, nb);
     cout << "123 decoded: " << i2 << "\n";
     assert(s == "7B");
     assert(i1 == i2);
 
     i1 = 1234;
-    s = bm::utils::encode_hex(bm::utils::serialize_varint(i1));
+    s = bm::utils::encode_hex(bm::utils::encode_varint(i1));
     cout << "1234: " << s << "\n";
     assert(s == "FD04D2");
 
     i1 = 66666;
-    s = bm::utils::encode_hex(bm::utils::serialize_varint(i1));
-    cout << "66666: " << bm::utils::encode_hex(bm::utils::serialize_varint(i1)) << "\n";
+    s = bm::utils::encode_hex(bm::utils::encode_varint(i1));
+    cout << "66666: " << bm::utils::encode_hex(bm::utils::encode_varint(i1)) << "\n";
     assert(s == "FE0001046A");
 
     i1 = 4595967296;
-    v1 = bm::utils::serialize_varint(i1);
+    v1 = bm::utils::encode_varint(i1);
     s = bm::utils::encode_hex(v1);
     cout << "4595967296 encoded: " << s << "\n";
-    i2 = bm::utils::deserialize_varint(v1, nb);
+    i2 = bm::utils::decode_varint(v1, nb);
     cout << "4595967296 decoded: " << i2 << "\n";
     assert(s == "FF0000000111F0E540");
     assert(i1 == i2);
@@ -99,7 +99,7 @@ static void test_ecc_keys()
 {
     cout << "\n=== TEST ECC ===\n\n";
 
-    bm::ECC ecc;
+    bm::ecc_type ecc;
 
     cout << "hex encoded private key: " << bm::utils::encode_hex(ecc.get_private_key()) << "\n"
          << "hex encoded public key: " << bm::utils::encode_hex(ecc.get_public_key()) << "\n\n";    
@@ -107,7 +107,7 @@ static void test_ecc_keys()
     string wif = ecc.get_wallet_import_format();
     cout << "ecc as wif:  " << wif << "\n";
 
-    bm::ECC ecc2(wif);
+    bm::ecc_type ecc2(wif);
 
     cout << "ecc2 as wif: " << ecc2.get_wallet_import_format() << "\n\n";
 
@@ -200,7 +200,7 @@ static void test_addresses()
 {
     cout << "\n=== TEST ADDRESSES ===\n\n";
 
-    bm::Address bm_addr;
+    bm::address_type bm_addr;
     bm_addr.generate_address();
 
     std::string addr = bm_addr.get_address_with_prefix();
