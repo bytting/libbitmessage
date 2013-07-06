@@ -39,7 +39,7 @@ private:
 
     std::string m_address;
 
-    void encode(uint64_t version, uint64_t stream, const ByteVector& ripe);
+    void encode(uint64_t version, uint64_t stream, const byte_vector_type& ripe);
 };
 
 } // namespace bm

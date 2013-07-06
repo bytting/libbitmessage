@@ -74,9 +74,9 @@ struct bm_version_header_struct {
 typedef struct version_header_struct version_header;
 
 
-ByteVector calculateInventoryHash(const ByteVector& data);
+byte_vector_type calculateInventoryHash(const byte_vector_type& data);
 
-uint64_t getProofOfWorkTrialValue(uint64_t nonce, const ByteVector& initialHash);
+uint64_t getProofOfWorkTrialValue(uint64_t nonce, const byte_vector_type& initialHash);
 
 std::string proofOfWork(
         uint32_t streamNumber,

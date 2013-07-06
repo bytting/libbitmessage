@@ -29,13 +29,13 @@
 
 namespace bm {
 
-ByteVector calculateInventoryHash(const ByteVector& data)
+byte_vector_type calculateInventoryHash(const byte_vector_type& data)
 {    
-    ByteVector sha1 = hash::sha512(data);
-    ByteVector sha2 = hash::sha512(sha1);
+    byte_vector_type sha1 = hash::sha512(data);
+    byte_vector_type sha2 = hash::sha512(sha1);
     if(sha2.size() < 32)
         throw SizeException(__FILE__, __LINE__, "calculateInventoryHash: Hash size is less than 32");
-    return ByteVector(&sha2[0], 32);
+    return byte_vector_type(&sha2[0], 32);
 }
 
 /*

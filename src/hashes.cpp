@@ -37,22 +37,22 @@ namespace hash {
 namespace internal {
 
 template<class T, class H>
-ByteVector hash(const T& data)
+byte_vector_type hash(const T& data)
 {
     H hashObject;
     return hashObject.process(data);
 }
 
-ByteVector hmac_hash(const ByteVector& data, const ByteVector& key, const std::string& hmac_name)
+byte_vector_type hmac_hash(const byte_vector_type& data, const byte_vector_type& key, const std::string& hmac_name)
 {
-    OctetVector okey(key);
+    octet_string_type okey(key);
     Botan::Pipe pipe(new Botan::MAC_Filter(hmac_name, okey));
     pipe.process_msg(data);
     return pipe.read_all();
 }
 
 template<class T>
-OctetVector pbkdf2_hmac_hash(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
+octet_string_type pbkdf2_hmac_hash(const std::string& password, const byte_vector_type& salt, int desiredKeyLength, int iterations)
 {
     T hashObject;
     Botan::HMAC hmac(&hashObject);
@@ -62,52 +62,52 @@ OctetVector pbkdf2_hmac_hash(const std::string& password, const ByteVector& salt
 
 } // namespace internal
 
-ByteVector ripemd160(const ByteVector& data)
+byte_vector_type ripemd160(const byte_vector_type& data)
 {
-    return internal::hash<ByteVector, Botan::RIPEMD_160>(data);
+    return internal::hash<byte_vector_type, Botan::RIPEMD_160>(data);
 }
 
-ByteVector ripemd160(const std::string& data)
+byte_vector_type ripemd160(const std::string& data)
 {
     return internal::hash<std::string, Botan::RIPEMD_160>(data);
 }
 
-ByteVector sha256(const ByteVector& data)
+byte_vector_type sha256(const byte_vector_type& data)
 {
-    return internal::hash<ByteVector, Botan::SHA_256>(data);
+    return internal::hash<byte_vector_type, Botan::SHA_256>(data);
 }
 
-ByteVector sha256(const std::string& data)
+byte_vector_type sha256(const std::string& data)
 {
     return internal::hash<std::string, Botan::SHA_256>(data);
 }
 
-ByteVector sha512(const ByteVector& data)
+byte_vector_type sha512(const byte_vector_type& data)
 {
-    return internal::hash<ByteVector, Botan::SHA_512>(data);
+    return internal::hash<byte_vector_type, Botan::SHA_512>(data);
 }
 
-ByteVector sha512(const std::string& data)
+byte_vector_type sha512(const std::string& data)
 {
     return internal::hash<std::string, Botan::SHA_512>(data);
 }
 
-ByteVector hmac_sha256(const ByteVector& data, const ByteVector& key)
+byte_vector_type hmac_sha256(const byte_vector_type& data, const byte_vector_type& key)
 {
     return internal::hmac_hash(data, key, "HMAC(SHA-256)");
 }
 
-ByteVector hmac_sha512(const ByteVector& data, const ByteVector& key)
+byte_vector_type hmac_sha512(const byte_vector_type& data, const byte_vector_type& key)
 {
     return internal::hmac_hash(data, key, "HMAC(SHA-512)");
 }
 
-OctetVector pbkdf2_hmac_sha256(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
+octet_string_type pbkdf2_hmac_sha256(const std::string& password, const byte_vector_type& salt, int desiredKeyLength, int iterations)
 {
     return internal::pbkdf2_hmac_hash<Botan::SHA_256>(password, salt, desiredKeyLength, iterations);
 }
 
-OctetVector pbkdf2_hmac_sha512(const std::string& password, const ByteVector& salt, int desiredKeyLength, int iterations)
+octet_string_type pbkdf2_hmac_sha512(const std::string& password, const byte_vector_type& salt, int desiredKeyLength, int iterations)
 {
     return internal::pbkdf2_hmac_hash<Botan::SHA_512>(password, salt, desiredKeyLength, iterations);
 }

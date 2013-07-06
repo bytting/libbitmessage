@@ -32,12 +32,15 @@ class ECC
 public:
 
     ECC();
-    ~ECC();
+    ECC(const big_integer_type& value);
+    ECC(const std::string& wif);
+    ~ECC();    
 
-    void generate_keys();
+    std::string get_wallet_import_format() const;
 
-    ByteVector get_public_key() const;
-    ByteVector get_private_key() const;
+    byte_vector_type get_public_key() const;
+    byte_vector_type get_private_key() const;
+    big_integer_type get_private_value() const { return m_key->private_value(); }
 
     std::string get_public_key_pem_encoded() const;
     std::string get_private_key_pem_encoded() const;
@@ -48,8 +51,8 @@ public:
 private:    
 
     Botan::ECDSA_PrivateKey* m_key;
-    ByteVector m_public_key;
-    ByteVector m_private_key;
+    byte_vector_type m_public_key;
+    byte_vector_type m_private_key;
 
     // secp224r1 : 713
     // secp256k1 : 714

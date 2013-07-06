@@ -49,7 +49,7 @@ Botan::AutoSeeded_RNG& random_number_generator()
     return internal::RandomNumberGeneratorAutoSeeded::instance();
 }
 
-ByteVector random_bytes(uint32_t count)
+byte_vector_type random_bytes(uint32_t count)
 {    
     return internal::RandomNumberGeneratorAutoSeeded::instance().random_vec(count);
 }
@@ -62,28 +62,28 @@ uint32_t seconds_since_epoc()
     return dtn.count() * system_clock::period::num / system_clock::period::den;
 }
 
-std::string encode_hex(const ByteVector& v)
+std::string encode_hex(const byte_vector_type& v)
 {
     Botan::Pipe pipe(new Botan::Hex_Encoder());
     pipe.process_msg(v);
     return pipe.read_all_as_string();
 }
 
-std::string encode_hex(const std::vector<Byte>& v)
+std::string encode_hex(const std::vector<byte_type>& v)
 {
     Botan::Pipe pipe(new Botan::Hex_Encoder());
     pipe.process_msg(&v[0], v.size());
     return pipe.read_all_as_string();
 }
 
-ByteVector decode_hex(const std::string& encoded)
+byte_vector_type decode_hex(const std::string& encoded)
 {
     Botan::Pipe pipe(new Botan::Hex_Decoder());
     pipe.process_msg(encoded);
     return pipe.read_all();
 }
 
-std::string encode_base58(const Botan::BigInt& num)
+std::string encode_base58(const big_integer_type& num)
 {
     std::stringstream ss;
 
@@ -93,7 +93,7 @@ std::string encode_base58(const Botan::BigInt& num)
         return ss.str();
     }
 
-    Botan::BigInt n = num;
+    big_integer_type n = num;
     uint32_t r, base = 58;
 
     while (n > 0)
@@ -110,12 +110,12 @@ std::string encode_base58(const Botan::BigInt& num)
     return output;
 }
 
-Botan::BigInt decode_base58(const std::string& encoded)
+big_integer_type decode_base58(const std::string& encoded)
 {
     if(encoded.empty())
         throw SizeException(__FILE__, __LINE__, "decode_base58: encoded string is empty");
 
-    Botan::BigInt num = 0;
+    big_integer_type num = 0;
     uint32_t base = 58;
     uint32_t exp = encoded.length() - 1;
 
@@ -131,23 +131,65 @@ Botan::BigInt decode_base58(const std::string& encoded)
     return num;
 }
 
-std::string encode_base64(const ByteVector& data)
+byte_vector_type decode_base58v(const std::string& encoded)
+{
+    // const char* psz
+    byte_vector_type result;
+
+    uint32_t r, base = 58;
+    big_integer_type bn = 0;
+
+    for (std::string::const_iterator it = encoded.begin(); it != encoded.end(); ++it)
+    {
+        uint64_t pos = internal::BASE58.find_first_of(*it);
+        if(it == internal::BASE58.end())
+            throw RangeException(__FILE__, __LINE__, "decode_base58: encoded character not in base58");
+
+        bn = bn * base;
+        bn += pos;
+    }
+
+    result.resize(bn.bytes());
+    bn.binary_encode(result);
+
+    /*
+    // Get bignum as little endian data
+    std::vector<unsigned char> vchTmp = bn.getvch();
+
+    // Trim off sign byte if present
+    if (vchTmp.size() >= 2 && vchTmp.end()[-1] == 0 && vchTmp.end()[-2] >= 0x80)
+        vchTmp.erase(vchTmp.end()-1);
+
+    // Restore leading zeros
+    int nLeadingZeros = 0;
+    for (const char* p = psz; *p == pszBase58[0]; p++)
+        nLeadingZeros++;
+    vchRet.assign(nLeadingZeros + vchTmp.size(), 0);
+
+    // Convert little endian data to big endian
+    reverse_copy(vchTmp.begin(), vchTmp.end(), vchRet.end() - vchTmp.size());
+    */
+
+    return result;
+}
+
+std::string encode_base64(const byte_vector_type& data)
 {
     Botan::Pipe pipe(new Botan::Base64_Encoder());
     pipe.process_msg(data);
     return pipe.read_all_as_string();
 }
 
-ByteVector decode_base64(const std::string& encoded)
+byte_vector_type decode_base64(const std::string& encoded)
 {
     Botan::Pipe pipe(new Botan::Base64_Decoder());
     pipe.process_msg(encoded);
     return pipe.read_all();
 }
 
-ByteVector serialize_varint(uint64_t integer)
+byte_vector_type serialize_varint(uint64_t integer)
 {
-    ByteVector v;
+    byte_vector_type v;
 
     if (integer < 253)
     {
@@ -179,7 +221,7 @@ ByteVector serialize_varint(uint64_t integer)
     return v;
 }
 
-uint64_t deserialize_varint(const ByteVector& data, int &nbytes)
+uint64_t deserialize_varint(const byte_vector_type& data, int &nbytes)
 {
     if (data.size() == 0)
         throw SizeException(__FILE__, __LINE__, "decode_varint: data buffer is empty");

@@ -30,15 +30,13 @@ void Address::generate_address()
     uint64_t address_version = 3, stream = 1;
 
     ECC signing_keys;
-    signing_keys.generate_keys();
-    ByteVector ripe;
+    byte_vector_type ripe;
 
     while(true)
     {
-        ECC encryption_keys;
-        encryption_keys.generate_keys();
+        ECC encryption_keys;        
 
-        ByteVector sha = hash::sha512(encryption_keys.get_private_key());
+        byte_vector_type sha = hash::sha512(encryption_keys.get_private_key());
         ripe = hash::ripemd160(sha);
 
         if(eighteen_byte_ripe)
@@ -55,82 +53,35 @@ void Address::generate_address()
 
     // FIXME: Only address version 3
     encode(address_version, stream, ripe);
-
-    /*
-     * FIXME
-    # An excellent way for us to store our keys is in Wallet Import Format. Let us convert now.
-    # https://en.bitcoin.it/wiki/Wallet_import_format
-    privSigningKey = '\x80' + potentialPrivSigningKey
-    checksum = hashlib.sha256(hashlib.sha256(
-        privSigningKey).digest()).digest()[0:4]
-    privSigningKeyWIF = arithmetic.changebase(
-        privSigningKey + checksum, 256, 58)
-    # print 'privSigningKeyWIF',privSigningKeyWIF
-
-    privEncryptionKey = '\x80' + potentialPrivEncryptionKey
-    checksum = hashlib.sha256(hashlib.sha256(
-        privEncryptionKey).digest()).digest()[0:4]
-    privEncryptionKeyWIF = arithmetic.changebase(
-        privEncryptionKey + checksum, 256, 58)
-    # print 'privEncryptionKeyWIF',privEncryptionKeyWIF
-
-    shared.config.add_section(address)
-    shared.config.set(address, 'label', label)
-    shared.config.set(address, 'enabled', 'true')
-    shared.config.set(address, 'decoy', 'false')
-    shared.config.set(address, 'noncetrialsperbyte', str(
-        nonceTrialsPerByte))
-    shared.config.set(address, 'payloadlengthextrabytes', str(
-        payloadLengthExtraBytes))
-    shared.config.set(
-        address, 'privSigningKey', privSigningKeyWIF)
-    shared.config.set(
-        address, 'privEncryptionKey', privEncryptionKeyWIF)
-    with open(shared.appdata + 'keys.dat', 'wb') as configfile:
-        shared.config.write(configfile)
-
-    # It may be the case that this address is being generated
-    # as a result of a call to the API. Let us put the result
-    # in the necessary queue.
-    shared.apiAddressGeneratorReturnQueue.put(address)
-
-    shared.UISignalQueue.put((
-        'updateStatusBar', tr.translateText("MainWindow", "Done generating address. Doing work necessary to broadcast it...")))
-    shared.UISignalQueue.put(('writeNewAddressToTable', (
-        label, address, streamNumber)))
-    shared.reloadMyAddressHashes()
-    shared.workerQueue.put((
-        'doPOWForMyV3Pubkey', ripe.digest()))
-    */
 }
 
-void Address::encode(uint64_t version, uint64_t stream, const ByteVector& ripe)
+void Address::encode(uint64_t version, uint64_t stream, const byte_vector_type& ripe)
 {
     if(ripe.size() != 20)
         throw SizeException(__FILE__, __LINE__, "create_random_address: The ripe length is not 20");
 
-    ByteVector r = ripe;
+    byte_vector_type r = ripe;
     if(r[0] == 0x00 && r[1] == 0x00)
     {
-        ByteVector tmp(&r[2], r.size() - 2);
+        byte_vector_type tmp(&r[2], r.size() - 2);
         r = tmp;
     }
     else if(r[0] == 0x00)
     {
-        ByteVector tmp(&r[1], r.size() - 1);
+        byte_vector_type tmp(&r[1], r.size() - 1);
         r = tmp;
     }
 
-    ByteVector v = utils::serialize_varint(version);
+    byte_vector_type v = utils::serialize_varint(version);
     v += utils::serialize_varint(stream);
     v += r;
 
-    ByteVector sha1 = hash::sha512(v);
-    ByteVector sha2 = hash::sha512(sha1);
-    ByteVector checksum(&sha2[0], 4);
+    byte_vector_type sha1 = hash::sha512(v);
+    byte_vector_type sha2 = hash::sha512(sha1);
+    byte_vector_type checksum(&sha2[0], 4);
 
     v += checksum;
-    Botan::BigInt bi(&v[0], v.size());
+    big_integer_type bi(&v[0], v.size());
     m_address = utils::encode_base58(bi);
 }
 

@@ -21,9 +21,8 @@
 
 #include <stdint.h>
 #include <string>
-#include <botan/botan.h>
-#include <botan/rng.h>
-#include <botan/bigint.h>
+//#include <botan/botan.h>
+#include <botan/auto_rng.h>
 #include "btypes.h"
 
 namespace bm {
@@ -32,21 +31,22 @@ namespace utils {
 
 Botan::AutoSeeded_RNG& random_number_generator();
 
-ByteVector random_bytes(uint32_t count);
+byte_vector_type random_bytes(uint32_t count);
 uint32_t seconds_since_epoc();
 
-std::string encode_hex(const ByteVector& v);
-std::string encode_hex(const std::vector<Byte>& v);
-ByteVector decode_hex(const std::string& encoded);
+std::string encode_hex(const byte_vector_type& v);
+std::string encode_hex(const std::vector<byte_type>& v);
+byte_vector_type decode_hex(const std::string& encoded);
 
-std::string encode_base58(const Botan::BigInt& src);
-Botan::BigInt decode_base58(const std::string& encoded);
+std::string encode_base58(const big_integer_type& src);
+big_integer_type decode_base58(const std::string& encoded);
+byte_vector_type decode_base58v(const std::string& encoded);
 
-std::string encode_base64(const ByteVector& data);
-ByteVector decode_base64(const std::string& encoded);
+std::string encode_base64(const byte_vector_type& data);
+byte_vector_type decode_base64(const std::string& encoded);
 
-ByteVector serialize_varint(uint64_t integer);
-uint64_t deserialize_varint(const ByteVector& data, int &nbytes);
+byte_vector_type serialize_varint(uint64_t integer);
+uint64_t deserialize_varint(const byte_vector_type& data, int &nbytes);
 
 } //namespace utils
 

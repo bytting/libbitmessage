@@ -16,14 +16,14 @@ static void test_encode_hex()
 {
     cout << "\n=== TEST ENCODE HEX ===\n\n";
 
-    bm::ByteVector v1;
+    bm::byte_vector_type v1;
     v1.push_back(0x01);
     v1.push_back(0x02);
     v1.push_back(0x03);
     string hex = bm::utils::encode_hex(v1);
     cout << "123 as hex: " << hex << "\n";
     assert(hex == "010203");
-    bm::ByteVector v2 = bm::utils::decode_hex(hex);
+    bm::byte_vector_type v2 = bm::utils::decode_hex(hex);
     assert(v2[0] == 0x01);
     assert(v2[1] == 0x02);
     assert(v2[2] == 0x03);
@@ -37,11 +37,11 @@ static void test_serialize_varint()
 
     int nb;
     uint64_t i1 = 123;
-    bm::ByteVector v1 = bm::utils::serialize_varint(i1);
+    bm::byte_vector_type v1 = bm::utils::serialize_varint(i1);
     string s = bm::utils::encode_hex(v1);
-    cout << "123 (encoded): " << s << "\n";
+    cout << "123 encoded: " << s << "\n";
     uint64_t i2 = bm::utils::deserialize_varint(v1, nb);
-    cout << "123 (decoded): " << i2 << "\n";
+    cout << "123 decoded: " << i2 << "\n";
     assert(s == "7B");
     assert(i1 == i2);
 
@@ -58,9 +58,9 @@ static void test_serialize_varint()
     i1 = 4595967296;
     v1 = bm::utils::serialize_varint(i1);
     s = bm::utils::encode_hex(v1);
-    cout << "4595967296 (encoded): " << s << "\n";
+    cout << "4595967296 encoded: " << s << "\n";
     i2 = bm::utils::deserialize_varint(v1, nb);
-    cout << "4595967296 (decoded): " << i2 << "\n";
+    cout << "4595967296 decoded: " << i2 << "\n";
     assert(s == "FF0000000111F0E540");
     assert(i1 == i2);
 
@@ -71,10 +71,10 @@ static void test_base58()
 {
     cout << "\n=== TEST BASE58 ===\n\n";
 
-    bm::BigInt bi1(1234567890);
+    bm::big_integer_type bi1(1234567890);
     string s = bm::utils::encode_base58(bi1);
-    cout << "1234567890 (encoded): " << s << "\n";
-    bm::BigInt bi2 = bm::utils::decode_base58(s);
+    cout << "1234567890 encoded: " << s << "\n";
+    bm::big_integer_type bi2 = bm::utils::decode_base58(s);
     assert(bi1 == bi2);
 
     cout << "\n=== OK ===\n" << endl;
@@ -85,11 +85,11 @@ static void test_base64()
     cout << "\n=== TEST BASE64 ===\n\n";
 
     string s = "This is a string"; // VGhpcyBpcyBhIHN0cmluZw==
-    bm::ByteVector v1((unsigned char*)&s.c_str()[0], s.length());
+    bm::byte_vector_type v1((unsigned char*)&s.c_str()[0], s.length());
     string str = bm::utils::encode_base64(v1);
-    cout << "\"This is a string\" (encoded): " << str << "\n";
+    cout << "\"This is a string\" encoded: " << str << "\n";
     assert(str == "VGhpcyBpcyBhIHN0cmluZw==");
-    bm::ByteVector v2 = bm::utils::decode_base64(str);
+    bm::byte_vector_type v2 = bm::utils::decode_base64(str);
     assert(v1 == v2);
 
     cout << "\n=== OK ===\n" << endl;
@@ -100,9 +100,16 @@ static void test_ecc_keys()
     cout << "\n=== TEST ECC ===\n\n";
 
     bm::ECC ecc;
-    ecc.generate_keys();
+
     cout << "hex encoded private key: " << bm::utils::encode_hex(ecc.get_private_key()) << "\n"
-         << "hex encoded public key: " << bm::utils::encode_hex(ecc.get_public_key()) << "\n\n";
+         << "hex encoded public key: " << bm::utils::encode_hex(ecc.get_public_key()) << "\n\n";    
+
+    string wif = ecc.get_wallet_import_format();
+    cout << "ecc as wif:  " << wif << "\n";
+
+    bm::ECC ecc2(wif);
+
+    cout << "ecc2 as wif: " << ecc2.get_wallet_import_format() << "\n\n";
 
     cout << "=== PEM encoded...\n";
     cout << ecc.get_private_key_pem_encoded() << "\n" << ecc.get_public_key_pem_encoded() << "\n";
@@ -118,8 +125,8 @@ static void test_ripemd160()
     cout << "\n=== TEST RIPEMD160 ===\n\n";
 
     string str = "This is a string"; // 291850ad6a9a191487f01b5fbe19c215de1a5d67
-    bm::ByteVector v1 = bm::hash::ripemd160(str);
-    bm::ByteVector v2 = bm::hash::ripemd160(str);
+    bm::byte_vector_type v1 = bm::hash::ripemd160(str);
+    bm::byte_vector_type v2 = bm::hash::ripemd160(str);
     cout << bm::utils::encode_hex(v1) << "\n";
     assert(v1.size() == 20);
     assert(v1 == v2);
@@ -134,8 +141,8 @@ static void test_sha256()
     cout << "\n=== TEST SHA256 ===\n\n";
 
     string str = "This is a string"; // 4E9518575422C9087396887CE20477AB5F550A4AA3D161C5C22A996B0ABB8B35
-    bm::ByteVector v1 = bm::hash::sha256(str);
-    bm::ByteVector v2 = bm::hash::sha256(str);
+    bm::byte_vector_type v1 = bm::hash::sha256(str);
+    bm::byte_vector_type v2 = bm::hash::sha256(str);
     cout << bm::utils::encode_hex(v1) << "\n";
     assert(v1.size() == 32);
     assert(v1 == v2);
@@ -150,8 +157,8 @@ static void test_sha512()
     cout << "\n=== TEST SHA512 ===\n\n";
 
     string str = "This is a string"; // F4D54D32E3523357FF023903EABA2721E8C8CFC7702663782CB3E52FAF2C56C002CC3096B5F2B6DF870BE665D0040E9963590EB02D03D166E52999CD1C430DB1
-    bm::ByteVector v1 = bm::hash::sha512(str);
-    bm::ByteVector v2 = bm::hash::sha512(str);
+    bm::byte_vector_type v1 = bm::hash::sha512(str);
+    bm::byte_vector_type v2 = bm::hash::sha512(str);
     cout << bm::utils::encode_hex(v1) << "\n";
     assert(v1.size() == 64);
     assert(v1 == v2);
@@ -165,10 +172,10 @@ static void test_hmac_sha256()
 {
     cout << "\n=== TEST HMAC_SHA256 ===\n\n";
 
-    bm::ByteVector key = bm::utils::random_bytes(32);
-    bm::ByteVector data = bm::utils::random_bytes(1024);
-    bm::ByteVector mac = bm::hash::hmac_sha256(data, key); // FIXME: Make a _real_ test
-    bm::OctetVector ostr(mac);
+    bm::byte_vector_type key = bm::utils::random_bytes(32);
+    bm::byte_vector_type data = bm::utils::random_bytes(1024);
+    bm::byte_vector_type mac = bm::hash::hmac_sha256(data, key); // FIXME: Make a _real_ test
+    bm::octet_string_type ostr(mac);
     cout << ostr.as_string() << endl;
     // FIXME: Sanity checks
 
@@ -179,10 +186,10 @@ static void test_hmac_sha512()
 {
     cout << "\n=== TEST HMAC_SHA512 ===\n\n";
 
-    bm::ByteVector key = bm::utils::random_bytes(32);
-    bm::ByteVector data = bm::utils::random_bytes(1024);
-    bm::ByteVector mac = bm::hash::hmac_sha512(data, key); // FIXME: Make a _real_ test
-    bm::OctetVector ostr(mac);
+    bm::byte_vector_type key = bm::utils::random_bytes(32);
+    bm::byte_vector_type data = bm::utils::random_bytes(1024);
+    bm::byte_vector_type mac = bm::hash::hmac_sha512(data, key); // FIXME: Make a _real_ test
+    bm::octet_string_type ostr(mac);
     cout << ostr.as_string() << endl;
     // FIXME: Sanity checks
 
