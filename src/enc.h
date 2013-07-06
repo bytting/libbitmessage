@@ -13,27 +13,43 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
-// Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
-
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef ENC_H
+#define ENC_H
 
 #include <stdint.h>
 #include <string>
-#include <botan/auto_rng.h>
 #include "btypes.h"
 
 namespace bm {
 
-namespace utils {
+namespace encode {
 
-Botan::AutoSeeded_RNG& random_number_generator();
-byte_vector_type random_bytes(uint32_t count);
-uint32_t seconds_since_epoc();
+std::string hex(const byte_vector_type& v);
+std::string hex(const std::vector<byte_type>& v);
 
-} //namespace utils
+std::string base58(const big_integer_type& src);
+std::string base58(const byte_vector_type& src);
 
-} //namespace bm
+std::string base64(const byte_vector_type& data);
+
+byte_vector_type varint(uint64_t integer);
+
+} // namespace encode
+
+namespace decode {
+
+byte_vector_type hex(const std::string& encoded);
+
+big_integer_type base58(const std::string& encoded);
+byte_vector_type base58v(const std::string& encoded);
+
+byte_vector_type base64(const std::string& encoded);
+
+uint64_t varint(const byte_vector_type& data, int &nbytes);
+
+} // namespace decode
+
+} // namespace bm
 
 #endif

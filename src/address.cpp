@@ -17,7 +17,8 @@
 
 #include "address.h"
 #include "exceptions.h"
-#include "utils.h"
+//#include "utils.h"
+#include "enc.h"
 #include "hashes.h"
 #include "ecc.h"
 
@@ -66,15 +67,15 @@ void address_type::encode(uint64_t version, uint64_t stream, const byte_vector_t
     else if(r[0] == 0x00)    
         r.copy(1, r, r.size() - 1);
 
-    byte_vector_type v = utils::encode_varint(version);
-    v += utils::encode_varint(stream);
+    byte_vector_type v = encode::varint(version);
+    v += encode::varint(stream);
     v += r;
 
     byte_vector_type sha = hash::sha512(hash::sha512(v));
     byte_vector_type checksum(&sha[0], 4);
 
     v += checksum;    
-    m_address = utils::encode_base58(v);
+    m_address = encode::base58(v);
 }
 
 } // namespace bm

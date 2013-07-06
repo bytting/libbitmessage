@@ -38,29 +38,28 @@ ecc_type::ecc_type(const big_integer_type& value) : m_key(0)
     m_private_key = m_key->pkcs8_private_key();
     m_public_key = m_key->x509_subject_public_key();
 }
-
+/*
 ecc_type::ecc_type(const std::string& wif) : m_key(0)
 {        
     byte_vector_type extended = utils::decode_base58v(wif);
     byte_vector_type checksum(&extended[extended.size() - 4], 4);
     byte_vector_type key(&extended[1], extended.size() - 1 - 4);
 
-    // FIXME: Validate key    
+    // FIXME: Validate key        
 
-    Botan::SymmetricKey symkey(key);
+    Botan::DataSource_Memory ds(&key[0], key.size());
+    m_key = dynamic_cast<Botan::ECDSA_PrivateKey*>(Botan::PKCS8::load_key(ds, utils::random_number_generator(), ""));
 
-    // FIXME: make keys based on symkey
-
-    //m_private_key = m_key->pkcs8_private_key();
-    //m_public_key = m_key->x509_subject_public_key();
+    m_private_key = m_key->pkcs8_private_key();
+    m_public_key = m_key->x509_subject_public_key();
 }
-
+*/
 ecc_type::~ecc_type()
 {
     if(m_key)    
         delete m_key;    
 }
-
+/*
 std::string ecc_type::get_wallet_import_format() const
 {    
     byte_vector_type extended;
@@ -76,7 +75,7 @@ std::string ecc_type::get_wallet_import_format() const
     big_integer_type bit(&extended[0], extended.size());    
     return utils::encode_base58(bit);
 }
-
+*/
 byte_vector_type ecc_type::get_public_key() const
 {
     return m_public_key;
@@ -87,17 +86,22 @@ byte_vector_type ecc_type::get_private_key() const
     return m_private_key;
 }
 
-std::string ecc_type::get_public_key_pem_encoded() const
+big_integer_type ecc_type::get_private_value() const
+{
+    return m_key->private_value();
+}
+
+std::string ecc_type::get_public_key_pem() const
 {
     return Botan::X509::PEM_encode(*m_key);
 }
 
-std::string ecc_type::get_private_key_pem_encoded() const
+std::string ecc_type::get_private_key_pem() const
 {
     return Botan::PKCS8::PEM_encode(*m_key);
 }
 
-std::string ecc_type::get_private_key_pem_encoded_encrypted(const std::string& password) const
+std::string ecc_type::get_private_key_pem_encrypted(const std::string& password) const
 {
     return Botan::PKCS8::PEM_encode(*m_key, utils::random_number_generator(), password.c_str());
 }

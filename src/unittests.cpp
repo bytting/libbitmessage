@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <ctime>
 #include "utils.h"
+#include "enc.h"
 #include "ecc.h"
 #include "hashes.h"
 #include "address.h"
@@ -20,10 +21,10 @@ static void test_encode_hex()
     v1.push_back(0x01);
     v1.push_back(0x02);
     v1.push_back(0x03);
-    string hex = bm::utils::encode_hex(v1);
+    string hex = bm::encode::hex(v1);
     cout << "123 as hex: " << hex << "\n";
     assert(hex == "010203");
-    bm::byte_vector_type v2 = bm::utils::decode_hex(hex);
+    bm::byte_vector_type v2 = bm::decode::hex(hex);
     assert(v2[0] == 0x01);
     assert(v2[1] == 0x02);
     assert(v2[2] == 0x03);
@@ -37,29 +38,29 @@ static void test_serialize_varint()
 
     int nb;
     uint64_t i1 = 123;
-    bm::byte_vector_type v1 = bm::utils::encode_varint(i1);
-    string s = bm::utils::encode_hex(v1);
+    bm::byte_vector_type v1 = bm::encode::varint(i1);
+    string s = bm::encode::hex(v1);
     cout << "123 encoded: " << s << "\n";
-    uint64_t i2 = bm::utils::decode_varint(v1, nb);
+    uint64_t i2 = bm::decode::varint(v1, nb);
     cout << "123 decoded: " << i2 << "\n";
     assert(s == "7B");
     assert(i1 == i2);
 
     i1 = 1234;
-    s = bm::utils::encode_hex(bm::utils::encode_varint(i1));
+    s = bm::encode::hex(bm::encode::varint(i1));
     cout << "1234: " << s << "\n";
     assert(s == "FD04D2");
 
     i1 = 66666;
-    s = bm::utils::encode_hex(bm::utils::encode_varint(i1));
-    cout << "66666: " << bm::utils::encode_hex(bm::utils::encode_varint(i1)) << "\n";
+    s = bm::encode::hex(bm::encode::varint(i1));
+    cout << "66666: " << bm::encode::hex(bm::encode::varint(i1)) << "\n";
     assert(s == "FE0001046A");
 
     i1 = 4595967296;
-    v1 = bm::utils::encode_varint(i1);
-    s = bm::utils::encode_hex(v1);
+    v1 = bm::encode::varint(i1);
+    s = bm::encode::hex(v1);
     cout << "4595967296 encoded: " << s << "\n";
-    i2 = bm::utils::decode_varint(v1, nb);
+    i2 = bm::decode::varint(v1, nb);
     cout << "4595967296 decoded: " << i2 << "\n";
     assert(s == "FF0000000111F0E540");
     assert(i1 == i2);
@@ -72,9 +73,9 @@ static void test_base58()
     cout << "\n=== TEST BASE58 ===\n\n";
 
     bm::big_integer_type bi1(1234567890);
-    string s = bm::utils::encode_base58(bi1);
+    string s = bm::encode::base58(bi1);
     cout << "1234567890 encoded: " << s << "\n";
-    bm::big_integer_type bi2 = bm::utils::decode_base58(s);
+    bm::big_integer_type bi2 = bm::decode::base58(s);
     assert(bi1 == bi2);
 
     cout << "\n=== OK ===\n" << endl;
@@ -86,10 +87,10 @@ static void test_base64()
 
     string s = "This is a string"; // VGhpcyBpcyBhIHN0cmluZw==
     bm::byte_vector_type v1((unsigned char*)&s.c_str()[0], s.length());
-    string str = bm::utils::encode_base64(v1);
+    string str = bm::encode::base64(v1);
     cout << "\"This is a string\" encoded: " << str << "\n";
     assert(str == "VGhpcyBpcyBhIHN0cmluZw==");
-    bm::byte_vector_type v2 = bm::utils::decode_base64(str);
+    bm::byte_vector_type v2 = bm::decode::base64(str);
     assert(v1 == v2);
 
     cout << "\n=== OK ===\n" << endl;
@@ -101,21 +102,19 @@ static void test_ecc_keys()
 
     bm::ecc_type ecc;
 
-    cout << "hex encoded private key: " << bm::utils::encode_hex(ecc.get_private_key()) << "\n"
-         << "hex encoded public key: " << bm::utils::encode_hex(ecc.get_public_key()) << "\n\n";    
+    cout << "hex encoded private key: " << bm::encode::hex(ecc.get_private_key()) << "\n"
+         << "hex encoded public key: " << bm::encode::hex(ecc.get_public_key()) << "\n\n";
 
-    string wif = ecc.get_wallet_import_format();
+    /*string wif = ecc.get_wallet_import_format();
     cout << "ecc as wif:  " << wif << "\n";
-
     bm::ecc_type ecc2(wif);
-
-    cout << "ecc2 as wif: " << ecc2.get_wallet_import_format() << "\n\n";
+    cout << "ecc2 as wif: " << ecc2.get_wallet_import_format() << "\n\n";*/
 
     cout << "=== PEM encoded...\n";
-    cout << ecc.get_private_key_pem_encoded() << "\n" << ecc.get_public_key_pem_encoded() << "\n";
+    cout << ecc.get_private_key_pem() << "\n" << ecc.get_public_key_pem() << "\n";
 
     cout << "=== PEM encoded encrypted...\n";
-    cout << ecc.get_private_key_pem_encoded_encrypted("qwerty");
+    cout << ecc.get_private_key_pem_encrypted("qwerty");
 
     cout << "\n=== OK ===" << endl;
 }
@@ -127,7 +126,7 @@ static void test_ripemd160()
     string str = "This is a string"; // 291850ad6a9a191487f01b5fbe19c215de1a5d67
     bm::byte_vector_type v1 = bm::hash::ripemd160(str);
     bm::byte_vector_type v2 = bm::hash::ripemd160(str);
-    cout << bm::utils::encode_hex(v1) << "\n";
+    cout << bm::encode::hex(v1) << "\n";
     assert(v1.size() == 20);
     assert(v1 == v2);
     assert(v1[0] == 0x29);
@@ -143,7 +142,7 @@ static void test_sha256()
     string str = "This is a string"; // 4E9518575422C9087396887CE20477AB5F550A4AA3D161C5C22A996B0ABB8B35
     bm::byte_vector_type v1 = bm::hash::sha256(str);
     bm::byte_vector_type v2 = bm::hash::sha256(str);
-    cout << bm::utils::encode_hex(v1) << "\n";
+    cout << bm::encode::hex(v1) << "\n";
     assert(v1.size() == 32);
     assert(v1 == v2);
     assert(v1[0] == 0x4E);    
@@ -159,7 +158,7 @@ static void test_sha512()
     string str = "This is a string"; // F4D54D32E3523357FF023903EABA2721E8C8CFC7702663782CB3E52FAF2C56C002CC3096B5F2B6DF870BE665D0040E9963590EB02D03D166E52999CD1C430DB1
     bm::byte_vector_type v1 = bm::hash::sha512(str);
     bm::byte_vector_type v2 = bm::hash::sha512(str);
-    cout << bm::utils::encode_hex(v1) << "\n";
+    cout << bm::encode::hex(v1) << "\n";
     assert(v1.size() == 64);
     assert(v1 == v2);
     assert(v1[0] == 0xF4);    
