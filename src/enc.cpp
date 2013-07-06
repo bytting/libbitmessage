@@ -152,11 +152,10 @@ big_integer_type base58(const std::string& encoded)
 }
 
 byte_vector_type base58v(const std::string& encoded)
-{
-    // const char* psz
+{    
     byte_vector_type result;
 
-    uint32_t r, base = 58;
+    uint32_t base = 58;
     big_integer_type bn = 0;
 
     for (std::string::const_iterator it = encoded.begin(); it != encoded.end(); ++it)
