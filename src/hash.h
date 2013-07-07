@@ -13,42 +13,31 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
+// Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
-#ifndef ENC_H
-#define ENC_H
 
-#include <stdint.h>
+#ifndef BM_HASH_H
+#define BM_HASH_H
+
 #include <string>
 #include "btypes.h"
 
 namespace bm {
 
-namespace encode {
+namespace hash {
 
-std::string hex(const byte_vector_type& v);
-std::string hex(const std::vector<byte_type>& v);
+byte_vector_type ripemd160(const byte_vector_type& data);
+byte_vector_type ripemd160(const std::string& data);
+byte_vector_type sha256(const byte_vector_type& data);
+byte_vector_type sha256(const std::string& data);
+byte_vector_type sha512(const byte_vector_type& data);
+byte_vector_type sha512(const std::string& data);
+byte_vector_type hmac_sha256(const byte_vector_type& data, const byte_vector_type& key);
+byte_vector_type hmac_sha512(const byte_vector_type& data, const byte_vector_type& key);
+octet_string_type pbkdf2_hmac_sha256(const std::string& password, const byte_vector_type& salt, int iterations = 10000);
+octet_string_type pbkdf2_hmac_sha512(const std::string& password, const byte_vector_type& salt, int iterations = 10000);
 
-std::string base58(const big_integer_type& src);
-std::string base58(const byte_vector_type& src);
-
-std::string base64(const byte_vector_type& data);
-
-byte_vector_type varint(uint64_t integer);
-
-} // namespace encode
-
-namespace decode {
-
-byte_vector_type hex(const std::string& encoded);
-
-big_integer_type base58(const std::string& encoded);
-byte_vector_type base58v(const std::string& encoded);
-
-byte_vector_type base64(const std::string& encoded);
-
-uint64_t varint(const byte_vector_type& data, int &nbytes);
-
-} // namespace decode
+} // namespace hash
 
 } // namespace bm
 

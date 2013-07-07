@@ -30,50 +30,6 @@ namespace bm {
 //pubkey bitfield
 //#define BM_PUBKEY_DOES_ACK 31 // FIXME: what is this
 
-// Message encodings
-enum {
-	BM_ENCODING_IGNORE = 0,
-	BM_ENCODING_TRIVIAL,
-	BM_ENCODING_SIMPLE
-};
-
-// Message header
-struct message_header_struct {
-    uint32_t magic;
-	char command[12];
-    uint32_t length;
-    uint32_t checksum;
-};
-typedef struct message_header_struct message_header;
-
-// Network address
-struct net_addr_struct {
-    uint32_t time;
-    uint32_t stream;
-    uint64_t services;
-    char ip_address[16];
-    uint16_t port;
-};
-typedef struct net_addr_struct net_addr;
-
-// Inventory vector element
-struct inventory_element_struct {
-	char hash[32];
-};
-typedef struct inventory_element_struct inventory_element;
-
-// Version request
-struct bm_version_header_struct {
-    int32_t version;
-    uint64_t services;
-    int64_t timestamp;
-    net_addr addr_recv;
-    net_addr addr_from;
-    uint64_t nonce;
-};
-typedef struct version_header_struct version_header;
-
-
 byte_vector_type calculateInventoryHash(const byte_vector_type& data);
 
 uint64_t getProofOfWorkTrialValue(uint64_t nonce, const byte_vector_type& initialHash);

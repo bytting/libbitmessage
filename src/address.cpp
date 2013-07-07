@@ -15,11 +15,11 @@
 // CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
+#include <stdint.h>
 #include "address.h"
 #include "exceptions.h"
-//#include "utils.h"
-#include "enc.h"
-#include "hashes.h"
+#include "encoding.h"
+#include "hash.h"
 #include "ecc.h"
 
 namespace bm {
@@ -53,6 +53,16 @@ void address_type::generate_address()
 
     // FIXME: Only address version 3
     encode(address_version, stream, ripe);
+}
+
+std::string address_type::get_address() const
+{
+    return m_address;
+}
+
+std::string address_type::get_address_with_prefix() const
+{
+    return "BM-" + m_address;
 }
 
 void address_type::encode(uint64_t version, uint64_t stream, const byte_vector_type& ripe)

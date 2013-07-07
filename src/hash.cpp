@@ -16,8 +16,6 @@
 // Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#include <sstream>
-#include <cstdio>
 #include <botan/hash.h>
 #include <botan/mdx_hash.h>
 #include <botan/rmd160.h>
@@ -28,7 +26,7 @@
 #include <botan/symkey.h>
 #include <botan/pipe.h>
 #include <botan/filters.h>
-#include "hashes.h"
+#include "hash.h"
 
 namespace bm {
 

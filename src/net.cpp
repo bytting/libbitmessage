@@ -16,23 +16,4 @@
 // Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#ifndef BM_UTILS_H
-#define BM_UTILS_H
-
-#include <stdint.h>
-#include <botan/auto_rng.h>
-#include "btypes.h"
-
-namespace bm {
-
-namespace utils {
-
-Botan::AutoSeeded_RNG& random_number_generator();
-byte_vector_type random_bytes(uint32_t count);
-uint32_t seconds_since_epoc();
-
-} //namespace utils
-
-} //namespace bm
-
-#endif
+#include "net.h"

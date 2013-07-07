@@ -15,10 +15,11 @@
 // CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
+#include <cmath>
 #include <sstream>
 #include <botan/pipe.h>
 #include <botan/filters.h>
-#include "enc.h"
+#include "encoding.h"
 #include "exceptions.h"
 
 namespace bm {

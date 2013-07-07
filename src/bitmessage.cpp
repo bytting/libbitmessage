@@ -16,15 +16,8 @@
 // Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <time.h>
-//#include <sstream>
-//#include <iostream>
 #include "exceptions.h"
-#include "hashes.h"
-#include "ecc.h"
+#include "hash.h"
 #include "bitmessage.h"
 
 namespace bm {

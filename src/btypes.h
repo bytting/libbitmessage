@@ -15,10 +15,9 @@
 // CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#ifndef BTYPES_H
-#define BTYPES_H
+#ifndef BM_BTYPES_H
+#define BM_BTYPES_H
 
-#include <cstdint>
 #include <botan/types.h>
 #include <botan/bigint.h>
 #include <botan/secmem.h>

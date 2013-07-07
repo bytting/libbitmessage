@@ -1,12 +1,12 @@
 #include <stdint.h>
 #include <string.h>
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 #include <ctime>
 #include "utils.h"
-#include "enc.h"
+#include "encoding.h"
 #include "ecc.h"
-#include "hashes.h"
+#include "hash.h"
 #include "address.h"
 #include "bitmessage.h"
 #include "unittests.h"

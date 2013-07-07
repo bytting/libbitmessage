@@ -32,8 +32,8 @@ public:
 
     void generate_address();
 
-    std::string get_address() const { return m_address; }
-    std::string get_address_with_prefix() const { return "BM-" + m_address; }
+    std::string get_address() const;
+    std::string get_address_with_prefix() const;
 
 private:
 

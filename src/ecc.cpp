@@ -19,9 +19,7 @@
 #include <botan/ec_group.h>
 #include <botan/alg_id.h>
 #include "ecc.h"
-#include "exceptions.h"
 #include "utils.h"
-#include "hashes.h"
 
 #include <iostream> // FIXME
 

@@ -17,9 +17,7 @@
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
 #include <chrono>
-#include <cmath>
 #include "utils.h"
-#include "hashes.h"
 
 namespace bm {
 
@@ -55,7 +53,6 @@ uint32_t seconds_since_epoc()
     system_clock::duration dtn = tp.time_since_epoch();
     return dtn.count() * system_clock::period::num / system_clock::period::den;
 }
-
 
 } // namespace utils
 

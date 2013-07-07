@@ -47,7 +47,7 @@ public:
 
     explicit range_exception(const char* file, int line, const char* message) throw()
         : base_exception(file, line, message) {}
-    virtual ~range_exception() throw() {}
+    ~range_exception() throw() {}
 };
 
 class size_exception : public base_exception
@@ -56,7 +56,7 @@ public:
 
     explicit size_exception(const char* file, int line, const char* message) throw()
         : base_exception(file, line, message) {}
-    virtual ~size_exception() throw() {}
+    ~size_exception() throw() {}
 };
 
 } // namespace bm
