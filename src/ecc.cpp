@@ -20,6 +20,8 @@
 #include <botan/alg_id.h>
 #include "ecc.h"
 #include "utils.h"
+#include "hash.h"
+#include "encoding.h"
 
 #include <iostream> // FIXME
 
@@ -36,45 +38,46 @@ ecc_type::ecc_type(const big_integer_type& value) : m_key(0)
     m_private_key = m_key->pkcs8_private_key();
     m_public_key = m_key->x509_subject_public_key();
 }
-/*
+
 ecc_type::ecc_type(const std::string& wif) : m_key(0)
 {        
-    byte_vector_type extended = utils::decode_base58v(wif);
-    byte_vector_type checksum(&extended[extended.size() - 4], 4);
-    byte_vector_type key(&extended[1], extended.size() - 1 - 4);
+    byte_vector_type extended = decode::base58v(wif);
+    byte_vector_type checksum(extended.end() - 4, extended.end());
+    byte_vector_type key(extended.begin() + 1, extended.end() - 1 - 4);
 
     // FIXME: Validate key        
 
-    Botan::DataSource_Memory ds(&key[0], key.size());
-    m_key = dynamic_cast<Botan::ECDSA_PrivateKey*>(Botan::PKCS8::load_key(ds, utils::random_number_generator(), ""));
+    //Botan::DataSource_Memory ds(&key[0], key.size());
+    //m_key = dynamic_cast<Botan::ECDSA_PrivateKey*>(Botan::PKCS8::load_key(ds, utils::random_number_generator(), ""));
+    //m_key = new Botan::ECDSA_PrivateKey(ai, key);
 
-    m_private_key = m_key->pkcs8_private_key();
-    m_public_key = m_key->x509_subject_public_key();
+    //m_private_key = m_key->pkcs8_private_key();
+    //m_public_key = m_key->x509_subject_public_key();
 }
-*/
+
 ecc_type::~ecc_type()
 {
     if(m_key)    
         delete m_key;    
 }
-/*
+
 std::string ecc_type::get_wallet_import_format() const
 {    
     byte_vector_type extended;
     extended.resize(m_private_key.size() + 1 + 4); // make room for 0x80 byte and the checksum
-    extended.copy(1, m_private_key, m_private_key.size());
-    extended[0] = 0x80;
+    extended.push_back(0x80);
+    extended.insert(extended.begin() + 1, m_private_key.begin(), m_private_key.end());
 
     byte_vector_type sha = hash::sha256(hash::sha256(extended));
 
-    byte_vector_type checksum(&sha[0], 4);
-    extended.copy(1 + m_private_key.size(), &checksum[0], 4);    
+    byte_vector_type checksum(sha.begin(), sha.begin() + 4);
+    extended.insert(extended.end() - 4, checksum.begin(), checksum.end());
 
     big_integer_type bit(&extended[0], extended.size());    
-    return utils::encode_base58(bit);
+    return encode::base58(bit);
 }
-*/
-byte_vector_type ecc_type::get_public_key() const
+
+std::vector<uint8_t> ecc_type::get_public_key() const
 {
     return m_public_key;
 }

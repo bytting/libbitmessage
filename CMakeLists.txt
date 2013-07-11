@@ -24,5 +24,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/Modules/)
 #set(LIBS ${LIBS} ${Botan_LIBRARIES})
 #target_link_libraries(${PROJECT_NAME} ${LIBS})
 
-include_directories(/usr/include/botan-1.10)
-target_link_libraries(${PROJECT_NAME} botan-1.10)
+include_directories(/usr/local/include/botan-1.11)
+target_link_libraries(${PROJECT_NAME} /usr/local/lib/libbotan-1.11.so)
+#target_link_libraries(${PROJECT_NAME} botan-1.11)

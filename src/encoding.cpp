@@ -170,7 +170,7 @@ byte_vector_type base58v(const std::string& encoded)
     }
 
     result.resize(bn.bytes());
-    bn.binary_encode(result);
+    bn.binary_encode(&result[0]);
 
     /*
     // Get bignum as little endian data

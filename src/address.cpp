@@ -72,17 +72,18 @@ void address_type::encode(uint64_t version, uint64_t stream, const byte_vector_t
 
     byte_vector_type r = ripe;
 
-    if(r[0] == 0x00 && r[1] == 0x00)    
-        r.copy(2, r, r.size() - 2);
+    if(r[0] == 0x00 && r[1] == 0x00)
+        r.assign(ripe.begin() + 2, ripe.end());
     else if(r[0] == 0x00)    
-        r.copy(1, r, r.size() - 1);
+        r.assign(ripe.begin() + 1, ripe.end());
 
     byte_vector_type v = encode::varint(version);
     v += encode::varint(stream);
     v += r;
 
-    byte_vector_type sha = hash::sha512(hash::sha512(v));
-    byte_vector_type checksum(&sha[0], 4);
+    byte_vector_type sha = hash::sha512(hash::sha512(v));    
+    byte_vector_type checksum;
+    checksum.assign(sha.begin(), sha.begin() + 4);
 
     v += checksum;    
     m_address = encode::base58(v);

@@ -33,12 +33,12 @@ public:
 
     ecc_type();
     ecc_type(const big_integer_type& value);
-    //ecc_type(const std::string& wif);
+    ecc_type(const std::string& wif);
     ~ecc_type();
 
-    //std::string get_wallet_import_format() const;
+    std::string get_wallet_import_format() const;
 
-    byte_vector_type get_public_key() const;
+    std::vector<uint8_t> get_public_key() const;
     byte_vector_type get_private_key() const;
     big_integer_type get_private_value() const;
 
@@ -46,12 +46,13 @@ public:
     std::string get_private_key_pem() const;
     std::string get_private_key_pem_encrypted(const std::string& password) const;
 
-    uint16_t get_curve_id() const;
+    uint16_t get_curve_id() const;    
 
 private:    
 
     Botan::ECDSA_PrivateKey* m_key;
-    byte_vector_type m_public_key;
+    //byte_vector_type m_public_key;
+    std::vector<uint8_t> m_public_key;
     byte_vector_type m_private_key;
 
     // secp224r1 : 713

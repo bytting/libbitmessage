@@ -86,7 +86,7 @@ static void test_base64()
     cout << "\n=== TEST BASE64 ===\n\n";
 
     string s = "This is a string"; // VGhpcyBpcyBhIHN0cmluZw==
-    bm::byte_vector_type v1((unsigned char*)&s.c_str()[0], s.length());
+    bm::byte_vector_type v1(s.begin(), s.end());
     string str = bm::encode::base64(v1);
     cout << "\"This is a string\" encoded: " << str << "\n";
     assert(str == "VGhpcyBpcyBhIHN0cmluZw==");
@@ -108,8 +108,8 @@ static void test_ecc_keys()
     /*string wif = ecc.get_wallet_import_format();
     cout << "ecc as wif:  " << wif << "\n";
     bm::ecc_type ecc2(wif);
-    cout << "ecc2 as wif: " << ecc2.get_wallet_import_format() << "\n\n";*/
-
+    cout << "ecc2 as wif: " << ecc2.get_wallet_import_format() << "\n\n";
+    */
     cout << "=== PEM encoded...\n";
     cout << ecc.get_private_key_pem() << "\n" << ecc.get_public_key_pem() << "\n";
 

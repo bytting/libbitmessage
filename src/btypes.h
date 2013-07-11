@@ -18,6 +18,7 @@
 #ifndef BM_BTYPES_H
 #define BM_BTYPES_H
 
+#include <vector>
 #include <botan/types.h>
 #include <botan/bigint.h>
 #include <botan/secmem.h>
@@ -46,7 +47,7 @@
 namespace bm {
 
 typedef Botan::byte byte_type;
-typedef Botan::SecureVector<byte_type> byte_vector_type;
+typedef Botan::secure_vector<byte_type> byte_vector_type;
 typedef Botan::OctetString octet_string_type;
 typedef Botan::BigInt big_integer_type;
 
