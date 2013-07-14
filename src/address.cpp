@@ -30,14 +30,19 @@ void address_type::generate_address()
     bool eighteen_byte_ripe = false;
     uint64_t address_version = 3, stream = 1;
 
-    ecc_type signing_keys;
+    ecc::private_key_type private_signing_key;
+    ecc::public_key_type public_signing_key;
+    ecc::create_key_pair(private_signing_key, public_signing_key);
+
     byte_vector_type ripe;
 
     while(true)
     {
-        ecc_type encryption_keys;
+        ecc::private_key_type private_encryption_key;
+        ecc::public_key_type public_encryption_key;
+        ecc::create_key_pair(private_encryption_key, public_encryption_key);
 
-        ripe = hash::ripemd160(hash::sha512(encryption_keys.get_private_key()));
+        ripe = hash::ripemd160(hash::sha512(public_encryption_key));
 
         if(eighteen_byte_ripe)
         {

@@ -31,6 +31,7 @@ byte_vector_type ripemd160(const std::string& data);
 byte_vector_type sha256(const byte_vector_type& data);
 byte_vector_type sha256(const std::string& data);
 byte_vector_type sha512(const byte_vector_type& data);
+byte_vector_type sha512(const std::vector<uint8_t>& data);
 byte_vector_type sha512(const std::string& data);
 byte_vector_type hmac_sha256(const byte_vector_type& data, const byte_vector_type& key);
 byte_vector_type hmac_sha512(const byte_vector_type& data, const byte_vector_type& key);

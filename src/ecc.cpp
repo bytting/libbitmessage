@@ -27,89 +27,34 @@
 
 namespace bm {
 
-ecc_type::ecc_type() : ecc_type((big_integer_type)0)
-{
-}
+namespace ecc {
 
-ecc_type::ecc_type(const big_integer_type& value) : m_key(0)
+void create_key_pair(private_key_type& privkey, public_key_type& pubkey)
 {
     Botan::EC_Group group("secp256k1");
-    m_key = new Botan::ECDSA_PrivateKey(utils::random_number_generator(), group, value);
-    m_private_key = m_key->pkcs8_private_key();
-    m_public_key = m_key->x509_subject_public_key();
+    Botan::ECDSA_PrivateKey key(utils::random_number_generator(), group);
+    privkey = Botan::PKCS8::BER_encode(key);
+    pubkey = Botan::X509::BER_encode(key);
 }
 
-ecc_type::ecc_type(const std::string& wif) : m_key(0)
-{        
-    byte_vector_type extended = decode::base58v(wif);
-    byte_vector_type checksum(extended.end() - 4, extended.end());
-    byte_vector_type key(extended.begin() + 1, extended.end() - 1 - 4);
-
-    // FIXME: Validate key        
-
-    //Botan::DataSource_Memory ds(&key[0], key.size());
-    //m_key = dynamic_cast<Botan::ECDSA_PrivateKey*>(Botan::PKCS8::load_key(ds, utils::random_number_generator(), ""));
-    //m_key = new Botan::ECDSA_PrivateKey(ai, key);
-
-    //m_private_key = m_key->pkcs8_private_key();
-    //m_public_key = m_key->x509_subject_public_key();
-}
-
-ecc_type::~ecc_type()
+std::string pem_encode_private_key_encrypted(const private_key_type& privkey, const std::string& password)
 {
-    if(m_key)    
-        delete m_key;    
+    Botan::DataSource_Memory mem(privkey);
+    std::auto_ptr<Botan::Private_Key> key(Botan::PKCS8::load_key(mem, utils::random_number_generator(), password));
+    return Botan::PKCS8::PEM_encode(*key);
 }
 
-std::string ecc_type::get_wallet_import_format() const
-{    
-    byte_vector_type extended;
-    extended.resize(m_private_key.size() + 1 + 4); // make room for 0x80 byte and the checksum
-    extended.push_back(0x80);
-    extended.insert(extended.begin() + 1, m_private_key.begin(), m_private_key.end());
-
-    byte_vector_type sha = hash::sha256(hash::sha256(extended));
-
-    byte_vector_type checksum(sha.begin(), sha.begin() + 4);
-    extended.insert(extended.end() - 4, checksum.begin(), checksum.end());
-
-    big_integer_type bit(&extended[0], extended.size());    
-    return encode::base58(bit);
-}
-
-std::vector<uint8_t> ecc_type::get_public_key() const
+std::string pem_encode_public_key(const public_key_type& pubkey)
 {
-    return m_public_key;
+    std::auto_ptr<Botan::Public_Key> key(Botan::X509::load_key(pubkey));
+    return Botan::X509::PEM_encode(*key);
 }
 
-byte_vector_type ecc_type::get_private_key() const
-{
-    return m_private_key;
-}
-
-big_integer_type ecc_type::get_private_value() const
-{
-    return m_key->private_value();
-}
-
-std::string ecc_type::get_public_key_pem() const
-{
-    return Botan::X509::PEM_encode(*m_key);
-}
-
-std::string ecc_type::get_private_key_pem() const
-{
-    return Botan::PKCS8::PEM_encode(*m_key);
-}
-
-std::string ecc_type::get_private_key_pem_encrypted(const std::string& password) const
-{
-    return Botan::PKCS8::PEM_encode(*m_key, utils::random_number_generator(), password.c_str());
-}
-
-uint16_t ecc_type::get_curve_id() const
+uint16_t get_curve_id()
 {
     return 714;
 }
+
+} // namespace ecc
 
 } // namespace bm

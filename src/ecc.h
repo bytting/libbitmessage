@@ -27,38 +27,19 @@
 
 namespace bm {
 
-class ecc_type
-{        
-public:
+namespace ecc {
 
-    ecc_type();
-    ecc_type(const big_integer_type& value);
-    ecc_type(const std::string& wif);
-    ~ecc_type();
+typedef byte_vector_type private_key_type;
+typedef std::vector<uint8_t> public_key_type;
 
-    std::string get_wallet_import_format() const;
+void create_key_pair(private_key_type& privkey, public_key_type& pubkey);
 
-    std::vector<uint8_t> get_public_key() const;
-    byte_vector_type get_private_key() const;
-    big_integer_type get_private_value() const;
+std::string pem_encode_private_key_encrypted(const private_key_type& privkey, const std::string& password);
+std::string pem_encode_public_key(const public_key_type& pubkey);
 
-    std::string get_public_key_pem() const;
-    std::string get_private_key_pem() const;
-    std::string get_private_key_pem_encrypted(const std::string& password) const;
+uint16_t get_curve_id();
 
-    uint16_t get_curve_id() const;    
-
-private:    
-
-    Botan::ECDSA_PrivateKey* m_key;
-    //byte_vector_type m_public_key;
-    std::vector<uint8_t> m_public_key;
-    byte_vector_type m_private_key;
-
-    // secp224r1 : 713
-    // secp256k1 : 714
-    // sect283r1 : 730
-};
+} // namespace ecc
 
 } // namespace bm
 

@@ -32,7 +32,7 @@ static void test_encode_hex()
     cout << "\n=== OK ===\n" << endl;
 }
 
-static void test_serialize_varint()
+static void test_encode_varint()
 {
     cout << "\n=== TEST ENCODE VARINT ===\n\n";
 
@@ -100,21 +100,16 @@ static void test_ecc_keys()
 {
     cout << "\n=== TEST ECC ===\n\n";
 
-    bm::ecc_type ecc;
+    bm::ecc::private_key_type private_key;
+    bm::ecc::public_key_type public_key;
+    bm::ecc::create_key_pair(private_key, public_key);
 
-    cout << "hex encoded private key: " << bm::encode::hex(ecc.get_private_key()) << "\n"
-         << "hex encoded public key: " << bm::encode::hex(ecc.get_public_key()) << "\n\n";
+    cout << "base64 encoded private key: " << bm::encode::base64(private_key) << "\n\n"
+         << "base64 encoded public key: " << bm::encode::base64(public_key) << "\n\n\n";
 
-    /*string wif = ecc.get_wallet_import_format();
-    cout << "ecc as wif:  " << wif << "\n";
-    bm::ecc_type ecc2(wif);
-    cout << "ecc2 as wif: " << ecc2.get_wallet_import_format() << "\n\n";
-    */
     cout << "=== PEM encoded...\n";
-    cout << ecc.get_private_key_pem() << "\n" << ecc.get_public_key_pem() << "\n";
-
-    cout << "=== PEM encoded encrypted...\n";
-    cout << ecc.get_private_key_pem_encrypted("qwerty");
+    //cout << bm::ecc::pem_encode_private_key_encrypted(private_key, "qwerty") << "\n\n"; // FIXME
+    cout << bm::ecc::pem_encode_public_key(public_key) << "\n\n";
 
     cout << "\n=== OK ===" << endl;
 }
@@ -203,7 +198,7 @@ static void test_addresses()
     bm_addr.generate_address();
 
     std::string addr = bm_addr.get_address_with_prefix();
-    cout << "Random address: " << addr << "\n";    
+    cout << "Random address: " << addr << "\n";
 
     cout << "\n=== OK ===\n" << endl;
 }
@@ -211,7 +206,7 @@ static void test_addresses()
 void run_unit_tests()
 {
     test_encode_hex();
-    test_serialize_varint();
+    test_encode_varint();
     test_base58();
     test_base64();
     test_ecc_keys();

@@ -86,6 +86,13 @@ std::string base64(const byte_vector_type& data)
     return pipe.read_all_as_string();
 }
 
+std::string base64(const std::vector<uint8_t>& data)
+{
+    Botan::Pipe pipe(new Botan::Base64_Encoder());
+    pipe.process_msg(data);
+    return pipe.read_all_as_string();
+}
+
 byte_vector_type varint(uint64_t integer)
 {
     byte_vector_type v;
@@ -203,7 +210,7 @@ byte_vector_type base64(const std::string& encoded)
 uint64_t varint(const byte_vector_type& data, int &nbytes)
 {
     if (data.size() == 0)
-        throw size_exception(__FILE__, __LINE__, "decode_varint: data buffer is empty");
+        throw size_exception(__FILE__, __LINE__, "decode::varint: data buffer is empty");
 
     uint8_t first_byte;
     uint64_t result;
@@ -221,24 +228,21 @@ uint64_t varint(const byte_vector_type& data, int &nbytes)
         nbytes = 3;
         uint16_t ui16;
         memcpy(&ui16, &data[1], 2);
-        ui16 = big_to_host_16(ui16);
-        result = ui16;
+        result = big_to_host_16(ui16);
     }
     else if (first_byte == 254)
     {
         nbytes = 5;
         uint32_t ui32;
         memcpy(&ui32, &data[1], 4);
-        ui32 = big_to_host_32(ui32);
-        result = ui32;
+        result = big_to_host_32(ui32);
     }
     else
     {
         nbytes = 9;
         uint64_t ui64;
         memcpy(&ui64, &data[1], 8);
-        ui64 = big_to_host_64(ui64);
-        result = ui64;
+        result = big_to_host_64(ui64);
     }
 
     return result;

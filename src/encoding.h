@@ -33,6 +33,7 @@ std::string base58(const big_integer_type& src);
 std::string base58(const byte_vector_type& src);
 
 std::string base64(const byte_vector_type& data);
+std::string base64(const std::vector<uint8_t>& data);
 
 byte_vector_type varint(uint64_t integer);
 

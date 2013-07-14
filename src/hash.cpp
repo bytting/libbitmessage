@@ -85,6 +85,11 @@ byte_vector_type sha512(const byte_vector_type& data)
     return internal::hash<byte_vector_type, Botan::SHA_512>(data);
 }
 
+byte_vector_type sha512(const std::vector<uint8_t>& data)
+{
+    return internal::hash<std::vector<uint8_t>, Botan::SHA_512>(data);
+}
+
 byte_vector_type sha512(const std::string& data)
 {
     return internal::hash<std::string, Botan::SHA_512>(data);
