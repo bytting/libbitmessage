@@ -21,6 +21,7 @@
 #include <botan/filters.h>
 #include "encoding.h"
 #include "exceptions.h"
+#include "hash.h"
 
 namespace bm {
 
@@ -125,6 +126,21 @@ byte_vector_type varint(uint64_t integer)
     }
 
     return v;
+}
+
+std::string wif(byte_vector_type& key)
+{
+    byte_vector_type extended;
+    extended.push_back(0x80);
+    for(int i=0; i<key.size(); i++)
+        extended.push_back(key[i]);
+
+    byte_vector_type sha = hash::sha256(hash::sha256(extended));
+    for(int i=0; i<4; i++)
+        extended.push_back(sha[i]);
+
+    big_integer_type bit(&extended[0], extended.size());
+    return encode::base58(bit);
 }
 
 } // namespace encode

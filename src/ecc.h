@@ -21,8 +21,6 @@
 
 #include <vector>
 #include <string>
-#include <botan/botan.h>
-#include <botan/ecdsa.h>
 #include "btypes.h"
 
 namespace bm {

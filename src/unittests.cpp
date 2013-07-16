@@ -107,9 +107,20 @@ static void test_ecc_keys()
     cout << "base64 encoded private key: " << bm::encode::base64(private_key) << "\n\n"
          << "base64 encoded public key: " << bm::encode::base64(public_key) << "\n\n\n";
 
-    cout << "=== PEM encoded...\n";
+    //cout << "=== PEM encoded...\n";
     //cout << bm::ecc::pem_encode_private_key_encrypted(private_key, "qwerty") << "\n\n"; // FIXME
-    cout << bm::ecc::pem_encode_public_key(public_key) << "\n\n";
+    //cout << bm::ecc::pem_encode_public_key(public_key) << "\n\n";
+
+    cout << "hex encoded private key: " << bm::encode::hex(private_key) << "\n\n";
+
+    cout << "base58 encoded private key: " << bm::encode::base58(private_key) << "\n\n";
+
+    cout << "wif encoded private key: " << bm::encode::wif(private_key) << "\n\n";
+
+    cout << "hex encoded public key: " << bm::encode::hex(public_key) << "\n\n";
+
+    cout << "private key size: " << private_key.size() << "\n\n";
+    cout << "public key size: " << public_key.size() << "\n\n";
 
     cout << "\n=== OK ===" << endl;
 }

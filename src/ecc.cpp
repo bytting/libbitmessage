@@ -16,8 +16,11 @@
 // Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
+#include <memory>
 #include <botan/ec_group.h>
 #include <botan/alg_id.h>
+//#include <botan/botan.h>
+#include <botan/ecdsa.h>
 #include "ecc.h"
 #include "utils.h"
 #include "hash.h"
@@ -33,8 +36,10 @@ void create_key_pair(private_key_type& privkey, public_key_type& pubkey)
 {
     Botan::EC_Group group("secp256k1");
     Botan::ECDSA_PrivateKey key(utils::random_number_generator(), group);
-    privkey = Botan::PKCS8::BER_encode(key);
-    pubkey = Botan::X509::BER_encode(key);
+    //privkey = Botan::PKCS8::BER_encode(key);
+    //pubkey = Botan::X509::BER_encode(key);    
+    privkey = key.pkcs8_private_key();
+    pubkey = key.x509_subject_public_key();
 }
 
 std::string pem_encode_private_key_encrypted(const private_key_type& privkey, const std::string& password)
