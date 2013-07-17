@@ -43,7 +43,7 @@ std::string hex(const SecureVector& v)
 std::string hex(const ByteVector& v)
 {
     Botan::Pipe pipe(new Botan::Hex_Encoder());
-    pipe.process_msg(&v[0], v.size());
+    pipe.process_msg(v.data(), v.size());
     return pipe.read_all_as_string();
 }
 
@@ -76,7 +76,7 @@ std::string base58(const BigInteger& num)
 
 std::string base58(const SecureVector& src)
 {
-    BigInteger bit(&src[0], src.size());
+    BigInteger bit(src.data(), src.size());
     return base58(bit);
 }
 
@@ -138,8 +138,9 @@ std::string wif(const SecureVector& key)
     SecureVector checksum = hash::sha256(hash::sha256(extended));
     std::copy(checksum.begin(), checksum.begin() + 4, std::back_inserter(extended));
 
-    BigInteger bit(extended.data(), extended.size());
-    return encode::base58(bit);
+    //BigInteger bit(extended.data(), extended.size());
+    //return encode::base58(bit);
+    return encode::base58(extended);
 }
 
 } // namespace encode
@@ -153,10 +154,10 @@ SecureVector hex(const std::string& encoded)
     return pipe.read_all();
 }
 
-BigInteger base58(const std::string& encoded)
+BigInteger base58i(const std::string& encoded)
 {
     if(encoded.empty())
-        throw size_exception(__FILE__, __LINE__, "decode_base58: encoded string is empty");
+        throw SizeException(__FILE__, __FUNCTION__, __LINE__, "Encoded string is empty");
 
     BigInteger num = 0;
     uint32_t base = 58;
@@ -166,7 +167,7 @@ BigInteger base58(const std::string& encoded)
     {
         uint64_t pos = internal::BASE58.find_first_of(*it);
         if(it == internal::BASE58.end())
-            throw range_exception(__FILE__, __LINE__, "decode_base58: encoded character not in base58");
+            throw RangeException(__FILE__, __FUNCTION__, __LINE__, "Encoded character not in base58");
 
         num += pos * (uint64_t)std::pow((double)base, (double)exp);
     }
@@ -174,7 +175,7 @@ BigInteger base58(const std::string& encoded)
     return num;
 }
 
-SecureVector base58v(const std::string& encoded)
+SecureVector base58(const std::string& encoded)
 {    
     SecureVector result;
 
@@ -185,14 +186,14 @@ SecureVector base58v(const std::string& encoded)
     {
         uint64_t pos = internal::BASE58.find_first_of(*it);
         if(it == internal::BASE58.end())
-            throw range_exception(__FILE__, __LINE__, "decode_base58v: encoded character not in base58");
+            throw RangeException(__FILE__, __FUNCTION__, __LINE__, "Encoded character not in base58");
 
         bn = bn * base;
         bn += pos;
     }
 
     result.resize(bn.bytes());
-    bn.binary_encode(&result[0]);
+    bn.binary_encode(result.data());
 
     /*
     // Get bignum as little endian data
@@ -225,7 +226,7 @@ SecureVector base64(const std::string& encoded)
 uint64_t varint(const SecureVector& data, int &nbytes)
 {
     if (data.size() == 0)
-        throw size_exception(__FILE__, __LINE__, "decode::varint: data buffer is empty");
+        throw SizeException(__FILE__, __FUNCTION__, __LINE__, "Data buffer is empty");
 
     uint8_t first_byte;
     uint64_t result;
@@ -260,6 +261,13 @@ uint64_t varint(const SecureVector& data, int &nbytes)
         result = big_to_host_64(ui64);
     }
 
+    return result;
+}
+
+SecureVector wif(const std::string& encoded)
+{
+    SecureVector result, decoded = decode::base58(encoded);
+    std::copy(decoded.begin() + 1, decoded.end() - 4, std::back_inserter(result));
     return result;
 }
 

@@ -55,7 +55,7 @@ OctetString pbkdf2_hmac_hash(const std::string& password, const SecureVector& sa
     T hashObject;
     Botan::HMAC hmac(&hashObject);
     Botan::PKCS5_PBKDF2 pbkdf2(&hmac);
-    return pbkdf2.derive_key(desiredKeyLength, password, &salt[0], salt.size(), iterations);
+    return pbkdf2.derive_key(desiredKeyLength, password, salt.data(), salt.size(), iterations);
 }
 
 } // namespace internal

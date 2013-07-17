@@ -45,12 +45,14 @@ namespace decode {
 
 SecureVector hex(const std::string& encoded);
 
-BigInteger base58(const std::string& encoded);
-SecureVector base58v(const std::string& encoded);
+BigInteger base58i(const std::string& encoded);
+SecureVector base58(const std::string& encoded);
 
 SecureVector base64(const std::string& encoded);
 
 uint64_t varint(const SecureVector& data, int &nbytes);
+
+SecureVector wif(const std::string& encoded);
 
 } // namespace decode
 

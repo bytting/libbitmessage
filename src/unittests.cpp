@@ -75,7 +75,7 @@ static void test_base58()
     bm::BigInteger bi1(1234567890);
     string s = bm::encode::base58(bi1);
     cout << "1234567890 encoded: " << s << "\n";
-    bm::BigInteger bi2 = bm::decode::base58(s);
+    bm::BigInteger bi2 = bm::decode::base58i(s);
     assert(bi1 == bi2);
 
     cout << "\n=== OK ===\n" << endl;
@@ -115,7 +115,11 @@ static void test_ecc_keys()
     cout << "hex encoded private key: " << bm::encode::hex(keys.private_key()) << "\n\n";
     cout << "hex encoded public key: " << bm::encode::hex(keys.public_key()) << "\n\n";
 
-    cout << "wif encoded private key: " << bm::encode::wif(keys.private_key()) << "\n\n";
+    string wif = bm::encode::wif(keys.private_key());
+    cout << "wif encoded private key: " << wif << "\n";
+    bm::SecureVector pk = bm::decode::wif(wif);
+    cout << "wif decoded private key: " << bm::encode::hex(pk) << "\n";
+    assert(keys.private_key() == pk);
 
     cout << "\n=== OK ===" << endl;
 }
@@ -221,5 +225,5 @@ void run_unit_tests()
     test_sha512();
     test_hmac_sha256();
     test_hmac_sha512();    
-    test_addresses();
+    test_addresses();    
 }

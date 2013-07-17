@@ -69,7 +69,7 @@ std::string Address::get_address_with_prefix() const
 void Address::encode_address(uint64_t version, uint64_t stream, const SecureVector& ripe)
 {
     if(ripe.size() != 20)
-        throw size_exception(__FILE__, __LINE__, "Address::encode_address: The ripe length is not 20");
+        throw SizeException(__FILE__, __FUNCTION__, __LINE__, "The ripe length is not 20");
 
     SecureVector ripex;
 

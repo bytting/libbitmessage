@@ -30,11 +30,11 @@ int main(int argc, char* argv[])
 
         Botan::LibraryInitializer init;
 
-        run_unit_tests();
+        run_unit_tests();               
     }
-    catch(bm::base_exception& bmex)
+    catch(bm::BaseException& bmex)
     {
-        std::cerr << bmex.file() << " : " << bmex.line() << " : " << bmex.what() << std::endl;
+        std::cerr << bmex.file() << " [" << bmex.line() << "]: " << bmex.function() << ": " << bmex.what() << std::endl;
     }
     catch(std::exception& stdex)
     {

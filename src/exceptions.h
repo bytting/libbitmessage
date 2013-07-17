@@ -22,41 +22,44 @@
 
 namespace bm {
 
-class base_exception : public std::exception
+class BaseException : public std::exception
 {
 public:
 
-    explicit base_exception(const char* file, int line, const char* message) throw()
-        : m_file(file), m_message(message), m_line(line) {}
+    explicit BaseException(const char* file, const char* function, int line, const char* message) throw()
+        : m_file(file), m_function(function), m_message(message), m_line(line) {}
 
-    virtual ~base_exception() throw() {}
+    virtual ~BaseException() throw() {}
 
     virtual const char* file() const throw() { return m_file; }
+    virtual const char* function() const throw() { return m_function; }
     virtual int line() const throw() { return m_line; }
     virtual const char* what() const throw() { return m_message; }
 
 private:
 
-    const char *m_file, *m_message;
+    const char *m_file, *m_function, *m_message;
     int m_line;
 };
 
-class range_exception : public base_exception
+class RangeException : public BaseException
 {
 public:
 
-    explicit range_exception(const char* file, int line, const char* message) throw()
-        : base_exception(file, line, message) {}
-    ~range_exception() throw() {}
+    explicit RangeException(const char* file, const char* function, int line, const char* message) throw()
+        : BaseException(file, function, line, message) {}
+
+    ~RangeException() throw() {}
 };
 
-class size_exception : public base_exception
+class SizeException : public BaseException
 {
 public:
 
-    explicit size_exception(const char* file, int line, const char* message) throw()
-        : base_exception(file, line, message) {}
-    ~size_exception() throw() {}
+    explicit SizeException(const char* file, const char* function, int line, const char* message) throw()
+        : BaseException(file, function, line, message) {}
+
+    ~SizeException() throw() {}
 };
 
 } // namespace bm
