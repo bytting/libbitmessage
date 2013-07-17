@@ -15,8 +15,8 @@
 // CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#ifndef BM_ENCODING_H
-#define BM_ENCODING_H
+#ifndef BM_ENCODE_H
+#define BM_ENCODE_H
 
 #include <stdint.h>
 #include <string>
@@ -40,21 +40,6 @@ SecureVector varint(uint64_t integer);
 std::string wif(const SecureVector& key);
 
 } // namespace encode
-
-namespace decode {
-
-SecureVector hex(const std::string& encoded);
-
-BigInteger base58i(const std::string& encoded);
-SecureVector base58(const std::string& encoded);
-
-SecureVector base64(const std::string& encoded);
-
-uint64_t varint(const SecureVector& data, int &nbytes);
-
-SecureVector wif(const std::string& encoded);
-
-} // namespace decode
 
 } // namespace bm
 

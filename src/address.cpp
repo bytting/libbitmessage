@@ -16,9 +16,11 @@
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
 #include <stdint.h>
+#include <algorithm>
+#include <iterator>
 #include "address.h"
 #include "exceptions.h"
-#include "encoding.h"
+#include "encode.h"
 #include "hash.h"
 #include "ecc.h"
 

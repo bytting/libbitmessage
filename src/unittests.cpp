@@ -4,10 +4,12 @@
 #include <cassert>
 #include <ctime>
 #include "utils.h"
-#include "encoding.h"
+#include "encode.h"
+#include "decode.h"
 #include "ecc.h"
 #include "hash.h"
 #include "address.h"
+#include "check.h"
 #include "bitmessage.h"
 #include "unittests.h"
 
@@ -120,6 +122,7 @@ static void test_ecc_keys()
     bm::SecureVector pk = bm::decode::wif(wif);
     cout << "wif decoded private key: " << bm::encode::hex(pk) << "\n";
     assert(keys.private_key() == pk);
+    assert(bm::check::wif(wif));
 
     cout << "\n=== OK ===" << endl;
 }

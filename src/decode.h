@@ -13,29 +13,32 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
-// Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#ifndef BM_UTILS_H
-#define BM_UTILS_H
+#ifndef BM_DECODE_H
+#define BM_DECODE_H
 
 #include <stdint.h>
 #include <string>
-#include <botan/auto_rng.h>
 #include "btypes.h"
 
 namespace bm {
 
-namespace utils {
+namespace decode {
 
-extern const std::string BASE58;
+SecureVector hex(const std::string& encoded);
 
-Botan::AutoSeeded_RNG& random_number_generator();
-SecureVector random_bytes(uint32_t count);
-uint32_t seconds_since_epoc();
+BigInteger base58i(const std::string& encoded);
+SecureVector base58(const std::string& encoded);
 
-} //namespace utils
+SecureVector base64(const std::string& encoded);
 
-} //namespace bm
+uint64_t varint(const SecureVector& data, int &nbytes);
+
+SecureVector wif(const std::string& encoded);
+
+} // namespace decode
+
+} // namespace bm
 
 #endif

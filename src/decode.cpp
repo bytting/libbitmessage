@@ -15,135 +15,18 @@
 // CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
+#include <algorithm>
+#include <iterator>
 #include <cmath>
 #include <sstream>
 #include <botan/pipe.h>
 #include <botan/filters.h>
-#include "encoding.h"
+#include "decode.h"
 #include "exceptions.h"
 #include "hash.h"
+#include "utils.h"
 
 namespace bm {
-
-namespace internal {
-
-const std::string BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-
-} // namespace internal
-
-namespace encode {
-
-std::string hex(const SecureVector& v)
-{
-    Botan::Pipe pipe(new Botan::Hex_Encoder());
-    pipe.process_msg(v);
-    return pipe.read_all_as_string();
-}
-
-std::string hex(const ByteVector& v)
-{
-    Botan::Pipe pipe(new Botan::Hex_Encoder());
-    pipe.process_msg(v.data(), v.size());
-    return pipe.read_all_as_string();
-}
-
-std::string base58(const BigInteger& num)
-{
-    std::stringstream ss;
-
-    if(num == 0)
-    {
-        ss << internal::BASE58[0];
-        return ss.str();
-    }
-
-    BigInteger n = num;
-    uint32_t r, base = 58;
-
-    while (n > 0)
-    {
-        r = n % base;
-        n = n / base;
-
-        ss << internal::BASE58[r];
-    }
-
-    std::string output = ss.str();
-    std::reverse(output.begin(), output.end());
-
-    return output;
-}
-
-std::string base58(const SecureVector& src)
-{
-    BigInteger bit(src.data(), src.size());
-    return base58(bit);
-}
-
-std::string base64(const SecureVector& data)
-{
-    Botan::Pipe pipe(new Botan::Base64_Encoder());
-    pipe.process_msg(data);
-    return pipe.read_all_as_string();
-}
-
-std::string base64(const ByteVector& data)
-{
-    Botan::Pipe pipe(new Botan::Base64_Encoder());
-    pipe.process_msg(data);
-    return pipe.read_all_as_string();
-}
-
-SecureVector varint(uint64_t integer)
-{
-    SecureVector v;
-
-    if (integer < 253)
-    {
-        v.resize(1);
-        v[0] = (uint8_t)integer;
-    }
-    else if (integer >= 253 && integer < 65536)
-    {
-        v.resize(3);
-        v[0] = (uint8_t)253;
-        uint16_t ui16 = host_to_big_16((uint16_t)integer);
-        memcpy(&v[1], &ui16, 2);
-    }
-    else if (integer >= 65536 && integer < 4294967296)
-    {
-        v.resize(5);
-        v[0] = (uint8_t)254;
-        uint32_t ui32 = host_to_big_32((uint32_t)integer);
-        memcpy(&v[1], &ui32, 4);
-    }
-    else
-    {
-        v.resize(9);
-        v[0] = (uint8_t)255;
-        uint64_t ui64 = host_to_big_64((uint64_t)integer);
-        memcpy(&v[1], &ui64, 8);
-    }
-
-    return v;
-}
-
-std::string wif(const SecureVector& key)
-{
-    SecureVector extended;
-
-    extended.push_back(0x80);
-    std::copy(key.begin(), key.end(), std::back_inserter(extended));
-
-    SecureVector checksum = hash::sha256(hash::sha256(extended));
-    std::copy(checksum.begin(), checksum.begin() + 4, std::back_inserter(extended));
-
-    //BigInteger bit(extended.data(), extended.size());
-    //return encode::base58(bit);
-    return encode::base58(extended);
-}
-
-} // namespace encode
 
 namespace decode {
 
@@ -165,8 +48,8 @@ BigInteger base58i(const std::string& encoded)
 
     for(std::string::const_iterator it = encoded.begin(); it != encoded.end(); ++it, exp--)
     {
-        uint64_t pos = internal::BASE58.find_first_of(*it);
-        if(it == internal::BASE58.end())
+        uint64_t pos = utils::BASE58.find_first_of(*it);
+        if(it == utils::BASE58.end())
             throw RangeException(__FILE__, __FUNCTION__, __LINE__, "Encoded character not in base58");
 
         num += pos * (uint64_t)std::pow((double)base, (double)exp);
@@ -184,8 +67,8 @@ SecureVector base58(const std::string& encoded)
 
     for (std::string::const_iterator it = encoded.begin(); it != encoded.end(); ++it)
     {
-        uint64_t pos = internal::BASE58.find_first_of(*it);
-        if(it == internal::BASE58.end())
+        uint64_t pos = utils::BASE58.find_first_of(*it);
+        if(it == utils::BASE58.end())
             throw RangeException(__FILE__, __FUNCTION__, __LINE__, "Encoded character not in base58");
 
         bn = bn * base;
@@ -266,6 +149,9 @@ uint64_t varint(const SecureVector& data, int &nbytes)
 
 SecureVector wif(const std::string& encoded)
 {
+    if(encoded.length() < 6)
+        throw SizeException(__FILE__, __FUNCTION__, __LINE__, "Encoded WIF is too short");
+
     SecureVector result, decoded = decode::base58(encoded);
     std::copy(decoded.begin() + 1, decoded.end() - 4, std::back_inserter(result));
     return result;

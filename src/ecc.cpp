@@ -22,7 +22,7 @@
 #include "ecc.h"
 #include "utils.h"
 #include "hash.h"
-#include "encoding.h"
+#include "encode.h"
 
 namespace bm {
 
