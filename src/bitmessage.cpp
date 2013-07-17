@@ -16,6 +16,7 @@
 // Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
+#include <cstring>
 #include "exceptions.h"
 #include "hash.h"
 #include "bitmessage.h"
@@ -120,7 +121,7 @@ bool checkProofOfWork(
 	unsigned long long nonce;
 
 	// extract the nonce value from the first 8 bytes
-	memcpy((void*)&nonce,(void*)payload_str,8);
+    std::memcpy((void*)&nonce,(void*)payload_str,8);
 
 	unsigned long long target = 18446744073709551615ULL /
 		((payload.length()+payloadLengthExtraBytes) *

@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <cstring>
 #include <cmath>
 #include <sstream>
 #include <botan/pipe.h>
@@ -126,21 +127,21 @@ uint64_t varint(const SecureVector& data, int &nbytes)
     {
         nbytes = 3;
         uint16_t ui16;
-        memcpy(&ui16, &data[1], 2);
+        std::memcpy(&ui16, &data[1], 2);
         result = big_to_host_16(ui16);
     }
     else if (first_byte == 254)
     {
         nbytes = 5;
         uint32_t ui32;
-        memcpy(&ui32, &data[1], 4);
+        std::memcpy(&ui32, &data[1], 4);
         result = big_to_host_32(ui32);
     }
     else
     {
         nbytes = 9;
         uint64_t ui64;
-        memcpy(&ui64, &data[1], 8);
+        std::memcpy(&ui64, &data[1], 8);
         result = big_to_host_64(ui64);
     }
 

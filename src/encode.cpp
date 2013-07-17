@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <cstring>
 #include <cmath>
 #include <sstream>
 #include <botan/pipe.h>
@@ -105,21 +106,21 @@ SecureVector varint(uint64_t integer)
         v.resize(3);
         v[0] = (uint8_t)253;
         uint16_t ui16 = host_to_big_16((uint16_t)integer);
-        memcpy(&v[1], &ui16, 2);
+        std::memcpy(&v[1], &ui16, 2);
     }
     else if (integer >= 65536 && integer < 4294967296)
     {
         v.resize(5);
         v[0] = (uint8_t)254;
         uint32_t ui32 = host_to_big_32((uint32_t)integer);
-        memcpy(&v[1], &ui32, 4);
+        std::memcpy(&v[1], &ui32, 4);
     }
     else
     {
         v.resize(9);
         v[0] = (uint8_t)255;
         uint64_t ui64 = host_to_big_64((uint64_t)integer);
-        memcpy(&v[1], &ui64, 8);
+        std::memcpy(&v[1], &ui64, 8);
     }
 
     return v;
