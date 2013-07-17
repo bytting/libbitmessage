@@ -25,9 +25,8 @@
 namespace bm {
 
 void Address::generate_address(uint64_t address_version_number, uint64_t stream_number)
-{
-    // FIXME: set these correctly
-    bool eighteen_byte_ripe = false;    
+{    
+    bool eighteen_byte_ripe = false; // FIXME: set this somewhere
 
     ECC sign_keys, encrypt_keys;
     sign_keys.generate_key_pair();
@@ -72,7 +71,7 @@ std::string Address::get_address_with_prefix() const
 void Address::encode_address(uint64_t version, uint64_t stream, const SecureVector& ripe)
 {
     if(ripe.size() != 20)
-        throw size_exception(__FILE__, __LINE__, "address_type::encode: The ripe length is not 20");
+        throw size_exception(__FILE__, __LINE__, "Address::encode_address: The ripe length is not 20");
 
     SecureVector ripex;
 
