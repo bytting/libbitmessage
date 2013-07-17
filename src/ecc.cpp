@@ -41,7 +41,7 @@ void ECC::generate_key_pair()
     m_key = new Botan::ECDSA_PrivateKey(utils::random_number_generator(), m_group);
     Botan::ECDSA_PublicKey pub(m_group, m_key->public_point());
 
-    big_integer_type bit = m_key->private_value();
+    BigInteger bit = m_key->private_value();
     m_private_key_bytes.resize(bit.bytes());
     bit.binary_encode(m_private_key_bytes.data());
 
@@ -51,17 +51,17 @@ void ECC::generate_key_pair()
     bit.binary_encode(m_public_key_bytes.data());
 }
 
-const byte_vector_type& ECC::private_key() const
+const SecureVector& ECC::private_key() const
 {
     return m_private_key_bytes;
 }
 
-const std::vector<uint8_t>& ECC::public_key() const
+const ByteVector& ECC::public_key() const
 {
     return m_public_key_bytes;
 }
 
-byte_vector_type ECC::PKCS8_BER()
+SecureVector ECC::PKCS8_BER()
 {
     return Botan::PKCS8::BER_encode(*m_key);
 }
@@ -76,7 +76,7 @@ std::string ECC::PKCS8_PEM(const std::string& password)
     return Botan::PKCS8::PEM_encode(*m_key, utils::random_number_generator(), password);
 }
 
-std::vector<uint8_t> ECC::X509_BER()
+ByteVector ECC::X509_BER()
 {
     return Botan::X509::BER_encode(*m_key);
 }

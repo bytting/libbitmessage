@@ -46,10 +46,11 @@
 
 namespace bm {
 
-typedef Botan::byte byte_type;
-typedef Botan::secure_vector<byte_type> byte_vector_type;
-typedef Botan::OctetString octet_string_type;
-typedef Botan::BigInt big_integer_type;
+typedef Botan::byte Byte;
+typedef Botan::secure_vector<Byte> SecureVector;
+typedef std::vector<Byte> ByteVector;
+typedef Botan::OctetString OctetString;
+typedef Botan::BigInt BigInteger;
 
 } // namespace bm
 

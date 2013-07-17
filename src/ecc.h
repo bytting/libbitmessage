@@ -36,13 +36,13 @@ public:
 
     void generate_key_pair();
 
-    const byte_vector_type& private_key() const;
-    const std::vector<uint8_t>& public_key() const;
+    const SecureVector& private_key() const;
+    const ByteVector& public_key() const;
 
-    byte_vector_type PKCS8_BER();
+    SecureVector PKCS8_BER();
     std::string PKCS8_PEM();
     std::string PKCS8_PEM(const std::string& password);
-    std::vector<uint8_t> X509_BER();
+    ByteVector X509_BER();
     std::string X509_PEM();
 
     void clear();
@@ -53,8 +53,8 @@ private:
 
     const Botan::EC_Group m_group;
     Botan::ECDSA_PrivateKey* m_key;
-    byte_vector_type m_private_key_bytes;
-    std::vector<uint8_t> m_public_key_bytes;
+    SecureVector m_private_key_bytes;
+    ByteVector m_public_key_bytes;
 };
 
 } // namespace bm

@@ -30,9 +30,9 @@ namespace bm {
 //pubkey bitfield
 //#define BM_PUBKEY_DOES_ACK 31 // FIXME: what is this
 
-byte_vector_type calculateInventoryHash(const byte_vector_type& data);
+SecureVector calculateInventoryHash(const SecureVector& data);
 
-uint64_t getProofOfWorkTrialValue(uint64_t nonce, const byte_vector_type& initialHash);
+uint64_t getProofOfWorkTrialValue(uint64_t nonce, const SecureVector& initialHash);
 
 std::string proofOfWork(
         uint32_t streamNumber,

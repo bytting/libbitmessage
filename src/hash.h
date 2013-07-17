@@ -26,17 +26,17 @@ namespace bm {
 
 namespace hash {
 
-byte_vector_type ripemd160(const byte_vector_type& data);
-byte_vector_type ripemd160(const std::string& data);
-byte_vector_type sha256(const byte_vector_type& data);
-byte_vector_type sha256(const std::string& data);
-byte_vector_type sha512(const byte_vector_type& data);
-byte_vector_type sha512(const std::vector<uint8_t>& data);
-byte_vector_type sha512(const std::string& data);
-byte_vector_type hmac_sha256(const byte_vector_type& data, const byte_vector_type& key);
-byte_vector_type hmac_sha512(const byte_vector_type& data, const byte_vector_type& key);
-octet_string_type pbkdf2_hmac_sha256(const std::string& password, const byte_vector_type& salt, int iterations = 10000);
-octet_string_type pbkdf2_hmac_sha512(const std::string& password, const byte_vector_type& salt, int iterations = 10000);
+SecureVector ripemd160(const SecureVector& data);
+SecureVector ripemd160(const std::string& data);
+SecureVector sha256(const SecureVector& data);
+SecureVector sha256(const std::string& data);
+SecureVector sha512(const SecureVector& data);
+SecureVector sha512(const ByteVector& data);
+SecureVector sha512(const std::string& data);
+SecureVector hmac_sha256(const SecureVector& data, const SecureVector& key);
+SecureVector hmac_sha512(const SecureVector& data, const SecureVector& key);
+OctetString pbkdf2_hmac_sha256(const std::string& password, const SecureVector& salt, int iterations = 10000);
+OctetString pbkdf2_hmac_sha512(const std::string& password, const SecureVector& salt, int iterations = 10000);
 
 } // namespace hash
 

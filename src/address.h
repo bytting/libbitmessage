@@ -23,14 +23,14 @@
 
 namespace bm {
 
-class address_type
+class Address
 {
 public:
 
-    address_type() {}
-    ~address_type() {}
+    Address() {}
+    ~Address() {}
 
-    void generate_address();
+    void generate_address(uint64_t address_version_number, uint64_t stream_number);
 
     std::string get_address() const;
     std::string get_address_with_prefix() const;
@@ -39,7 +39,7 @@ private:
 
     std::string m_address;
 
-    void encode(uint64_t version, uint64_t stream, const byte_vector_type& ripe);
+    void encode_address(uint64_t version, uint64_t stream, const SecureVector& ripe);
 };
 
 } // namespace bm

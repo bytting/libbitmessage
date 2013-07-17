@@ -24,22 +24,25 @@
 
 namespace bm {
 
-void address_type::generate_address()
+void Address::generate_address(uint64_t address_version_number, uint64_t stream_number)
 {
     // FIXME: set these correctly
-    bool eighteen_byte_ripe = false;
-    uint64_t address_version = 3, stream = 1;
+    bool eighteen_byte_ripe = false;    
 
     ECC sign_keys, encrypt_keys;
     sign_keys.generate_key_pair();
 
-    byte_vector_type ripe;
+    SecureVector ripe;
 
     while(true)
     {        
         encrypt_keys.generate_key_pair();
 
-        ripe = hash::ripemd160(hash::sha512(encrypt_keys.public_key()));
+        SecureVector key_merge;
+        std::copy(sign_keys.public_key().begin(), sign_keys.public_key().end(), std::back_inserter(key_merge));
+        std::copy(encrypt_keys.public_key().begin(), encrypt_keys.public_key().end(), std::back_inserter(key_merge));
+
+        ripe = hash::ripemd160(hash::sha512(key_merge));
 
         if(eighteen_byte_ripe)
         {
@@ -53,26 +56,25 @@ void address_type::generate_address()
         }        
     }
 
-    // FIXME: Only address version 3
-    encode(address_version, stream, ripe);
+    encode_address(address_version_number, stream_number, ripe);
 }
 
-std::string address_type::get_address() const
+std::string Address::get_address() const
 {
     return m_address;
 }
 
-std::string address_type::get_address_with_prefix() const
+std::string Address::get_address_with_prefix() const
 {
     return "BM-" + m_address;
 }
 
-void address_type::encode(uint64_t version, uint64_t stream, const byte_vector_type& ripe)
+void Address::encode_address(uint64_t version, uint64_t stream, const SecureVector& ripe)
 {
     if(ripe.size() != 20)
         throw size_exception(__FILE__, __LINE__, "address_type::encode: The ripe length is not 20");
 
-    byte_vector_type ripex;
+    SecureVector ripex;
 
     if(ripe[0] == 0x00 && ripe[1] == 0x00)
         std::copy(ripe.begin() + 2, ripe.end(), std::back_inserter(ripex));
@@ -80,11 +82,11 @@ void address_type::encode(uint64_t version, uint64_t stream, const byte_vector_t
         std::copy(ripe.begin() + 1, ripe.end(), std::back_inserter(ripex));
     else ripex = ripe;
 
-    byte_vector_type bm_addr = encode::varint(version);
+    SecureVector bm_addr = encode::varint(version);
     bm_addr += encode::varint(stream);
     bm_addr += ripex;
 
-    byte_vector_type checksum = hash::sha512(hash::sha512(bm_addr));
+    SecureVector checksum = hash::sha512(hash::sha512(bm_addr));
     std::copy(checksum.begin(), checksum.begin() + 4, std::back_inserter(bm_addr));
 
     m_address = encode::base58(bm_addr);

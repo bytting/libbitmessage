@@ -26,31 +26,31 @@ namespace bm {
 
 namespace encode {
 
-std::string hex(const byte_vector_type& v);
-std::string hex(const std::vector<byte_type>& v);
+std::string hex(const SecureVector& v);
+std::string hex(const ByteVector& v);
 
-std::string base58(const big_integer_type& src);
-std::string base58(const byte_vector_type& src);
+std::string base58(const BigInteger& src);
+std::string base58(const SecureVector& src);
 
-std::string base64(const byte_vector_type& data);
-std::string base64(const std::vector<uint8_t>& data);
+std::string base64(const SecureVector& data);
+std::string base64(const ByteVector& data);
 
-byte_vector_type varint(uint64_t integer);
+SecureVector varint(uint64_t integer);
 
-std::string wif(const byte_vector_type& key);
+std::string wif(const SecureVector& key);
 
 } // namespace encode
 
 namespace decode {
 
-byte_vector_type hex(const std::string& encoded);
+SecureVector hex(const std::string& encoded);
 
-big_integer_type base58(const std::string& encoded);
-byte_vector_type base58v(const std::string& encoded);
+BigInteger base58(const std::string& encoded);
+SecureVector base58v(const std::string& encoded);
 
-byte_vector_type base64(const std::string& encoded);
+SecureVector base64(const std::string& encoded);
 
-uint64_t varint(const byte_vector_type& data, int &nbytes);
+uint64_t varint(const SecureVector& data, int &nbytes);
 
 } // namespace decode
 

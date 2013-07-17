@@ -33,21 +33,21 @@ const std::string BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrst
 
 namespace encode {
 
-std::string hex(const byte_vector_type& v)
+std::string hex(const SecureVector& v)
 {
     Botan::Pipe pipe(new Botan::Hex_Encoder());
     pipe.process_msg(v);
     return pipe.read_all_as_string();
 }
 
-std::string hex(const std::vector<byte_type>& v)
+std::string hex(const ByteVector& v)
 {
     Botan::Pipe pipe(new Botan::Hex_Encoder());
     pipe.process_msg(&v[0], v.size());
     return pipe.read_all_as_string();
 }
 
-std::string base58(const big_integer_type& num)
+std::string base58(const BigInteger& num)
 {
     std::stringstream ss;
 
@@ -57,7 +57,7 @@ std::string base58(const big_integer_type& num)
         return ss.str();
     }
 
-    big_integer_type n = num;
+    BigInteger n = num;
     uint32_t r, base = 58;
 
     while (n > 0)
@@ -74,29 +74,29 @@ std::string base58(const big_integer_type& num)
     return output;
 }
 
-std::string base58(const byte_vector_type& src)
+std::string base58(const SecureVector& src)
 {
-    big_integer_type bit(&src[0], src.size());
+    BigInteger bit(&src[0], src.size());
     return base58(bit);
 }
 
-std::string base64(const byte_vector_type& data)
+std::string base64(const SecureVector& data)
 {
     Botan::Pipe pipe(new Botan::Base64_Encoder());
     pipe.process_msg(data);
     return pipe.read_all_as_string();
 }
 
-std::string base64(const std::vector<uint8_t>& data)
+std::string base64(const ByteVector& data)
 {
     Botan::Pipe pipe(new Botan::Base64_Encoder());
     pipe.process_msg(data);
     return pipe.read_all_as_string();
 }
 
-byte_vector_type varint(uint64_t integer)
+SecureVector varint(uint64_t integer)
 {
-    byte_vector_type v;
+    SecureVector v;
 
     if (integer < 253)
     {
@@ -128,18 +128,18 @@ byte_vector_type varint(uint64_t integer)
     return v;
 }
 
-std::string wif(const byte_vector_type& key)
+std::string wif(const SecureVector& key)
 {
-    byte_vector_type extended;
+    SecureVector extended;
     extended.push_back(0x80);
-    for(int i=0; i<key.size(); i++)
+    for(unsigned int i=0; i<key.size(); i++)
         extended.push_back(key[i]);
 
-    byte_vector_type sha = hash::sha256(hash::sha256(extended));
+    SecureVector sha = hash::sha256(hash::sha256(extended));
     for(int i=0; i<4; i++)
         extended.push_back(sha[i]);
 
-    big_integer_type bit(&extended[0], extended.size());
+    BigInteger bit(&extended[0], extended.size());
     return encode::base58(bit);
 }
 
@@ -147,19 +147,19 @@ std::string wif(const byte_vector_type& key)
 
 namespace decode {
 
-byte_vector_type hex(const std::string& encoded)
+SecureVector hex(const std::string& encoded)
 {
     Botan::Pipe pipe(new Botan::Hex_Decoder());
     pipe.process_msg(encoded);
     return pipe.read_all();
 }
 
-big_integer_type base58(const std::string& encoded)
+BigInteger base58(const std::string& encoded)
 {
     if(encoded.empty())
         throw size_exception(__FILE__, __LINE__, "decode_base58: encoded string is empty");
 
-    big_integer_type num = 0;
+    BigInteger num = 0;
     uint32_t base = 58;
     uint32_t exp = encoded.length() - 1;
 
@@ -175,12 +175,12 @@ big_integer_type base58(const std::string& encoded)
     return num;
 }
 
-byte_vector_type base58v(const std::string& encoded)
+SecureVector base58v(const std::string& encoded)
 {    
-    byte_vector_type result;
+    SecureVector result;
 
     uint32_t base = 58;
-    big_integer_type bn = 0;
+    BigInteger bn = 0;
 
     for (std::string::const_iterator it = encoded.begin(); it != encoded.end(); ++it)
     {
@@ -197,7 +197,7 @@ byte_vector_type base58v(const std::string& encoded)
 
     /*
     // Get bignum as little endian data
-    std::vector<unsigned char> vchTmp = bn.getvch();
+    ByteVector vchTmp = bn.getvch();
 
     // Trim off sign byte if present
     if (vchTmp.size() >= 2 && vchTmp.end()[-1] == 0 && vchTmp.end()[-2] >= 0x80)
@@ -216,14 +216,14 @@ byte_vector_type base58v(const std::string& encoded)
     return result;
 }
 
-byte_vector_type base64(const std::string& encoded)
+SecureVector base64(const std::string& encoded)
 {
     Botan::Pipe pipe(new Botan::Base64_Decoder());
     pipe.process_msg(encoded);
     return pipe.read_all();
 }
 
-uint64_t varint(const byte_vector_type& data, int &nbytes)
+uint64_t varint(const SecureVector& data, int &nbytes)
 {
     if (data.size() == 0)
         throw size_exception(__FILE__, __LINE__, "decode::varint: data buffer is empty");

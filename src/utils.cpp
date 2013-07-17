@@ -41,7 +41,7 @@ Botan::AutoSeeded_RNG& random_number_generator()
     return internal::RandomNumberGeneratorAutoSeeded::instance();
 }
 
-byte_vector_type random_bytes(uint32_t count)
+SecureVector random_bytes(uint32_t count)
 {    
     return internal::RandomNumberGeneratorAutoSeeded::instance().random_vec(count);
 }

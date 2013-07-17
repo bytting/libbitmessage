@@ -28,7 +28,7 @@ namespace bm {
 namespace utils {
 
 Botan::AutoSeeded_RNG& random_number_generator();
-byte_vector_type random_bytes(uint32_t count);
+SecureVector random_bytes(uint32_t count);
 uint32_t seconds_since_epoc();
 
 } //namespace utils
