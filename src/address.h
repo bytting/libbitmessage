@@ -30,7 +30,7 @@ public:
     Address() {}
     ~Address() {}
 
-    void generate_address(uint64_t address_version_number, uint64_t stream_number);
+    void generate_address(uint64_t address_version_number, uint64_t stream_number, bool eighteen_byte_ripe = false);
 
     std::string get_address() const;
     std::string get_address_with_prefix() const;

@@ -131,15 +131,14 @@ SecureVector varint(uint64_t integer)
 std::string wif(const SecureVector& key)
 {
     SecureVector extended;
+
     extended.push_back(0x80);
-    for(unsigned int i=0; i<key.size(); i++)
-        extended.push_back(key[i]);
+    std::copy(key.begin(), key.end(), std::back_inserter(extended));
 
-    SecureVector sha = hash::sha256(hash::sha256(extended));
-    for(int i=0; i<4; i++)
-        extended.push_back(sha[i]);
+    SecureVector checksum = hash::sha256(hash::sha256(extended));
+    std::copy(checksum.begin(), checksum.begin() + 4, std::back_inserter(extended));
 
-    BigInteger bit(&extended[0], extended.size());
+    BigInteger bit(extended.data(), extended.size());
     return encode::base58(bit);
 }
 

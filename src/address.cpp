@@ -24,10 +24,8 @@
 
 namespace bm {
 
-void Address::generate_address(uint64_t address_version_number, uint64_t stream_number)
-{    
-    bool eighteen_byte_ripe = false; // FIXME: set this somewhere
-
+void Address::generate_address(uint64_t address_version_number, uint64_t stream_number, bool eighteen_byte_ripe)
+{        
     ECC sign_keys, encrypt_keys;
     sign_keys.generate_key_pair();
 
