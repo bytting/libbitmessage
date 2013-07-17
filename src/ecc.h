@@ -21,23 +21,41 @@
 
 #include <vector>
 #include <string>
+#include <botan/ec_group.h>
+#include <botan/ecdsa.h>
 #include "btypes.h"
 
 namespace bm {
 
-namespace ecc {
+class ECC
+{
+public:
 
-typedef byte_vector_type private_key_type;
-typedef std::vector<uint8_t> public_key_type;
+    ECC();
+    ~ECC();
 
-void create_key_pair(private_key_type& privkey, public_key_type& pubkey);
+    void generate_key_pair();
 
-std::string pem_encode_private_key_encrypted(const private_key_type& privkey, const std::string& password);
-std::string pem_encode_public_key(const public_key_type& pubkey);
+    const byte_vector_type& private_key() const;
+    const std::vector<uint8_t>& public_key() const;
 
-uint16_t get_curve_id();
+    byte_vector_type PKCS8_BER();
+    std::string PKCS8_PEM();
+    std::string PKCS8_PEM(const std::string& password);
+    std::vector<uint8_t> X509_BER();
+    std::string X509_PEM();
 
-} // namespace ecc
+    void clear();
+
+    uint16_t get_curve_id();
+
+private:
+
+    const Botan::EC_Group m_group;
+    Botan::ECDSA_PrivateKey* m_key;
+    byte_vector_type m_private_key_bytes;
+    std::vector<uint8_t> m_public_key_bytes;
+};
 
 } // namespace bm
 

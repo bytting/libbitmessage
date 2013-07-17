@@ -128,7 +128,7 @@ byte_vector_type varint(uint64_t integer)
     return v;
 }
 
-std::string wif(byte_vector_type& key)
+std::string wif(const byte_vector_type& key)
 {
     byte_vector_type extended;
     extended.push_back(0x80);

@@ -37,7 +37,7 @@ std::string base64(const std::vector<uint8_t>& data);
 
 byte_vector_type varint(uint64_t integer);
 
-std::string wif(byte_vector_type& key);
+std::string wif(const byte_vector_type& key);
 
 } // namespace encode
 

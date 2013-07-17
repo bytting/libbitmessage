@@ -17,49 +17,87 @@
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
 #include <memory>
-#include <botan/ec_group.h>
 #include <botan/alg_id.h>
-//#include <botan/botan.h>
-#include <botan/ecdsa.h>
+#include <botan/ber_dec.h>
 #include "ecc.h"
 #include "utils.h"
 #include "hash.h"
 #include "encoding.h"
 
-#include <iostream> // FIXME
-
 namespace bm {
 
-namespace ecc {
-
-void create_key_pair(private_key_type& privkey, public_key_type& pubkey)
+ECC::ECC() : m_group("secp256k1"), m_key(0)
 {
-    Botan::EC_Group group("secp256k1");
-    Botan::ECDSA_PrivateKey key(utils::random_number_generator(), group);
-    //privkey = Botan::PKCS8::BER_encode(key);
-    //pubkey = Botan::X509::BER_encode(key);    
-    privkey = key.pkcs8_private_key();
-    pubkey = key.x509_subject_public_key();
 }
 
-std::string pem_encode_private_key_encrypted(const private_key_type& privkey, const std::string& password)
+ECC::~ECC()
 {
-    Botan::DataSource_Memory mem(privkey);
-    std::auto_ptr<Botan::Private_Key> key(Botan::PKCS8::load_key(mem, utils::random_number_generator(), password));
-    return Botan::PKCS8::PEM_encode(*key);
+    clear();
 }
 
-std::string pem_encode_public_key(const public_key_type& pubkey)
+void ECC::generate_key_pair()
 {
-    std::auto_ptr<Botan::Public_Key> key(Botan::X509::load_key(pubkey));
-    return Botan::X509::PEM_encode(*key);
+    clear();
+    m_key = new Botan::ECDSA_PrivateKey(utils::random_number_generator(), m_group);
+    Botan::ECDSA_PublicKey pub(m_group, m_key->public_point());
+
+    big_integer_type bit = m_key->private_value();
+    m_private_key_bytes.resize(bit.bytes());
+    bit.binary_encode(m_private_key_bytes.data());
+
+    Botan::PointGFp gfp = Botan::OS2ECP(m_key->x509_subject_public_key(), m_key->public_point().get_curve());
+    bit = gfp.get_affine_y();
+    m_public_key_bytes.resize(bit.bytes());
+    bit.binary_encode(m_public_key_bytes.data());
+}
+
+const byte_vector_type& ECC::private_key() const
+{
+    return m_private_key_bytes;
+}
+
+const std::vector<uint8_t>& ECC::public_key() const
+{
+    return m_public_key_bytes;
+}
+
+byte_vector_type ECC::PKCS8_BER()
+{
+    return Botan::PKCS8::BER_encode(*m_key);
+}
+
+std::string ECC::PKCS8_PEM()
+{
+    return Botan::PKCS8::PEM_encode(*m_key);
+}
+
+std::string ECC::PKCS8_PEM(const std::string& password)
+{
+    return Botan::PKCS8::PEM_encode(*m_key, utils::random_number_generator(), password);
+}
+
+std::vector<uint8_t> ECC::X509_BER()
+{
+    return Botan::X509::BER_encode(*m_key);
+}
+
+std::string ECC::X509_PEM()
+{
+    return Botan::X509::PEM_encode(*m_key);
+}
+
+void ECC::clear()
+{
+    if(m_key)
+    {
+        delete m_key;
+        m_key = 0;
+    }
 }
 
 uint16_t get_curve_id()
 {
     return 714;
 }
-
-} // namespace ecc
 
 } // namespace bm

@@ -100,27 +100,22 @@ static void test_ecc_keys()
 {
     cout << "\n=== TEST ECC ===\n\n";
 
-    bm::ecc::private_key_type private_key;
-    bm::ecc::public_key_type public_key;
-    bm::ecc::create_key_pair(private_key, public_key);
+    bm::ECC keys;
+    keys.generate_key_pair();
 
-    cout << "base64 encoded private key: " << bm::encode::base64(private_key) << "\n\n"
-         << "base64 encoded public key: " << bm::encode::base64(public_key) << "\n\n\n";
+    cout << "=== BER encoded...\n";
+    cout << "Private key BER:\n" << bm::encode::hex(keys.PKCS8_BER()) << "\n\n";
+    cout << "Public key BER:\n" << bm::encode::hex(keys.X509_BER()) << "\n\n";
 
-    //cout << "=== PEM encoded...\n";
-    //cout << bm::ecc::pem_encode_private_key_encrypted(private_key, "qwerty") << "\n\n"; // FIXME
-    //cout << bm::ecc::pem_encode_public_key(public_key) << "\n\n";
+    cout << "=== PEM encoded...\n";
+    cout << "Private key PEM:\n" << keys.PKCS8_PEM() << "\n\n";
+    cout << "Private key PEM encrypted:\n" << keys.PKCS8_PEM("qwerty") << "\n\n";
+    cout << "Public key PEM:\n" << keys.X509_PEM() << "\n\n";
 
-    cout << "hex encoded private key: " << bm::encode::hex(private_key) << "\n\n";
+    cout << "hex encoded private key: " << bm::encode::hex(keys.private_key()) << "\n\n";
+    cout << "hex encoded public key: " << bm::encode::hex(keys.public_key()) << "\n\n";
 
-    cout << "base58 encoded private key: " << bm::encode::base58(private_key) << "\n\n";
-
-    cout << "wif encoded private key: " << bm::encode::wif(private_key) << "\n\n";
-
-    cout << "hex encoded public key: " << bm::encode::hex(public_key) << "\n\n";
-
-    cout << "private key size: " << private_key.size() << "\n\n";
-    cout << "public key size: " << public_key.size() << "\n\n";
+    cout << "wif encoded private key: " << bm::encode::wif(keys.private_key()) << "\n\n";
 
     cout << "\n=== OK ===" << endl;
 }

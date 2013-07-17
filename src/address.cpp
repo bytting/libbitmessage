@@ -30,19 +30,16 @@ void address_type::generate_address()
     bool eighteen_byte_ripe = false;
     uint64_t address_version = 3, stream = 1;
 
-    ecc::private_key_type private_signing_key;
-    ecc::public_key_type public_signing_key;
-    ecc::create_key_pair(private_signing_key, public_signing_key);
+    ECC sign_keys, encrypt_keys;
+    sign_keys.generate_key_pair();
 
     byte_vector_type ripe;
 
     while(true)
-    {
-        ecc::private_key_type private_encryption_key;
-        ecc::public_key_type public_encryption_key;
-        ecc::create_key_pair(private_encryption_key, public_encryption_key);
+    {        
+        encrypt_keys.generate_key_pair();
 
-        ripe = hash::ripemd160(hash::sha512(public_encryption_key));
+        ripe = hash::ripemd160(hash::sha512(encrypt_keys.public_key()));
 
         if(eighteen_byte_ripe)
         {
@@ -53,7 +50,7 @@ void address_type::generate_address()
         {
             if(ripe[0] == 0x00)
                 break;
-        }
+        }        
     }
 
     // FIXME: Only address version 3
@@ -75,23 +72,22 @@ void address_type::encode(uint64_t version, uint64_t stream, const byte_vector_t
     if(ripe.size() != 20)
         throw size_exception(__FILE__, __LINE__, "address_type::encode: The ripe length is not 20");
 
-    byte_vector_type r = ripe;
+    byte_vector_type ripex;
 
-    if(r[0] == 0x00 && r[1] == 0x00)
-        r.assign(ripe.begin() + 2, ripe.end());
-    else if(r[0] == 0x00)    
-        r.assign(ripe.begin() + 1, ripe.end());
+    if(ripe[0] == 0x00 && ripe[1] == 0x00)
+        std::copy(ripe.begin() + 2, ripe.end(), std::back_inserter(ripex));
+    else if(ripe[0] == 0x00)
+        std::copy(ripe.begin() + 1, ripe.end(), std::back_inserter(ripex));
+    else ripex = ripe;
 
-    byte_vector_type v = encode::varint(version);
-    v += encode::varint(stream);
-    v += r;
+    byte_vector_type bm_addr = encode::varint(version);
+    bm_addr += encode::varint(stream);
+    bm_addr += ripex;
 
-    byte_vector_type sha = hash::sha512(hash::sha512(v));    
-    byte_vector_type checksum;
-    checksum.assign(sha.begin(), sha.begin() + 4);
+    byte_vector_type checksum = hash::sha512(hash::sha512(bm_addr));
+    std::copy(checksum.begin(), checksum.begin() + 4, std::back_inserter(bm_addr));
 
-    v += checksum;    
-    m_address = encode::base58(v);
+    m_address = encode::base58(bm_addr);
 }
 
 } // namespace bm
