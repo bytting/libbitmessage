@@ -10,6 +10,7 @@ set(LIBRARY_VERSION ${MAJOR_VERSION}.${MINOR_VERSION}-${PATCH_VERSION})
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -g -Wall")
 
+set (BM_DEBUG 1)
 set(CMAKE_BUILD_TYPE Debug)
 
 configure_file(${CMAKE_SOURCE_DIR}/config.h.cmake ${CMAKE_SOURCE_DIR}/src/config.h)

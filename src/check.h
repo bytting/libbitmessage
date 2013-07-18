@@ -25,6 +25,7 @@ namespace bm {
 namespace check {
 
 bool wif(const std::string& encoded);
+
 bool address(const std::string& address);
 
 } // namespace check

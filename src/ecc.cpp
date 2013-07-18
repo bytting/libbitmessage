@@ -62,34 +62,43 @@ const ByteVector& ECC::public_key() const
     return m_public_key_bytes;
 }
 
-SecureVector ECC::PKCS8_BER()
+SecureVector ECC::PKCS8_BER() const
 {
     return Botan::PKCS8::BER_encode(*m_key);
 }
 
-std::string ECC::PKCS8_PEM()
+std::string ECC::PKCS8_PEM() const
 {
     return Botan::PKCS8::PEM_encode(*m_key);
 }
 
-std::string ECC::PKCS8_PEM(const std::string& password)
+std::string ECC::PKCS8_PEM(const std::string& password) const
 {
     return Botan::PKCS8::PEM_encode(*m_key, utils::random_number_generator(), password);
 }
 
-ByteVector ECC::X509_BER()
+ByteVector ECC::X509_BER() const
 {
     return Botan::X509::BER_encode(*m_key);
 }
 
-std::string ECC::X509_PEM()
+std::string ECC::X509_PEM() const
 {
     return Botan::X509::PEM_encode(*m_key);
 }
 
-uint16_t ECC::get_curve_id()
+uint16_t ECC::get_curve_id() const
 {
     return 714; // secp256k1
+}
+
+std::ostream& operator << (std::ostream& out, const ECC& ecc)
+{
+    out << "Private key hex:\n" << encode::hex(ecc.m_private_key_bytes) << "\n"
+        << "Private key PEM:\n" << ecc.PKCS8_PEM() << "\n"
+        << "Public key hex:\n" << encode::hex(ecc.m_public_key_bytes) << "\n"
+        << "Public key PEM:\n" << ecc.X509_PEM();
+    return out;
 }
 
 void ECC::reset()

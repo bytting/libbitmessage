@@ -16,8 +16,14 @@
 // Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
+#include "config.h"
 #include <algorithm>
 #include <iterator>
+#include <limits>
+#include <ctime> // FIXME chrono
+#ifdef BM_DEBUG
+#include <iostream>
+#endif
 #include "pow.h"
 #include "enc.h"
 #include "hash.h"
@@ -25,6 +31,8 @@
 namespace bm {
 
 namespace pow {
+
+namespace internal {
 
 uint64_t get_proof_of_work_trial_value(uint64_t nonce, const SecureVector& initial_hash)
 {
@@ -37,93 +45,89 @@ uint64_t get_proof_of_work_trial_value(uint64_t nonce, const SecureVector& initi
     int nb;
     return decode::varint(trial_value.data(), nb);
 }
-/*
-string proofOfWork(
-        uint32_t streamNumber,
-        string embeddedTime,
-        string cyphertext,
-        uint32_t payloadLengthExtraBytes,
-        uint32_t averageProofOfWorkNonceTrialsPerByte,
-        bool verbose)
+
+} // namespace internal
+
+SecureVector append_proof_of_work(
+        uint64_t stream_number,
+        const SecureVector& embedded_time,
+        const SecureVector& cyphertext,
+        uint32_t payload_length_extra_bytes,
+        uint32_t average_proof_of_work_nonce_trials_per_byte)
 {
-    uint64_t nonce = 0;
-    // the maximum 64bit value
-    uint64_t trialValue = 18446744073709551615ULL;
-    uint64_t target;
+    uint64_t target, nonce = 0;
+    uint64_t trial_value = std::numeric_limits<uint64_t>::max();
     clock_t begin_time, end_time;
-    char str[129];
-    string lastBytes;
-    string encodedStreamNumber = encodeVarint(streamNumber);
-    string payload = embeddedTime + encodedStreamNumber + cyphertext;
 
-    target = 18446744073709551615ULL /
-        ((8+payload.length()+payloadLengthExtraBytes) *
-         averageProofOfWorkNonceTrialsPerByte);
+    SecureVector payload = embedded_time;
+    payload += encode::varint(stream_number);
+    payload += cyphertext;
 
-    if (verbose) {
-        printf("(For msg message) Doing proof of work. Target: %lld\n",target);
-    }
+    target = std::numeric_limits<uint64_t>::max() / ((8 + payload.size() + payload_length_extra_bytes) * average_proof_of_work_nonce_trials_per_byte);
 
-    begin_time = clock();
-    string initialHash = getHashString512(payload);
+    begin_time = std::clock();
+    SecureVector initial_hash = hash::sha512(payload);
     uint64_t best = 0;
-    while (trialValue > target) {
-        if (nonce == 0) {
+    while (trial_value > target)
+    {
+        if (nonce == 0)
             nonce = 1;
-        }
-        else {
+        else
             nonce += 32;
-        }
-#pragma omp parallel for
-        for (uint64_t index = 0; index < 4; index++) {
-            uint64_t n = getProofOfWorkTrialValue(nonce + index, initialHash);
-            if (n <= target) {
-                trialValue = n;
+
+// #pragma omp parallel for
+        for (uint64_t index = 0; index < 4; index++)
+        {
+            uint64_t n = internal::get_proof_of_work_trial_value(nonce + index, initial_hash);
+            if (n <= target)
+            {
+                trial_value = n;
                 best = nonce + index;
             }
         }
     }
+
     nonce = best;
-    end_time = clock();
+    end_time = std::clock();
 
-    if (verbose) {
-        printf("(For msg message) Found proof of work %lld", trialValue);
-        printf(" Nonce: %lld\n", nonce);
+#ifdef BM_DEBUG
 
-        if (end_time>begin_time) {
-            printf("POW took %d seconds.  ",
-                   (int)((end_time-begin_time)/CLOCKS_PER_SEC));
-            printf("%lld nonce trials per second.\n",
-                   nonce / (unsigned long long)((end_time-begin_time)/CLOCKS_PER_SEC));
-        }
+    std::clog << "Found proof of work: " << trial_value << std::endl;
+    std::clog << "Nonce: " << nonce << std::endl;
+
+    if (end_time > begin_time)
+    {
+        std::clog << "POW took " << (int)((end_time - begin_time) / CLOCKS_PER_SEC) << " seconds" << std::endl;
+        std::clog << nonce / (uint64_t)((end_time - begin_time) / CLOCKS_PER_SEC) << " nonce trials per second" << std::endl;
     }
+
+#endif
+
     // prepend the nonce value.  This can then be used by the receiver to check that the payload is valid
-    payload = utils::pack<unsigned long long>(nonce) + payload;
-    return payload;
+    SecureVector result = encode::varint(nonce);
+    result += payload;
+    return result;
 }
 
-bool checkProofOfWork(
-        string payload,
-        uint32_t payloadLengthExtraBytes,
-        uint32_t averageProofOfWorkNonceTrialsPerByte)
+bool validate_proof_of_work(const SecureVector& payload,
+        uint32_t payload_length_extra_bytes,
+        uint32_t average_proof_of_work_nonce_trials_per_byte)
 {
-    if (payload.length() <= 8) return false;
+    if (payload.size() < 2)
+        return false;
 
-    const char * payload_str = payload.c_str();
-    char * message_payload = (char*)&payload_str[8];
-    unsigned long long nonce;
+    int nb;
+    SecureVector tmp_payload;
 
-    // extract the nonce value from the first 8 bytes
-    std::memcpy((void*)&nonce,(void*)payload_str,8);
+    uint64_t nonce = decode::varint(&payload[0], nb);
+    std::copy(payload.begin() + nb, payload.end(), std::back_inserter(tmp_payload));
 
-    unsigned long long target = 18446744073709551615ULL /
-        ((payload.length()+payloadLengthExtraBytes) *
-         averageProofOfWorkNonceTrialsPerByte);
+    uint64_t target = std::numeric_limits<uint64_t>::max() / ((payload.size() + payload_length_extra_bytes) * average_proof_of_work_nonce_trials_per_byte);
 
-    string initialHash = getHashString512(message_payload);
-    return (getProofOfWorkTrialValue(nonce, initialHash) <= target);
+    SecureVector initial_hash = hash::sha512(tmp_payload);
+    return internal::get_proof_of_work_trial_value(nonce, initial_hash) <= target;
 }
-*/
+
 } // namespace pow
 
 } // namespace bm

@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <string>
+#include <ostream>
 #include <botan/ec_group.h>
 #include <botan/ecdsa.h>
 #include "btypes.h"
@@ -34,18 +35,20 @@ public:
     ECC();
     ECC(const SecureVector& key_bytes);
     ECC(const std::string& key_hex);
-    ~ECC();    
+    ~ECC();
 
     const SecureVector& private_key() const;
     const ByteVector& public_key() const;
 
-    SecureVector PKCS8_BER();
-    std::string PKCS8_PEM();
-    std::string PKCS8_PEM(const std::string& password);
-    ByteVector X509_BER();
-    std::string X509_PEM();    
+    SecureVector PKCS8_BER() const;
+    std::string PKCS8_PEM() const;
+    std::string PKCS8_PEM(const std::string& password) const;
+    ByteVector X509_BER() const;
+    std::string X509_PEM() const;
 
-    uint16_t get_curve_id();
+    uint16_t get_curve_id() const;
+
+    friend std::ostream& operator << (std::ostream& out, const ECC& ecc);
 
 private:
 

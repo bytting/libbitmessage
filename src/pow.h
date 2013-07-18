@@ -30,21 +30,16 @@ namespace bm {
 
 namespace pow {
 
-uint64_t get_proof_of_work_trial_value(uint64_t nonce, const SecureVector& initial_hash);
-/*
-std::string proofOfWork(
-        uint32_t streamNumber,
-        std::string embeddedTime,
-        std::string cyphertext,
-        uint32_t payloadLengthExtraBytes = PAYLOAD_LENGTH_EXTRA_BYTES,
-        uint32_t averageProofOfWorkNonceTrialsPerByte = AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE,
-        bool verbose=false);
+SecureVector append_proof_of_work(
+        uint64_t stream_number,
+        const SecureVector& embedded_time,
+        const SecureVector& cyphertext,
+        uint32_t payload_length_extra_bytes = PAYLOAD_LENGTH_EXTRA_BYTES,
+        uint32_t average_proof_of_work_nonce_trials_per_byte = AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
 
-bool checkProofOfWork(
-        std::string payload,
-        uint32_t payloadLengthExtraBytes = PAYLOAD_LENGTH_EXTRA_BYTES,
-        uint32_t averageProofOfWorkNonceTrialsPerByte = AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
-        */
+bool validate_proof_of_work(const SecureVector &payload,
+        uint32_t payload_length_extra_bytes = PAYLOAD_LENGTH_EXTRA_BYTES,
+        uint32_t average_proof_of_work_nonce_trials_per_byte = AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
 
 } // namespace pow
 

@@ -98,46 +98,6 @@ static void test_base64()
     cout << "\n=== OK ===\n" << endl;
 }
 
-static void test_ecc_keys()
-{
-    cout << "\n=== TEST ECC ===\n\n";
-
-    bm::ECC keys;    
-
-    cout << "=== BER encoded...\n";
-    cout << "Private key BER:\n" << bm::encode::hex(keys.PKCS8_BER()) << "\n\n";
-    cout << "Public key BER:\n" << bm::encode::hex(keys.X509_BER()) << "\n\n";
-
-    cout << "=== PEM encoded...\n";
-    cout << "Private key PEM:\n" << keys.PKCS8_PEM() << "\n\n";
-    cout << "Private key PEM encrypted:\n" << keys.PKCS8_PEM("qwerty") << "\n\n";
-    cout << "Public key PEM:\n" << keys.X509_PEM() << "\n\n";
-
-    cout << "hex encoded private key: " << bm::encode::hex(keys.private_key()) << "\n\n";
-    cout << "hex encoded public key: " << bm::encode::hex(keys.public_key()) << "\n\n";
-
-    string wif = bm::encode::wif(keys.private_key());
-    cout << "wif encoded private key: " << wif << "\n";
-    bm::SecureVector pk = bm::decode::wif(wif);
-    cout << "wif decoded private key: " << bm::encode::hex(pk) << "\n";
-    assert(keys.private_key() == pk);
-    assert(bm::check::wif(wif));
-
-    // Private key hex (32 byte): 092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801
-    // Public key hex (65 byte including 0x04 prefix): 0437a3191fe90d9b483324c28ecd019479e708cfcff96800131c113ec30a0646ee95c31b4c5656b1e7122f071ae4471a97511f372179147277ea2a2087147f9486
-    // Private WIF: 5HtKNfWZH4QQZPUGRadud7wfyPGEKLhQJfnYPGvpiivgwfrHfpX
-    // BM-Address: BM-2D8168aQ5uxvoUNxAVJagS4f8tr7ubyMEB
-
-    cout << "\n\nTest creating key from hex string [092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801]\n\n";
-    bm::ECC k("092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801");
-    cout << "hex encoded priv: " << bm::encode::hex(k.private_key()) << "\n";
-    cout << "hex encoded pub : " << bm::encode::hex(k.public_key()) << "\n";
-    wif = bm::encode::wif(k.private_key());
-    cout << "wif encoded priv: " << wif << "\n";
-
-    cout << "\n=== OK ===" << endl;
-}
-
 static void test_ripemd160()
 {
     cout << "\n=== TEST RIPEMD160 ===\n\n";
@@ -164,7 +124,7 @@ static void test_sha256()
     cout << bm::encode::hex(v1) << "\n";
     assert(v1.size() == 32);
     assert(v1 == v2);
-    assert(v1[0] == 0x4E);    
+    assert(v1[0] == 0x4E);
     assert(v1[31] == 0x35);
 
     cout << "\n=== OK ===" << endl;
@@ -180,7 +140,7 @@ static void test_sha512()
     cout << bm::encode::hex(v1) << "\n";
     assert(v1.size() == 64);
     assert(v1 == v2);
-    assert(v1[0] == 0xF4);    
+    assert(v1[0] == 0xF4);
     assert(v1[63] == 0xB1);
 
     cout << "\n=== OK ===\n" << endl;
@@ -214,6 +174,37 @@ static void test_hmac_sha512()
     cout << "\n=== OK ===\n" << endl;
 }
 
+static void test_ecc_keys()
+{
+    cout << "\n=== TEST ECC ===\n\n";
+
+    bm::ECC keys;
+
+    cout << "Private key BER:\n" << bm::encode::hex(keys.PKCS8_BER()) << "\n";
+    cout << "Public key BER:\n" << bm::encode::hex(keys.X509_BER()) << "\n";
+    cout << "Private key PEM encrypted:\n" << keys.PKCS8_PEM("qwerty") << "\n";
+
+    string wif = bm::encode::wif(keys.private_key());
+    cout << "wif encoded private key: " << wif << "\n";
+    bm::SecureVector pk = bm::decode::wif(wif);
+    cout << "wif decoded private key: " << bm::encode::hex(pk) << "\n";
+    assert(keys.private_key() == pk);
+    assert(bm::check::wif(wif));
+
+    // Private key hex (32 byte): 092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801
+    // Public key hex (65 byte including 0x04 prefix): 0437a3191fe90d9b483324c28ecd019479e708cfcff96800131c113ec30a0646ee95c31b4c5656b1e7122f071ae4471a97511f372179147277ea2a2087147f9486
+    // Private WIF: 5HtKNfWZH4QQZPUGRadud7wfyPGEKLhQJfnYPGvpiivgwfrHfpX
+    // BM-Address: BM-2D8168aQ5uxvoUNxAVJagS4f8tr7ubyMEB
+
+    cout << "\nTest creating key from hex string [092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801]\n";
+    bm::ECC k("092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801");
+    cout << k << endl;
+    wif = bm::encode::wif(k.private_key());
+    cout << "wif encoded priv: " << wif << "\n";
+
+    cout << "\n=== OK ===" << endl;
+}
+
 static void test_addresses()
 {
     cout << "\n=== TEST ADDRESSES ===\n\n";
@@ -231,6 +222,49 @@ static void test_pow()
 {
     cout << "\n=== TEST POW ===\n\n";
 
+    bm::SecureVector payload;
+    bm::SecureVector embedded_time = bm::decode::hex("010203");
+    bm::SecureVector cyphertext = bm::decode::hex("060409020305060a0e0a030c0d010700030b02010407030f080d0d050f0f0e080f0a");
+
+    //clock_t begin_time, end_time;
+    //printf("test_proofOfWork...");
+    //begin_time = clock();
+
+    payload = bm::pow::append_proof_of_work(1, embedded_time, cyphertext);
+
+    //end_time = clock();
+    //int seconds = (int)((end_time-begin_time)/CLOCKS_PER_SEC);
+    //assert(seconds < 60);
+
+    // proof of work should be correct
+    assert(bm::pow::validate_proof_of_work(payload));
+
+    // FIXME: test bogus nonce
+    /*
+    // if the proof of work is not correct
+    int nb;
+    uint64_t real_nonce = 0;
+    bm::decode::varint(&payload[0], nb);
+
+    //memcpy((void*)&real_nonce,(void*)payload.c_str(),8);
+
+    char str[8];
+    string s;
+    string message_payload = payload.substr(8);
+    for (unsigned long long bogus_nonce = 0; bogus_nonce < 100; bogus_nonce++)
+    {
+        if (real_nonce == bogus_nonce)
+            break;
+        memcpy((void*)str,(void*)&bogus_nonce,8);
+        s = "";
+        for (int i = 0; i < 8; i++)
+        {
+            s += str[i];
+        }
+        // the check should return false
+        assert(!bitmessage::checkProofOfWork(s + message_payload));
+    }
+    */
     cout << "\n=== OK ===\n" << endl;
 }
 
@@ -240,12 +274,12 @@ void run_unit_tests()
     test_encode_varint();
     test_base58();
     test_base64();
-    test_ecc_keys();
     test_ripemd160();
     test_sha256();
     test_sha512();
     test_hmac_sha256();
-    test_hmac_sha512();    
-    test_addresses();    
+    test_hmac_sha512();
+    test_ecc_keys();
+    test_addresses();
     test_pow();
 }
