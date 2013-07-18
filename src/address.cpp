@@ -22,8 +22,7 @@
 #include "exceptions.h"
 #include "utils.h"
 #include "check.h"
-#include "encode.h"
-#include "decode.h"
+#include "enc.h"
 #include "hash.h"
 #include "ecc.h"
 

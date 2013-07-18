@@ -21,7 +21,7 @@
 #include "exceptions.h"
 #include "btypes.h"
 #include "utils.h"
-#include "decode.h"
+#include "enc.h"
 #include "hash.h"
 
 namespace bm {

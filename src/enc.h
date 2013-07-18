@@ -15,14 +15,32 @@
 // CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#ifndef BM_DECODE_H
-#define BM_DECODE_H
+#ifndef BM_ENC_H
+#define BM_ENC_H
 
 #include <stdint.h>
 #include <string>
 #include "btypes.h"
 
 namespace bm {
+
+namespace encode {
+
+std::string hex(const SecureVector& v);
+std::string hex(const ByteVector& v);
+std::string hex(const BigInteger& v);
+
+std::string base58(const BigInteger& src);
+std::string base58(const SecureVector& src);
+
+std::string base64(const SecureVector& data);
+std::string base64(const ByteVector& data);
+
+SecureVector varint(uint64_t integer);
+
+std::string wif(const SecureVector& key);
+
+} // namespace encode
 
 namespace decode {
 

@@ -5,8 +5,7 @@
 #include <ctime>
 #include "unittests.h"
 #include "utils.h"
-#include "encode.h"
-#include "decode.h"
+#include "enc.h"
 #include "ecc.h"
 #include "hash.h"
 #include "address.h"

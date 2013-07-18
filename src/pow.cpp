@@ -19,8 +19,7 @@
 #include <algorithm>
 #include <iterator>
 #include "pow.h"
-#include "encode.h"
-#include "decode.h"
+#include "enc.h"
 #include "hash.h"
 
 namespace bm {

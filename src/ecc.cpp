@@ -24,8 +24,7 @@
 #include "ecc.h"
 #include "utils.h"
 #include "hash.h"
-#include "encode.h"
-#include "decode.h"
+#include "enc.h"
 
 namespace bm {
 
