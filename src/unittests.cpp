@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cassert>
 #include <ctime>
+#include "unittests.h"
 #include "utils.h"
 #include "encode.h"
 #include "decode.h"
@@ -10,8 +11,8 @@
 #include "hash.h"
 #include "address.h"
 #include "check.h"
-#include "bitmessage.h"
-#include "unittests.h"
+#include "pow.h"
+//#include "bitmessage.h"
 
 using namespace std;
 
@@ -123,6 +124,11 @@ static void test_ecc_keys()
     assert(keys.private_key() == pk);
     assert(bm::check::wif(wif));
 
+    // Private key hex (32 byte): 092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801
+    // Public key hex (65 byte including 0x04 prefix): 0437a3191fe90d9b483324c28ecd019479e708cfcff96800131c113ec30a0646ee95c31b4c5656b1e7122f071ae4471a97511f372179147277ea2a2087147f9486
+    // Private WIF: 5HtKNfWZH4QQZPUGRadud7wfyPGEKLhQJfnYPGvpiivgwfrHfpX
+    // BM-Address: BM-2D8168aQ5uxvoUNxAVJagS4f8tr7ubyMEB
+
     cout << "\n\nTest creating key from hex string [092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801]\n\n";
     bm::ECC k("092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801");
     cout << "hex encoded priv: " << bm::encode::hex(k.private_key()) << "\n";
@@ -223,6 +229,13 @@ static void test_addresses()
     cout << "\n=== OK ===\n" << endl;
 }
 
+static void test_pow()
+{
+    cout << "\n=== TEST POW ===\n\n";
+
+    cout << "\n=== OK ===\n" << endl;
+}
+
 void run_unit_tests()
 {
     test_encode_hex();
@@ -236,4 +249,5 @@ void run_unit_tests()
     test_hmac_sha256();
     test_hmac_sha512();    
     test_addresses();    
+    test_pow();
 }

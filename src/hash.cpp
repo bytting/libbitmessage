@@ -36,7 +36,7 @@ namespace internal {
 
 template<class T, class H>
 SecureVector hash(const T& data)
-{
+{    
     H hashObject;
     return hashObject.process(data);
 }
