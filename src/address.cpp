@@ -20,19 +20,22 @@
 #include <iterator>
 #include "address.h"
 #include "exceptions.h"
+#include "utils.h"
+#include "check.h"
 #include "encode.h"
+#include "decode.h"
 #include "hash.h"
 #include "ecc.h"
 
 namespace bm {
 
-void Address::generate_address(uint64_t address_version_number, uint64_t stream_number, bool eighteen_byte_ripe)
-{        
+Address::Address(uint64_t address_version_number, uint64_t stream_number, bool eighteen_byte_ripe)
+{
     ECC sign_keys;
     SecureVector ripe;
 
     while(true)
-    {        
+    {
         ECC encrypt_keys;
         SecureVector key_merge;
 
@@ -50,7 +53,7 @@ void Address::generate_address(uint64_t address_version_number, uint64_t stream_
         {
             if(ripe[0] == 0x00)
                 break;
-        }        
+        }
     }
 
     encode_address(address_version_number, stream_number, ripe);
@@ -58,12 +61,20 @@ void Address::generate_address(uint64_t address_version_number, uint64_t stream_
 
 std::string Address::get_address() const
 {
-    return m_address;
+    return "BM-" + m_address;
 }
 
-std::string Address::get_address_with_prefix() const
+uint64_t Address::extract_stream_number(const std::string& address)
 {
-    return "BM-" + m_address;
+    if(!check::address(address))
+        throw ParseException(__FILE__, __FUNCTION__, __LINE__, "Invalid address checksum");
+
+    int nb;
+    std::string addr = utils::remove_prefix(address, "BM-");
+    SecureVector bytes = decode::base58(addr);
+
+    decode::varint(bytes.data(), nb);
+    return decode::varint(&bytes[nb], nb);
 }
 
 void Address::encode_address(uint64_t version, uint64_t stream, const SecureVector& ripe)

@@ -33,6 +33,7 @@ extern const std::string BASE58;
 Botan::AutoSeeded_RNG& random_number_generator();
 SecureVector random_bytes(uint32_t count);
 uint32_t seconds_since_epoc();
+std::string remove_prefix(const std::string& source, const std::string& prefix);
 
 } //namespace utils
 

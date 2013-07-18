@@ -27,17 +27,16 @@ class Address
 {
 public:
 
-    Address() {}
-    ~Address() {}
+    Address(uint64_t address_version_number, uint64_t stream_number, bool eighteen_byte_ripe = false);
+    ~Address() {}    
 
-    void generate_address(uint64_t address_version_number, uint64_t stream_number, bool eighteen_byte_ripe = false);
+    std::string get_address() const;    
 
-    std::string get_address() const;
-    std::string get_address_with_prefix() const;
+    static uint64_t extract_stream_number(const std::string& address);
 
 private:
 
-    std::string m_address;
+    std::string m_address;    
 
     void encode_address(uint64_t version, uint64_t stream, const SecureVector& ripe);
 };

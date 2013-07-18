@@ -47,8 +47,6 @@ bool checkProofOfWork(
         uint32_t payloadLengthExtraBytes = PAYLOAD_LENGTH_EXTRA_BYTES,
         uint32_t averageProofOfWorkNonceTrialsPerByte = AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
 
-uint32_t addressStreamNumber(std::string address, std::string &status);
-
 } // namespace bm
 
 #endif

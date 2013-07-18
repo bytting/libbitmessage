@@ -56,6 +56,16 @@ uint32_t seconds_since_epoc()
     return dtn.count() * system_clock::period::num / system_clock::period::den;
 }
 
+std::string remove_prefix(const std::string& source, const std::string& prefix)
+{
+    std::string result;
+    std::string::size_type pos = source.find_first_of(prefix);
+    if(!pos)
+        std::copy(source.begin() + prefix.length(), source.end(), std::back_inserter(result));
+    else result = source;
+    return result;
+}
+
 } // namespace utils
 
 } // namespace bm

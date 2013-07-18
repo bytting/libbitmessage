@@ -107,12 +107,12 @@ SecureVector base64(const std::string& encoded)
     return pipe.read_all();
 }
 
-uint64_t varint(const SecureVector& data, int &nbytes)
+uint64_t varint(const Byte* data, int &nbytes)
 {
-    if (data.size() == 0)
+    if (!data)
         throw SizeException(__FILE__, __FUNCTION__, __LINE__, "Data buffer is empty");
 
-    uint8_t first_byte;
+    Byte first_byte;
     uint64_t result;
     nbytes = 0;
 
@@ -127,21 +127,21 @@ uint64_t varint(const SecureVector& data, int &nbytes)
     {
         nbytes = 3;
         uint16_t ui16;
-        std::memcpy(&ui16, &data[1], 2);
+        std::memcpy(&ui16, data + 1, 2);
         result = big_to_host_16(ui16);
     }
     else if (first_byte == 254)
     {
         nbytes = 5;
         uint32_t ui32;
-        std::memcpy(&ui32, &data[1], 4);
+        std::memcpy(&ui32, data + 1, 4);
         result = big_to_host_32(ui32);
     }
     else
     {
         nbytes = 9;
         uint64_t ui64;
-        std::memcpy(&ui64, &data[1], 8);
+        std::memcpy(&ui64, data + 1, 8);
         result = big_to_host_64(ui64);
     }
 

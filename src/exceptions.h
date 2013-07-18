@@ -62,6 +62,16 @@ public:
     ~SizeException() throw() {}
 };
 
+class ParseException : public BaseException
+{
+public:
+
+    explicit ParseException(const char* file, const char* function, int line, const char* message) throw()
+        : BaseException(file, function, line, message) {}
+
+    ~ParseException() throw() {}
+};
+
 } // namespace bm
 
 #endif

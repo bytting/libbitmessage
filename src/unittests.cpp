@@ -43,7 +43,7 @@ static void test_encode_varint()
     bm::SecureVector v1 = bm::encode::varint(i1);
     string s = bm::encode::hex(v1);
     cout << "123 encoded: " << s << "\n";
-    uint64_t i2 = bm::decode::varint(v1, nb);
+    uint64_t i2 = bm::decode::varint(v1.data(), nb);
     cout << "123 decoded: " << i2 << "\n";
     assert(s == "7B");
     assert(i1 == i2);
@@ -62,7 +62,7 @@ static void test_encode_varint()
     v1 = bm::encode::varint(i1);
     s = bm::encode::hex(v1);
     cout << "4595967296 encoded: " << s << "\n";
-    i2 = bm::decode::varint(v1, nb);
+    i2 = bm::decode::varint(v1.data(), nb);
     cout << "4595967296 decoded: " << i2 << "\n";
     assert(s == "FF0000000111F0E540");
     assert(i1 == i2);
@@ -213,11 +213,12 @@ static void test_addresses()
 {
     cout << "\n=== TEST ADDRESSES ===\n\n";
 
-    bm::Address bm_addr;
-    bm_addr.generate_address(3, 1);
+    bm::Address bm_addr(3, 1);
 
-    std::string addr = bm_addr.get_address_with_prefix();
+    std::string addr = bm_addr.get_address();
     cout << "Random address: " << addr << "\n";
+    assert(bm::check::address(addr));
+    cout << "Address stream number: " << bm::Address::extract_stream_number(addr) << "\n";
 
     cout << "\n=== OK ===\n" << endl;
 }

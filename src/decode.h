@@ -33,7 +33,7 @@ SecureVector base58(const std::string& encoded);
 
 SecureVector base64(const std::string& encoded);
 
-uint64_t varint(const SecureVector& data, int &nbytes);
+uint64_t varint(const Byte* data, int &nbytes);
 
 SecureVector wif(const std::string& encoded);
 

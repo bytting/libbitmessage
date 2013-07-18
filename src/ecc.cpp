@@ -90,7 +90,7 @@ std::string ECC::X509_PEM()
 
 uint16_t ECC::get_curve_id()
 {
-    return 714;
+    return 714; // secp256k1
 }
 
 void ECC::reset()
