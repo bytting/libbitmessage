@@ -12,7 +12,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -g -Wall")
 
 set(CMAKE_BUILD_TYPE Debug)
 
-configure_file(${CMAKE_SOURCE_DIR}/src/config.h.cmake ${CMAKE_SOURCE_DIR}/src/config.h)
+configure_file(${CMAKE_SOURCE_DIR}/config.h.cmake ${CMAKE_SOURCE_DIR}/src/config.h)
 
 aux_source_directory(./src SRC_LIST)
 add_executable(${PROJECT_NAME} ${SRC_LIST})
