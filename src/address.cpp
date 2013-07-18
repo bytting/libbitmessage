@@ -59,9 +59,10 @@ Address::Address(uint64_t address_version_number, uint64_t stream_number, bool e
     encode_address(address_version_number, stream_number, ripe);
 }
 
-std::string Address::get_address() const
+std::ostream& operator << (std::ostream& out, const Address& address)
 {
-    return "BM-" + m_address;
+    out << "BM-"  << address.m_address;
+    return out;
 }
 
 uint64_t Address::extract_stream_number(const std::string& address)

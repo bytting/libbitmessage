@@ -19,6 +19,7 @@
 #define BM_ADDRESS_H
 
 #include <string>
+#include <ostream>
 #include "btypes.h"
 
 namespace bm {
@@ -30,7 +31,8 @@ public:
     Address(uint64_t address_version_number, uint64_t stream_number, bool eighteen_byte_ripe = false);
     ~Address() {}    
 
-    std::string get_address() const;    
+    operator std::string() { return "BM-" + m_address; }
+    friend std::ostream& operator << (std::ostream& out, const Address& address);
 
     static uint64_t extract_stream_number(const std::string& address);
 

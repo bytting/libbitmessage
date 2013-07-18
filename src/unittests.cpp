@@ -219,12 +219,11 @@ static void test_addresses()
 {
     cout << "\n=== TEST ADDRESSES ===\n\n";
 
-    bm::Address bm_addr(3, 1);
+    bm::Address address(3, 1);
 
-    std::string addr = bm_addr.get_address();
-    cout << "Random address: " << addr << "\n";
-    assert(bm::check::address(addr));
-    cout << "Address stream number: " << bm::Address::extract_stream_number(addr) << "\n";
+    cout << "Random address: " << address << "\n";
+    assert(bm::check::address(address));
+    cout << "Address stream number: " << bm::Address::extract_stream_number(address) << "\n";
 
     cout << "\n=== OK ===\n" << endl;
 }
