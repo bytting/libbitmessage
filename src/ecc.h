@@ -32,9 +32,9 @@ class ECC
 public:
 
     ECC();
-    ~ECC();
-
-    void generate_key_pair();
+    ECC(const SecureVector& key_bytes);
+    ECC(const std::string& key_hex);
+    ~ECC();    
 
     const SecureVector& private_key() const;
     const ByteVector& public_key() const;
@@ -43,13 +43,13 @@ public:
     std::string PKCS8_PEM();
     std::string PKCS8_PEM(const std::string& password);
     ByteVector X509_BER();
-    std::string X509_PEM();
-
-    void clear();
+    std::string X509_PEM();    
 
     uint16_t get_curve_id();
 
 private:
+
+    void initialize_keys(const BigInteger& ikey);
 
     const Botan::EC_Group m_group;
     Botan::ECDSA_PrivateKey* m_key;

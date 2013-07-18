@@ -45,6 +45,13 @@ std::string hex(const ByteVector& v)
     return pipe.read_all_as_string();
 }
 
+std::string hex(const BigInteger& v)
+{
+    ByteVector result(v.bytes());
+    v.binary_encode(result.data());
+    return hex(result);
+}
+
 std::string base58(const BigInteger& num)
 {
     std::stringstream ss;

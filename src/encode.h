@@ -28,6 +28,7 @@ namespace encode {
 
 std::string hex(const SecureVector& v);
 std::string hex(const ByteVector& v);
+std::string hex(const BigInteger& v);
 
 std::string base58(const BigInteger& src);
 std::string base58(const SecureVector& src);

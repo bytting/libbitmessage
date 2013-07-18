@@ -28,16 +28,14 @@ namespace bm {
 
 void Address::generate_address(uint64_t address_version_number, uint64_t stream_number, bool eighteen_byte_ripe)
 {        
-    ECC sign_keys, encrypt_keys;
-    sign_keys.generate_key_pair();
-
+    ECC sign_keys;
     SecureVector ripe;
 
     while(true)
     {        
-        encrypt_keys.generate_key_pair();
-
+        ECC encrypt_keys;
         SecureVector key_merge;
+
         std::copy(sign_keys.public_key().begin(), sign_keys.public_key().end(), std::back_inserter(key_merge));
         std::copy(encrypt_keys.public_key().begin(), encrypt_keys.public_key().end(), std::back_inserter(key_merge));
 

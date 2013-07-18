@@ -16,6 +16,8 @@
 // Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
 #include <botan/alg_id.h>
 #include <botan/ber_dec.h>
@@ -23,32 +25,32 @@
 #include "utils.h"
 #include "hash.h"
 #include "encode.h"
+#include "decode.h"
 
 namespace bm {
 
 ECC::ECC() : m_group("secp256k1"), m_key(0)
 {
+    initialize_keys((BigInteger)0);
+}
+
+ECC::ECC(const SecureVector& key_bytes) : m_group("secp256k1"), m_key(0)
+{
+    BigInteger ikey(key_bytes.data(), key_bytes.size());
+    initialize_keys(ikey);
+}
+
+ECC::ECC(const std::string& key_hex) : m_group("secp256k1"), m_key(0)
+{
+    SecureVector key_bytes = decode::hex(key_hex);
+    BigInteger ikey(key_bytes.data(), key_bytes.size());
+    initialize_keys(ikey);
 }
 
 ECC::~ECC()
 {
-    clear();
-}
-
-void ECC::generate_key_pair()
-{
-    clear();
-    m_key = new Botan::ECDSA_PrivateKey(utils::random_number_generator(), m_group);
-    Botan::ECDSA_PublicKey pub(m_group, m_key->public_point());
-
-    BigInteger bit = m_key->private_value();
-    m_private_key_bytes.resize(bit.bytes());
-    bit.binary_encode(m_private_key_bytes.data());
-
-    Botan::PointGFp gfp = Botan::OS2ECP(m_key->x509_subject_public_key(), m_key->public_point().get_curve());
-    bit = gfp.get_affine_y();
-    m_public_key_bytes.resize(bit.bytes());
-    bit.binary_encode(m_public_key_bytes.data());
+    if(m_key)
+        delete m_key;
 }
 
 const SecureVector& ECC::private_key() const
@@ -86,18 +88,34 @@ std::string ECC::X509_PEM()
     return Botan::X509::PEM_encode(*m_key);
 }
 
-void ECC::clear()
-{
-    if(m_key)
-    {
-        delete m_key;
-        m_key = 0;
-    }
-}
-
-uint16_t get_curve_id()
+uint16_t ECC::get_curve_id()
 {
     return 714;
+}
+
+void ECC::initialize_keys(const BigInteger& ikey)
+{
+    if(m_key)
+        delete m_key;
+
+    m_key = new Botan::ECDSA_PrivateKey(utils::random_number_generator(), m_group, ikey);
+
+    BigInteger bi = m_key->private_value();
+    m_private_key_bytes.resize(bi.bytes());
+    bi.binary_encode(m_private_key_bytes.data());
+
+    m_public_key_bytes.push_back(0x04);
+
+    bi = m_key->public_point().get_affine_x();
+    ByteVector pub(bi.bytes());
+    bi.binary_encode(pub.data());
+    std::copy(pub.begin(), pub.end(), std::back_inserter(m_public_key_bytes));
+
+    pub.clear();
+    bi = m_key->public_point().get_affine_y();
+    pub.resize(bi.bytes());
+    bi.binary_encode(pub.data());
+    std::copy(pub.begin(), pub.end(), std::back_inserter(m_public_key_bytes));
 }
 
 } // namespace bm

@@ -102,8 +102,7 @@ static void test_ecc_keys()
 {
     cout << "\n=== TEST ECC ===\n\n";
 
-    bm::ECC keys;
-    keys.generate_key_pair();
+    bm::ECC keys;    
 
     cout << "=== BER encoded...\n";
     cout << "Private key BER:\n" << bm::encode::hex(keys.PKCS8_BER()) << "\n\n";
@@ -123,6 +122,13 @@ static void test_ecc_keys()
     cout << "wif decoded private key: " << bm::encode::hex(pk) << "\n";
     assert(keys.private_key() == pk);
     assert(bm::check::wif(wif));
+
+    cout << "\n\nTest creating key from hex string [092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801]\n\n";
+    bm::ECC k("092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801");
+    cout << "hex encoded priv: " << bm::encode::hex(k.private_key()) << "\n";
+    cout << "hex encoded pub : " << bm::encode::hex(k.public_key()) << "\n";
+    wif = bm::encode::wif(k.private_key());
+    cout << "wif encoded priv: " << wif << "\n";
 
     cout << "\n=== OK ===" << endl;
 }
