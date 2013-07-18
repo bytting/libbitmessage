@@ -93,10 +93,21 @@ uint16_t ECC::get_curve_id()
     return 714;
 }
 
-void ECC::initialize_keys(const BigInteger& ikey)
+void ECC::reset()
 {
     if(m_key)
+    {
         delete m_key;
+        m_key = 0;
+    }
+
+    m_private_key_bytes.clear();
+    m_public_key_bytes.clear();
+}
+
+void ECC::initialize_keys(const BigInteger& ikey)
+{
+    reset();
 
     m_key = new Botan::ECDSA_PrivateKey(utils::random_number_generator(), m_group, ikey);
 

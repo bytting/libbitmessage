@@ -49,6 +49,8 @@ public:
 
 private:
 
+    void reset();
+
     void initialize_keys(const BigInteger& ikey);
 
     const Botan::EC_Group m_group;
