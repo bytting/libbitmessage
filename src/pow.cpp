@@ -41,7 +41,7 @@ void do_generate_nonce(const SecureVector& payload, uint64_t& trials, uint64_t& 
 
     while(trials_test > target)
     {
-        nonce_test += 1;
+        ++nonce_test;
         v = bm::encode::varint(nonce_test);
         v += initial_hash;
         v2 = bm::hash::sha512(bm::hash::sha512(v));
@@ -66,11 +66,10 @@ bool validate_nonce(const SecureVector& payload)
         return false;
 
     int nb;
-    SecureVector original_payload;
-    uint64_t original_nonce = decode::varint(&payload[0], nb);
+    bm::SecureVector original_payload;
+    uint64_t trials, nonce, original_nonce = decode::varint(&payload[0], nb);
     std::copy(payload.begin() + nb, payload.end(), std::back_inserter(original_payload));
 
-    uint64_t trials, nonce;
     internal::do_generate_nonce(original_payload, trials, nonce);
 
     return nonce == original_nonce;

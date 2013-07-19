@@ -207,9 +207,9 @@ static void test_ecc_keys()
     cout << "\n=== OK ===" << endl;
 }
 
-static void test_addresses()
+static void test_address()
 {
-    cout << "\n=== TEST ADDRESSES ===\n\n";
+    cout << "\n=== TEST ADDRESS ===\n\n";
 
     bm::Address address(3, 1);
 
@@ -222,34 +222,41 @@ static void test_addresses()
 
 static void test_pow()
 {
+    using namespace chrono;
+
     cout << "\n=== TEST POW ===\n\n";
 
     bm::SecureVector payload;
 
-    ifstream fin("cipher_small", ios::in | ios::binary | ios::ate);
+    string test_file = "cipher_small";
+    ifstream fin(test_file.c_str(), ios::in | ios::binary | ios::ate);
     if (!fin.is_open())
     {
-        cout << "Unable to open file. Skipping pow test" << endl;
+        cout << "Unable to open file " << test_file << ". Skipping pow test" << endl;
     }
     else
     {
         payload.resize(fin.tellg());
-        fin.seekg (0, ios::beg);
+        fin.seekg(0, ios::beg);
         fin.read((char*)payload.data(), payload.size());
         fin.close();
+
+        time_point<system_clock> start_time = system_clock::now();
 
         uint64_t nonce;
         bm::pow::generate_nonce(payload, nonce);
 
-        cout << "nonce: " << nonce << endl;
+        time_point<system_clock> end_time = system_clock::now();
+
+        cout << "Generated nonce " << nonce << " in " << duration_cast<milliseconds>(end_time - start_time).count() << " ms" << endl;
 
         bm::SecureVector new_payload = bm::encode::varint(nonce);
         new_payload += payload;
 
         assert(bm::pow::validate_nonce(new_payload));
-    }
 
-    // FIXME: test bogus nonce
+        // FIXME: test bogus nonce
+    }
 
     cout << "\n=== OK ===\n" << endl;
 }
@@ -266,6 +273,6 @@ void run_unit_tests()
     test_hmac_sha256();
     test_hmac_sha512();
     test_ecc_keys();
-    test_addresses();
+    test_address();
     test_pow();
 }

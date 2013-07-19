@@ -28,13 +28,17 @@ namespace hash {
 
 SecureVector ripemd160(const SecureVector& data);
 SecureVector ripemd160(const std::string& data);
+
 SecureVector sha256(const SecureVector& data);
 SecureVector sha256(const std::string& data);
+
 SecureVector sha512(const SecureVector& data);
 SecureVector sha512(const ByteVector& data);
 SecureVector sha512(const std::string& data);
+
 SecureVector hmac_sha256(const SecureVector& data, const SecureVector& key);
 SecureVector hmac_sha512(const SecureVector& data, const SecureVector& key);
+
 OctetString pbkdf2_hmac_sha256(const std::string& password, const SecureVector& salt, int iterations = 10000);
 OctetString pbkdf2_hmac_sha512(const std::string& password, const SecureVector& salt, int iterations = 10000);
 
