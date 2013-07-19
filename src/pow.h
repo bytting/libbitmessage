@@ -30,7 +30,7 @@ namespace bm {
 
 namespace pow {
 
-void generate_nonce(const SecureVector& payload, uint64_t& nonce);
+uint64_t generate_nonce(const SecureVector& payload, bool parallel = true);
 
 bool validate_nonce(const SecureVector& payload);
 

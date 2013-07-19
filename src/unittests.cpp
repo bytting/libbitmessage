@@ -228,7 +228,7 @@ static void test_pow()
 
     bm::SecureVector payload;
 
-    string test_file = "cipher_small";
+    string test_file = "cipher_medium";
     ifstream fin(test_file.c_str(), ios::in | ios::binary | ios::ate);
     if (!fin.is_open())
     {
@@ -243,8 +243,7 @@ static void test_pow()
 
         time_point<system_clock> start_time = system_clock::now();
 
-        uint64_t nonce;
-        bm::pow::generate_nonce(payload, nonce);
+        uint64_t nonce = bm::pow::generate_nonce(payload);
 
         time_point<system_clock> end_time = system_clock::now();
 
