@@ -3,7 +3,17 @@ libbitmessage
 
 C++ bitmessage protocol API
 
+
+
 Status: Development
+
+
+
+License: GPLv3
+
+For a trustless project like the bitmessage protocol, all other licenses would be a security liability.
+
+
 
 At this point the code only compiles on Linux due to missing implementations of endianness for other platforms (see btypes.h)
 There is currently also a hard-coded dependency on the Botan C++ crypto library version 1.11 (see CMakeLists.txt)
