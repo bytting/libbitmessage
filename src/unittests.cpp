@@ -1,8 +1,10 @@
 #include <stdint.h>
 #include <string.h>
+#include <sstream>
+#include <fstream>
 #include <iostream>
 #include <cassert>
-#include <ctime>
+#include <chrono>
 #include "unittests.h"
 #include "utils.h"
 #include "enc.h"
@@ -223,48 +225,32 @@ static void test_pow()
     cout << "\n=== TEST POW ===\n\n";
 
     bm::SecureVector payload;
-    bm::SecureVector embedded_time = bm::decode::hex("010203");
-    bm::SecureVector cyphertext = bm::decode::hex("060409020305060a0e0a030c0d010700030b02010407030f080d0d050f0f0e080f0a");
 
-    //clock_t begin_time, end_time;
-    //printf("test_proofOfWork...");
-    //begin_time = clock();
+    ifstream fin("cipher_small", ios::in | ios::binary | ios::ate);
+    if (!fin.is_open())
+    {
+        cout << "Unable to open file. Skipping pow test" << endl;
+    }
+    else
+    {
+        payload.resize(fin.tellg());
+        fin.seekg (0, ios::beg);
+        fin.read((char*)payload.data(), payload.size());
+        fin.close();
 
-    payload = bm::pow::append_proof_of_work(1, embedded_time, cyphertext);
+        uint64_t nonce;
+        bm::pow::generate_nonce(payload, nonce);
 
-    //end_time = clock();
-    //int seconds = (int)((end_time-begin_time)/CLOCKS_PER_SEC);
-    //assert(seconds < 60);
+        cout << "nonce: " << nonce << endl;
 
-    // proof of work should be correct
-    assert(bm::pow::validate_proof_of_work(payload));
+        bm::SecureVector new_payload = bm::encode::varint(nonce);
+        new_payload += payload;
+
+        assert(bm::pow::validate_nonce(new_payload));
+    }
 
     // FIXME: test bogus nonce
-    /*
-    // if the proof of work is not correct
-    int nb;
-    uint64_t real_nonce = 0;
-    bm::decode::varint(&payload[0], nb);
 
-    //memcpy((void*)&real_nonce,(void*)payload.c_str(),8);
-
-    char str[8];
-    string s;
-    string message_payload = payload.substr(8);
-    for (unsigned long long bogus_nonce = 0; bogus_nonce < 100; bogus_nonce++)
-    {
-        if (real_nonce == bogus_nonce)
-            break;
-        memcpy((void*)str,(void*)&bogus_nonce,8);
-        s = "";
-        for (int i = 0; i < 8; i++)
-        {
-            s += str[i];
-        }
-        // the check should return false
-        assert(!bitmessage::checkProofOfWork(s + message_payload));
-    }
-    */
     cout << "\n=== OK ===\n" << endl;
 }
 

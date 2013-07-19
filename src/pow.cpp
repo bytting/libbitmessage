@@ -16,14 +16,10 @@
 // Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#include "config.h"
+#include <cstring>
 #include <algorithm>
 #include <iterator>
 #include <limits>
-#include <ctime> // FIXME chrono
-#ifdef BM_DEBUG
-#include <iostream>
-#endif
 #include "pow.h"
 #include "enc.h"
 #include "hash.h"
@@ -34,98 +30,50 @@ namespace pow {
 
 namespace internal {
 
-uint64_t get_proof_of_work_trial_value(uint64_t nonce, const SecureVector& initial_hash)
+void do_generate_nonce(const SecureVector& payload, uint64_t& trials, uint64_t& nonce)
 {
-    SecureVector trial_value, nonce_hash = encode::varint(nonce);
-    nonce_hash += initial_hash;
+    bm::SecureVector initial_hash = bm::hash::sha512(payload);
+    uint64_t target = std::numeric_limits<uint64_t>::max() / ((payload.size() + PAYLOAD_LENGTH_EXTRA_BYTES + 8) * AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
 
-    SecureVector sha = hash::sha512(hash::sha512(nonce_hash));
-    std::copy(sha.end() - 8, sha.end(), std::back_inserter(trial_value));
+    bm::SecureVector v, v2;
+    uint64_t nonce_test = 0;
+    uint64_t trials_test = std::numeric_limits<uint64_t>::max();
 
-    int nb;
-    return decode::varint(trial_value.data(), nb);
+    while(trials_test > target)
+    {
+        nonce_test += 1;
+        v = bm::encode::varint(nonce_test);
+        v += initial_hash;
+        v2 = bm::hash::sha512(bm::hash::sha512(v));
+        std::memcpy(&trials_test, &v2[0], 8);
+    }
+
+    trials = trials_test;
+    nonce = nonce_test;
 }
 
 } // namespace internal
 
-SecureVector append_proof_of_work(
-        uint64_t stream_number,
-        const SecureVector& embedded_time,
-        const SecureVector& cyphertext,
-        uint32_t payload_length_extra_bytes,
-        uint32_t average_proof_of_work_nonce_trials_per_byte)
+void generate_nonce(const SecureVector& payload, uint64_t& nonce)
 {
-    uint64_t target, nonce = 0;
-    uint64_t trial_value = std::numeric_limits<uint64_t>::max();
-    clock_t begin_time, end_time;
-
-    SecureVector payload = embedded_time;
-    payload += encode::varint(stream_number);
-    payload += cyphertext;
-
-    target = std::numeric_limits<uint64_t>::max() / ((8 + payload.size() + payload_length_extra_bytes) * average_proof_of_work_nonce_trials_per_byte);
-
-    begin_time = std::clock();
-    SecureVector initial_hash = hash::sha512(payload);
-    uint64_t best = 0;
-    while (trial_value > target)
-    {
-        if (nonce == 0)
-            nonce = 1;
-        else
-            nonce += 32;
-
-// #pragma omp parallel for
-        for (uint64_t index = 0; index < 4; index++)
-        {
-            uint64_t n = internal::get_proof_of_work_trial_value(nonce + index, initial_hash);
-            if (n <= target)
-            {
-                trial_value = n;
-                best = nonce + index;
-            }
-        }
-    }
-
-    nonce = best;
-    end_time = std::clock();
-
-#ifdef BM_DEBUG
-
-    std::clog << "Found proof of work: " << trial_value << std::endl;
-    std::clog << "Nonce: " << nonce << std::endl;
-
-    if (end_time > begin_time)
-    {
-        std::clog << "POW took " << (int)((end_time - begin_time) / CLOCKS_PER_SEC) << " seconds" << std::endl;
-        std::clog << nonce / (uint64_t)((end_time - begin_time) / CLOCKS_PER_SEC) << " nonce trials per second" << std::endl;
-    }
-
-#endif
-
-    // prepend the nonce value.  This can then be used by the receiver to check that the payload is valid
-    SecureVector result = encode::varint(nonce);
-    result += payload;
-    return result;
+    uint64_t trials;
+    internal::do_generate_nonce(payload, trials, nonce);
 }
 
-bool validate_proof_of_work(const SecureVector& payload,
-        uint32_t payload_length_extra_bytes,
-        uint32_t average_proof_of_work_nonce_trials_per_byte)
+bool validate_nonce(const SecureVector& payload)
 {
     if (payload.size() < 2)
         return false;
 
     int nb;
-    SecureVector tmp_payload;
+    SecureVector original_payload;
+    uint64_t original_nonce = decode::varint(&payload[0], nb);
+    std::copy(payload.begin() + nb, payload.end(), std::back_inserter(original_payload));
 
-    uint64_t nonce = decode::varint(&payload[0], nb);
-    std::copy(payload.begin() + nb, payload.end(), std::back_inserter(tmp_payload));
+    uint64_t trials, nonce;
+    internal::do_generate_nonce(original_payload, trials, nonce);
 
-    uint64_t target = std::numeric_limits<uint64_t>::max() / ((payload.size() + payload_length_extra_bytes) * average_proof_of_work_nonce_trials_per_byte);
-
-    SecureVector initial_hash = hash::sha512(tmp_payload);
-    return internal::get_proof_of_work_trial_value(nonce, initial_hash) <= target;
+    return nonce == original_nonce;
 }
 
 } // namespace pow

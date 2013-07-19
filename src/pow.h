@@ -30,16 +30,9 @@ namespace bm {
 
 namespace pow {
 
-SecureVector append_proof_of_work(
-        uint64_t stream_number,
-        const SecureVector& embedded_time,
-        const SecureVector& cyphertext,
-        uint32_t payload_length_extra_bytes = PAYLOAD_LENGTH_EXTRA_BYTES,
-        uint32_t average_proof_of_work_nonce_trials_per_byte = AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
+void generate_nonce(const SecureVector& payload, uint64_t& nonce);
 
-bool validate_proof_of_work(const SecureVector &payload,
-        uint32_t payload_length_extra_bytes = PAYLOAD_LENGTH_EXTRA_BYTES,
-        uint32_t average_proof_of_work_nonce_trials_per_byte = AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
+bool validate_nonce(const SecureVector& payload);
 
 } // namespace pow
 
