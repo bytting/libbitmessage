@@ -23,8 +23,6 @@ namespace bm {
 
 namespace utils {
 
-const std::string BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-
 namespace internal {
 
 struct RandomNumberGeneratorAutoSeeded

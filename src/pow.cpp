@@ -78,12 +78,11 @@ void do_generate_nonce_parallel_worker(const SecureVector& payload_hash, uint64_
     *nonce = nonce_test;
 }
 
-void do_generate_nonce_parallel(const SecureVector& payload, uint64_t& nonce)
+void do_generate_nonce_parallel(const SecureVector& payload, uint64_t& nonce) // FIXME: Do better threading
 {
-    unsigned int concurent_threads_supported = std::thread::hardware_concurrency();
-    if(!concurent_threads_supported)
+    unsigned int concurent_threads_supported = std::thread::hardware_concurrency() - 2;
+    if(concurent_threads_supported <= 0)
         concurent_threads_supported = 1;
-    else concurent_threads_supported = 6; // FIXME: Do better threading
 
     SecureVector payload_hash = bm::hash::sha512(payload);
     uint64_t target = std::numeric_limits<uint64_t>::max() / ((payload.size() + PAYLOAD_LENGTH_EXTRA_BYTES + 8) * AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);

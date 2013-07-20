@@ -28,8 +28,6 @@ namespace bm {
 
 namespace utils {
 
-extern const std::string BASE58;
-
 Botan::AutoSeeded_RNG& random_number_generator();
 SecureVector random_bytes(uint32_t count);
 uint32_t seconds_since_epoc();

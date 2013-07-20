@@ -243,13 +243,14 @@ static void test_pow()
         fin.read((char*)payload.data(), payload.size());
         fin.close();
 
+        ProfilerStart("profile-test");
         time_point<system_clock> start_time = system_clock::now();
 
-        ProfilerStart("profile-test");
         uint64_t nonce = bm::pow::generate_nonce(payload, true);
-        ProfilerStop();
 
         time_point<system_clock> end_time = system_clock::now();
+        ProfilerStop();
+
 
         cout << "Generated nonce " << nonce << " in " << duration_cast<milliseconds>(end_time - start_time).count() << " ms" << endl;
 

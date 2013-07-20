@@ -29,6 +29,12 @@
 
 namespace bm {
 
+namespace internal {
+
+const std::string BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+} // namespace internal
+
 namespace encode {
 
 std::string hex(const SecureVector& v)
@@ -58,7 +64,7 @@ std::string base58(const BigInteger& num)
 
     if(num == 0)
     {
-        ss << utils::BASE58[0];
+        ss << internal::BASE58[0];
         return ss.str();
     }
 
@@ -70,7 +76,7 @@ std::string base58(const BigInteger& num)
         r = n % base;
         n = n / base;
 
-        ss << utils::BASE58[r];
+        ss << internal::BASE58[r];
     }
 
     std::string output = ss.str();
@@ -168,8 +174,8 @@ BigInteger base58i(const std::string& encoded)
 
     for(std::string::const_iterator it = encoded.begin(); it != encoded.end(); ++it, exp--)
     {
-        uint64_t pos = utils::BASE58.find_first_of(*it);
-        if(it == utils::BASE58.end())
+        uint64_t pos = internal::BASE58.find_first_of(*it);
+        if(it == internal::BASE58.end())
             throw RangeException(__FILE__, __FUNCTION__, __LINE__, "Encoded character not in base58");
 
         num += pos * (uint64_t)std::pow((double)base, (double)exp);
@@ -187,8 +193,8 @@ SecureVector base58(const std::string& encoded)
 
     for (std::string::const_iterator it = encoded.begin(); it != encoded.end(); ++it)
     {
-        uint64_t pos = utils::BASE58.find_first_of(*it);
-        if(it == utils::BASE58.end())
+        uint64_t pos = internal::BASE58.find_first_of(*it);
+        if(it == internal::BASE58.end())
             throw RangeException(__FILE__, __FUNCTION__, __LINE__, "Encoded character not in base58");
 
         bn = bn * base;
