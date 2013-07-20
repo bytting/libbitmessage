@@ -11,8 +11,6 @@ Status: Development
 
 License: GPLv3
 
-For a trustless project like the bitmessage protocol, all other licenses would be a security liability.
-
 
 
 At this point the code only compiles on Linux due to missing implementations of endianness for other platforms (see btypes.h)

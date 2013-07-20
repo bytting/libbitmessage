@@ -6,6 +6,7 @@
 #include <cassert>
 #include <chrono>
 #include "unittests.h"
+#include "btypes.h"
 #include "utils.h"
 #include "enc.h"
 #include "ecc.h"
@@ -13,7 +14,8 @@
 #include "address.h"
 #include "check.h"
 #include "pow.h"
-//#include "bitmessage.h"
+
+#include <google/profiler.h>
 
 using namespace std;
 
@@ -243,7 +245,9 @@ static void test_pow()
 
         time_point<system_clock> start_time = system_clock::now();
 
-        uint64_t nonce = bm::pow::generate_nonce(payload);
+        ProfilerStart("profile-test");
+        uint64_t nonce = bm::pow::generate_nonce(payload, true);
+        ProfilerStop();
 
         time_point<system_clock> end_time = system_clock::now();
 
