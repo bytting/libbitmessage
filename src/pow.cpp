@@ -49,7 +49,7 @@ void do_generate_nonce(const SecureVector& payload, uint64_t& nonce)
         v = bm::encode::varint(nonce_test);
         std::copy(payload_hash.begin(), payload_hash.end(), std::back_inserter(v));
         v = bm::hash::sha512(bm::hash::sha512(v));
-        std::memcpy(&trials_test, v.data(), 8);
+        std::memcpy(&trials_test, v.data(), 8);        
     }
 
     nonce = nonce_test;
@@ -71,7 +71,7 @@ void do_generate_nonce_parallel_worker(const SecureVector& payload_hash, uint64_
         v = bm::encode::varint(nonce_test);
         std::copy(payload_hash.begin(), payload_hash.end(), std::back_inserter(v));
         v = bm::hash::sha512(bm::hash::sha512(v));
-        std::memcpy(&trials_test, v.data(), 8);
+        std::memcpy(&trials_test, v.data(), 8);        
     }
 
     tflag = true;

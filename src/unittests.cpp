@@ -186,7 +186,7 @@ static void test_ecc_keys()
 
     cout << "Private key BER:\n" << bm::encode::hex(keys.PKCS8_BER()) << "\n";
     cout << "Public key BER:\n" << bm::encode::hex(keys.X509_BER()) << "\n";
-    cout << "Private key PEM encrypted:\n" << keys.PKCS8_PEM("qwerty") << "\n";
+    //cout << "Private key PEM encrypted:\n" << keys.PKCS8_PEM("qwerty") << "\n"; // FIXME
 
     string wif = bm::encode::wif(keys.private_key());
     cout << "wif encoded private key: " << wif << "\n";
@@ -230,7 +230,7 @@ static void test_pow()
 
     bm::SecureVector payload;
 
-    string test_file = "cipher_medium";
+    string test_file = "cipher";
     ifstream fin(test_file.c_str(), ios::in | ios::binary | ios::ate);
     if (!fin.is_open())
     {
@@ -246,11 +246,10 @@ static void test_pow()
         ProfilerStart("profile-test");
         time_point<system_clock> start_time = system_clock::now();
 
-        uint64_t nonce = bm::pow::generate_nonce(payload, true);
+        uint64_t nonce = bm::pow::generate_nonce(payload, false);
 
         time_point<system_clock> end_time = system_clock::now();
         ProfilerStop();
-
 
         cout << "Generated nonce " << nonce << " in " << duration_cast<milliseconds>(end_time - start_time).count() << " ms" << endl;
 

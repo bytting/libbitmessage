@@ -18,16 +18,14 @@ configure_file(${CMAKE_SOURCE_DIR}/config.h.cmake ${CMAKE_SOURCE_DIR}/src/config
 aux_source_directory(./src SRC_LIST)
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/Modules/)
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/Modules/)
 
-#find_package(Botan REQUIRED)
-#include_directories(${Botan_INCLUDE_DIRS})
-#set(LIBS ${LIBS} ${Botan_LIBRARIES})
-#target_link_libraries(${PROJECT_NAME} ${LIBS})
+exec_program("botan-config-1.11 --cflags" OUTPUT_VARIABLE BOTAN_CXXFLAGS)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BOTAN_CXXFLAGS}")
+exec_program("botan-config-1.11 --libs" OUTPUT_VARIABLE BOTAN_LIBS)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BOTAN_LIBS}")
 
-include_directories(/usr/local/include/botan-1.11)
-target_link_libraries(${PROJECT_NAME} /usr/local/lib/libbotan-1.11.so)
-#target_link_libraries(${PROJECT_NAME} botan-1.11)
+message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 # Google Performance Tools
 target_link_libraries(${PROJECT_NAME} profiler)

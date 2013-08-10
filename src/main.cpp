@@ -28,7 +28,8 @@ int main(int argc, char* argv[])
     {
         std::cout << LIBRARY_NAME << " " << LIBRARY_VERSION << std::endl;
 
-        Botan::LibraryInitializer init("thread_safe=no");
+        //Botan::LibraryInitializer init("thread_safe=no");
+        Botan::LibraryInitializer init;
 
         run_unit_tests();
     }
