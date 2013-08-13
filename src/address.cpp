@@ -21,7 +21,6 @@
 #include "address.h"
 #include "exceptions.h"
 #include "utils.h"
-#include "check.h"
 #include "enc.h"
 #include "hash.h"
 #include "ecc.h"

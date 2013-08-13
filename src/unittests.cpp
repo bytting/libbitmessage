@@ -12,7 +12,6 @@
 #include "ecc.h"
 #include "hash.h"
 #include "address.h"
-#include "check.h"
 #include "pow.h"
 
 #include <google/profiler.h>
