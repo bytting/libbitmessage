@@ -35,6 +35,7 @@ public:
     friend std::ostream& operator << (std::ostream& out, const Address& address);
 
     static uint64_t extract_stream_number(const std::string& address);
+    static bool validate_checksum(const std::string& address);
 
 private:
 

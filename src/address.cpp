@@ -66,7 +66,7 @@ std::ostream& operator << (std::ostream& out, const Address& address)
 
 uint64_t Address::extract_stream_number(const std::string& address)
 {
-    if(!check::address(address))
+    if(!validate_checksum(address))
         throw ParseException(__FILE__, __FUNCTION__, __LINE__, "Invalid address checksum");
 
     int nb;
@@ -75,6 +75,20 @@ uint64_t Address::extract_stream_number(const std::string& address)
 
     decode::varint(bytes.data(), nb);
     return decode::varint(&bytes[nb], nb);
+}
+
+bool Address::validate_checksum(const std::string& address)
+{
+    std::string addr = utils::remove_prefix(address, "BM-");
+    SecureVector checksum1, checksum2, raw_address, address_bytes = decode::base58(addr);
+
+    std::copy(address_bytes.begin(), address_bytes.end() - 4, std::back_inserter(raw_address));
+    std::copy(address_bytes.end() - 4, address_bytes.end(), std::back_inserter(checksum1));
+
+    SecureVector sha = hash::sha512(hash::sha512(raw_address));
+    std::copy(sha.begin(), sha.begin() + 4, std::back_inserter(checksum2));
+
+    return checksum1 == checksum2;
 }
 
 void Address::encode_address(uint64_t version, uint64_t stream, const SecureVector& ripe)

@@ -28,35 +28,6 @@ namespace bm {
 
 namespace check {
 
-bool wif(const std::string& encoded)
-{
-    if(encoded.length() < 5)
-        throw SizeException(__FILE__, __FUNCTION__, __LINE__, "Encoded WIF is too short");
-
-    SecureVector checksum1, checksum2, extended, decoded = decode::base58(encoded);
-
-    std::copy(decoded.end() - 4, decoded.end(), std::back_inserter(checksum1));
-    std::copy(decoded.begin(), decoded.end() - 4, std::back_inserter(extended));
-    SecureVector sha = hash::sha256(hash::sha256(extended));
-    std::copy(sha.begin(), sha.begin() + 4, std::back_inserter(checksum2));
-
-    return checksum1 == checksum2;
-}
-
-bool address(const std::string& address)
-{
-    std::string addr = utils::remove_prefix(address, "BM-");
-    SecureVector checksum1, checksum2, raw_address, address_bytes = decode::base58(addr);
-
-    std::copy(address_bytes.begin(), address_bytes.end() - 4, std::back_inserter(raw_address));
-    std::copy(address_bytes.end() - 4, address_bytes.end(), std::back_inserter(checksum1));
-
-    SecureVector sha = hash::sha512(hash::sha512(raw_address));
-    std::copy(sha.begin(), sha.begin() + 4, std::back_inserter(checksum2));
-
-    return checksum1 == checksum2;
-}
-
 } // namespace check
 
 } // namespace bm

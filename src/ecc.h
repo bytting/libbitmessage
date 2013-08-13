@@ -48,6 +48,8 @@ public:
 
     uint16_t get_curve_id() const;
 
+    static bool validate_wif_checksum(const std::string& encoded);
+
     friend std::ostream& operator << (std::ostream& out, const ECC& ecc);
 
 private:

@@ -22,6 +22,7 @@
 #include <botan/alg_id.h>
 #include <botan/ber_dec.h>
 #include "ecc.h"
+#include "exceptions.h"
 #include "utils.h"
 #include "hash.h"
 #include "enc.h"
@@ -90,6 +91,21 @@ std::string ECC::X509_PEM() const
 uint16_t ECC::get_curve_id() const
 {
     return 714; // secp256k1
+}
+
+bool ECC::validate_wif_checksum(const std::string& encoded)
+{
+    if(encoded.length() < 5)
+        throw SizeException(__FILE__, __FUNCTION__, __LINE__, "Encoded WIF is too short");
+
+    SecureVector checksum1, checksum2, extended, decoded = decode::base58(encoded);
+
+    std::copy(decoded.end() - 4, decoded.end(), std::back_inserter(checksum1));
+    std::copy(decoded.begin(), decoded.end() - 4, std::back_inserter(extended));
+    SecureVector sha = hash::sha256(hash::sha256(extended));
+    std::copy(sha.begin(), sha.begin() + 4, std::back_inserter(checksum2));
+
+    return checksum1 == checksum2;
 }
 
 std::ostream& operator << (std::ostream& out, const ECC& ecc)

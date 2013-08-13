@@ -193,7 +193,7 @@ static void test_ecc_keys()
     bm::SecureVector pk = bm::decode::wif(wif);
     cout << "wif decoded private key: " << bm::encode::hex(pk) << "\n";
     assert(keys.private_key() == pk);
-    assert(bm::check::wif(wif));
+    assert(bm::ECC::validate_wif_checksum(wif));
 
     // Private key hex (32 byte): 092715c60df8c561c832ab3c804be0a0f90b108072133df7d1e348e2570be801
     // Public key hex (65 byte including 0x04 prefix): 0437a3191fe90d9b483324c28ecd019479e708cfcff96800131c113ec30a0646ee95c31b4c5656b1e7122f071ae4471a97511f372179147277ea2a2087147f9486
@@ -216,7 +216,7 @@ static void test_address()
     bm::Address address(3, 1);
 
     cout << "Random address: " << address << "\n";
-    assert(bm::check::address(address));
+    assert(bm::Address::validate_checksum(address));
     cout << "Address stream number: " << bm::Address::extract_stream_number(address) << "\n";
 
     cout << "\n=== OK ===\n" << endl;
