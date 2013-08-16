@@ -13,7 +13,25 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
-// Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#include "net.h"
+#include <string>
+#include "str.h"
+
+namespace bm {
+
+namespace str {
+
+std::string remove_prefix(const std::string& source, const std::string& prefix)
+{
+    std::string result;
+    std::string::size_type pos = source.find_first_of(prefix);
+    if(!pos)
+        std::copy(source.begin() + prefix.length(), source.end(), std::back_inserter(result));
+    else result = source;
+    return result;
+}
+
+} // namespace str
+
+} // namespace bm

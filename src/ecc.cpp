@@ -23,7 +23,7 @@
 #include <botan/ber_dec.h>
 #include "ecc.h"
 #include "exceptions.h"
-#include "utils.h"
+#include "random.h"
 #include "hash.h"
 #include "enc.h"
 
@@ -75,7 +75,7 @@ std::string ECC::PKCS8_PEM() const
 
 std::string ECC::PKCS8_PEM(const std::string& password) const
 {
-    return Botan::PKCS8::PEM_encode(*m_key, utils::random_number_generator(), password);
+    return Botan::PKCS8::PEM_encode(*m_key, random::generator(), password);
 }
 
 ByteVector ECC::X509_BER() const
@@ -133,7 +133,7 @@ void ECC::initialize_keys(const BigInteger& ikey)
 {
     reset();
 
-    m_key = new Botan::ECDSA_PrivateKey(utils::random_number_generator(), m_group, ikey);
+    m_key = new Botan::ECDSA_PrivateKey(random::generator(), m_group, ikey);
 
     BigInteger bi = m_key->private_value();
     m_private_key_bytes.resize(bi.bytes());

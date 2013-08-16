@@ -16,25 +16,21 @@
 // Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#ifndef BM_UTILS_H
-#define BM_UTILS_H
-
-#include <stdint.h>
-#include <string>
-#include <botan/auto_rng.h>
-#include "btypes.h"
+#include <chrono>
+#include "time.h"
 
 namespace bm {
 
-namespace utils {
+namespace time {
 
-Botan::AutoSeeded_RNG& random_number_generator();
-SecureVector random_bytes(uint32_t count);
-uint32_t seconds_since_epoc();
-std::string remove_prefix(const std::string& source, const std::string& prefix);
+/*uint32_t seconds_since_epoc()
+{
+    using namespace std::chrono;
+    system_clock::time_point tp = system_clock::now();
+    system_clock::duration dtn = tp.time_since_epoch();
+    return dtn.count() * system_clock::period::num / system_clock::period::den;
+}*/
 
-} //namespace utils
+} // namespace time
 
-} //namespace bm
-
-#endif
+} // namespace bm

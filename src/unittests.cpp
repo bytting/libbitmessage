@@ -7,7 +7,8 @@
 #include <chrono>
 #include "unittests.h"
 #include "btypes.h"
-#include "utils.h"
+#include "time.h"
+#include "random.h"
 #include "enc.h"
 #include "ecc.h"
 #include "hash.h"
@@ -153,8 +154,8 @@ static void test_hmac_sha256()
 {
     cout << "\n=== TEST HMAC_SHA256 ===\n\n";
 
-    bm::SecureVector key = bm::utils::random_bytes(32);
-    bm::SecureVector data = bm::utils::random_bytes(1024);
+    bm::SecureVector key = bm::random::bytes(32);
+    bm::SecureVector data = bm::random::bytes(1024);
     bm::SecureVector mac = bm::hash::hmac_sha256(data, key); // FIXME: Make a _real_ test
     bm::OctetString ostr(mac);
     cout << ostr.as_string() << endl;
@@ -167,8 +168,8 @@ static void test_hmac_sha512()
 {
     cout << "\n=== TEST HMAC_SHA512 ===\n\n";
 
-    bm::SecureVector key = bm::utils::random_bytes(32);
-    bm::SecureVector data = bm::utils::random_bytes(1024);
+    bm::SecureVector key = bm::random::bytes(32);
+    bm::SecureVector data = bm::random::bytes(1024);
     bm::SecureVector mac = bm::hash::hmac_sha512(data, key); // FIXME: Make a _real_ test
     bm::OctetString ostr(mac);
     cout << ostr.as_string() << endl;

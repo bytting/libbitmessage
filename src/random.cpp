@@ -13,15 +13,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // CONTRIBUTORS AND COPYRIGHT HOLDERS (c) 2013:
-// Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#include <chrono>
-#include "utils.h"
+#include "random.h"
 
 namespace bm {
 
-namespace utils {
+namespace random {
 
 namespace internal {
 
@@ -36,34 +34,16 @@ struct RandomNumberGeneratorAutoSeeded
 
 } // namespace internal
 
-Botan::AutoSeeded_RNG& random_number_generator()
+Botan::AutoSeeded_RNG& generator()
 {
     return internal::RandomNumberGeneratorAutoSeeded::instance();
 }
 
-SecureVector random_bytes(uint32_t count)
+SecureVector bytes(uint32_t count)
 {
     return internal::RandomNumberGeneratorAutoSeeded::instance().random_vec(count);
 }
 
-uint32_t seconds_since_epoc()
-{
-    using namespace std::chrono;
-    system_clock::time_point tp = system_clock::now();
-    system_clock::duration dtn = tp.time_since_epoch();
-    return dtn.count() * system_clock::period::num / system_clock::period::den;
-}
-
-std::string remove_prefix(const std::string& source, const std::string& prefix)
-{
-    std::string result;
-    std::string::size_type pos = source.find_first_of(prefix);
-    if(!pos)
-        std::copy(source.begin() + prefix.length(), source.end(), std::back_inserter(result));
-    else result = source;
-    return result;
-}
-
-} // namespace utils
+} // namespace random
 
 } // namespace bm

@@ -16,8 +16,8 @@
 // Bob Mottram (bob@robotics.uk.to)
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
-#ifndef BM_NET_H
-#define BM_NET_H
+#ifndef PROTO_H
+#define PROTO_H
 
 #include <stdint.h>
 

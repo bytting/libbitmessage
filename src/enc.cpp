@@ -25,7 +25,6 @@
 #include "enc.h"
 #include "exceptions.h"
 #include "hash.h"
-#include "utils.h"
 
 namespace bm {
 
