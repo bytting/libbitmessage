@@ -21,11 +21,11 @@
 #include <memory>
 #include <botan/alg_id.h>
 #include <botan/ber_dec.h>
-#include "ecc.h"
+#include "elliptic.h"
 #include "exceptions.h"
 #include "random.h"
 #include "hash.h"
-#include "enc.h"
+#include "encoding.h"
 
 namespace bm {
 

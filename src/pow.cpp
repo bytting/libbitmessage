@@ -23,7 +23,7 @@
 #include <thread>
 #include <atomic>
 #include "pow.h"
-#include "enc.h"
+#include "encoding.h"
 #include "hash.h"
 
 namespace bm {

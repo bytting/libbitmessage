@@ -16,11 +16,11 @@
 // Dag Robøle (BM-2DAS9BAs92wLKajVy9DS1LFcDiey5dxp5c)
 
 #include <string>
-#include "str.h"
+#include "strings.h"
 
 namespace bm {
 
-namespace str {
+namespace strings {
 
 std::string remove_prefix(const std::string& source, const std::string& prefix)
 {
@@ -32,6 +32,6 @@ std::string remove_prefix(const std::string& source, const std::string& prefix)
     return result;
 }
 
-} // namespace str
+} // namespace strings
 
 } // namespace bm

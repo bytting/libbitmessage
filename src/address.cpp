@@ -20,10 +20,10 @@
 #include <iterator>
 #include "address.h"
 #include "exceptions.h"
-#include "enc.h"
+#include "encoding.h"
 #include "hash.h"
-#include "ecc.h"
-#include "str.h"
+#include "elliptic.h"
+#include "strings.h"
 
 namespace bm {
 
@@ -69,7 +69,7 @@ uint64_t Address::extract_stream_number(const std::string& address)
         throw ParseException(__FILE__, __FUNCTION__, __LINE__, "Invalid address checksum");
 
     int nb;
-    std::string addr = str::remove_prefix(address, "BM-");
+    std::string addr = strings::remove_prefix(address, "BM-");
     SecureVector bytes = decode::base58(addr);
 
     decode::varint(bytes.data(), nb);
@@ -78,7 +78,7 @@ uint64_t Address::extract_stream_number(const std::string& address)
 
 bool Address::validate_checksum(const std::string& address)
 {
-    std::string addr = str::remove_prefix(address, "BM-");
+    std::string addr = strings::remove_prefix(address, "BM-");
     SecureVector checksum1, checksum2, raw_address, address_bytes = decode::base58(addr);
 
     std::copy(address_bytes.begin(), address_bytes.end() - 4, std::back_inserter(raw_address));

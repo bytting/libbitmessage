@@ -22,7 +22,7 @@
 #include <sstream>
 #include <botan/pipe.h>
 #include <botan/filters.h>
-#include "enc.h"
+#include "encoding.h"
 #include "exceptions.h"
 #include "hash.h"
 
