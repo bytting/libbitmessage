@@ -25,7 +25,7 @@ namespace bm {
 
 SecureVector calculateInventoryHash(const SecureVector& data)
 {
-    SecureVector sha = hash::sha512(hash::sha512(data));
+    SecureVector sha = hash::double_sha512(data);
     if(sha.size() < 32)
         throw SizeException(__FILE__, __FUNCTION__, __LINE__, "Hash size is less than 32");
     return sha;

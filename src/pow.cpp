@@ -23,7 +23,6 @@
 #include <thread>
 #include <atomic>
 #include "pow.h"
-#include "encoding.h"
 #include "hash.h"
 
 namespace bm {
@@ -45,8 +44,8 @@ uint64_t do_generate_nonce(const SecureVector& payload_hash, uint64_t target)
     while(trials_test > target)
     {
         ++nonce_test;        
-        *nonce = host_to_big_64(nonce_test);
-        vx = bm::hash::sha512(bm::hash::sha512(v));
+        *nonce = host_to_big_64(nonce_test);        
+        vx = bm::hash::double_sha512(v);
         memcpy(&trials_test, vx.data(), 8);
         trials_test = big_to_host_64(trials_test);
     }    
@@ -70,7 +69,7 @@ void do_generate_nonce_parallel_worker(const SecureVector& payload_hash, uint64_
             return;
         ++nonce_test;
         *nonce_ptr = host_to_big_64(nonce_test);
-        vx = bm::hash::sha512(bm::hash::sha512(v));
+        vx = bm::hash::double_sha512(v);
         memcpy(&trials_test, vx.data(), 8);
         trials_test = big_to_host_64(trials_test);
     }
@@ -130,7 +129,7 @@ bool validate_nonce(const SecureVector& payload)
     memcpy(v.data() + sizeof(uint64_t), initial_hash.data(), initial_hash.size());
     *((uint64_t*)v.data()) = nonce;
 
-    SecureVector vx = bm::hash::sha512(bm::hash::sha512(v));
+    SecureVector vx = bm::hash::double_sha512(v);
     trials_test = big_to_host_64(*vx.data());
 
     return trials_test <= target;

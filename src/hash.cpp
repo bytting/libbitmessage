@@ -95,6 +95,13 @@ SecureVector sha512(const std::string& data)
     return internal::hash<std::string, Botan::SHA_512>(data);
 }
 
+SecureVector double_sha512(const SecureVector& data)
+{
+    Botan::Pipe pipe(new Botan::Chain(new Botan::Hash_Filter("SHA-512"), new Botan::Hash_Filter("SHA-512")));
+    pipe.process_msg(data);
+    return pipe.read_all();
+}
+
 SecureVector hmac_sha256(const SecureVector& data, const SecureVector& key)
 {
     return internal::hmac_hash(data, key, "HMAC(SHA-256)");

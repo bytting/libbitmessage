@@ -84,7 +84,7 @@ bool Address::validate_checksum(const std::string& address)
     std::copy(address_bytes.begin(), address_bytes.end() - 4, std::back_inserter(raw_address));
     std::copy(address_bytes.end() - 4, address_bytes.end(), std::back_inserter(checksum1));
 
-    SecureVector sha = hash::sha512(hash::sha512(raw_address));
+    SecureVector sha = hash::double_sha512(raw_address);
     std::copy(sha.begin(), sha.begin() + 4, std::back_inserter(checksum2));
 
     return checksum1 == checksum2;
@@ -107,7 +107,7 @@ void Address::encode_address(uint64_t version, uint64_t stream, const SecureVect
     bm_addr += encode::varint(stream);
     bm_addr += ripex;
 
-    SecureVector checksum = hash::sha512(hash::sha512(bm_addr));
+    SecureVector checksum = hash::double_sha512(bm_addr);
     std::copy(checksum.begin(), checksum.begin() + 4, std::back_inserter(bm_addr));
 
     m_address = encode::base58(bm_addr);

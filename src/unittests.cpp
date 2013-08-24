@@ -230,13 +230,13 @@ static void test_pow()
 
     bm::SecureVector payload = bm::random::bytes(1000);
 
-    //ProfilerStart("profile-test");
+    ProfilerStart("profile-test");
     time_point<system_clock> start_time = system_clock::now();
 
     uint64_t nonce = bm::pow::generate_nonce(payload, true);
 
     time_point<system_clock> end_time = system_clock::now();
-    //ProfilerStop();
+    ProfilerStop();
 
     cout << "Generated nonce " << nonce << " in " << duration_cast<milliseconds>(end_time - start_time).count() << " ms" << endl;
 
