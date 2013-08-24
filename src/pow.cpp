@@ -34,114 +34,104 @@ namespace internal {
 
 std::atomic_bool tflag;
 
-void do_generate_nonce(const SecureVector& payload, uint64_t& nonce)
+uint64_t do_generate_nonce(const SecureVector& payload_hash, uint64_t target)
 {
-    SecureVector payload_hash = bm::hash::sha512(payload);
-    uint64_t target = std::numeric_limits<uint64_t>::max() / ((payload.size() + PAYLOAD_LENGTH_EXTRA_BYTES + 8) * AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
-
-    SecureVector v;
     uint64_t nonce_test = 0;
     uint64_t trials_test = std::numeric_limits<uint64_t>::max();
+    SecureVector vx, v(sizeof(uint64_t) + payload_hash.size());
+    memcpy(v.data() + sizeof(uint64_t), payload_hash.data(), payload_hash.size());
+    uint64_t *nonce = (uint64_t*)v.data();
 
     while(trials_test > target)
     {
-        ++nonce_test;
-        v = bm::encode::varint(nonce_test);
-        std::copy(payload_hash.begin(), payload_hash.end(), std::back_inserter(v));
-        v = bm::hash::sha512(bm::hash::sha512(v));
-        std::memcpy(&trials_test, v.data(), 8);        
-    }
+        ++nonce_test;        
+        *nonce = host_to_big_64(nonce_test);
+        vx = bm::hash::sha512(bm::hash::sha512(v));
+        memcpy(&trials_test, vx.data(), 8);
+        trials_test = big_to_host_64(trials_test);
+    }    
 
-    nonce = nonce_test;
+    return nonce_test;
 }
 
 void do_generate_nonce_parallel_worker(const SecureVector& payload_hash, uint64_t target, uint64_t offset, uint64_t iterations, uint64_t* nonce)
 {
     *nonce = 0;
 
-    SecureVector v;
     uint64_t i = offset, nonce_test = offset;
     uint64_t trials_test = std::numeric_limits<uint64_t>::max();
+    SecureVector vx, v(sizeof(uint64_t) + payload_hash.size());
+    memcpy(v.data() + sizeof(uint64_t), payload_hash.data(), payload_hash.size());
+    uint64_t *nonce_ptr = (uint64_t*)v.data();
 
     while(trials_test > target)
     {
         if(tflag || ++i - offset > iterations)
             return;
         ++nonce_test;
-        v = bm::encode::varint(nonce_test);
-        std::copy(payload_hash.begin(), payload_hash.end(), std::back_inserter(v));
-        v = bm::hash::sha512(bm::hash::sha512(v));
-        std::memcpy(&trials_test, v.data(), 8);        
+        *nonce_ptr = host_to_big_64(nonce_test);
+        vx = bm::hash::sha512(bm::hash::sha512(v));
+        memcpy(&trials_test, vx.data(), 8);
+        trials_test = big_to_host_64(trials_test);
     }
 
     tflag = true;
     *nonce = nonce_test;
 }
 
-void do_generate_nonce_parallel(const SecureVector& payload, uint64_t& nonce) // FIXME: Do better threading
+uint64_t do_generate_nonce_parallel(const SecureVector& payload_hash, uint64_t target) // FIXME: Do better threading
 {
-    unsigned int concurent_threads_supported = std::thread::hardware_concurrency() - 2;
-    if(concurent_threads_supported <= 0)
-        concurent_threads_supported = 1;
-
-    SecureVector payload_hash = bm::hash::sha512(payload);
-    uint64_t target = std::numeric_limits<uint64_t>::max() / ((payload.size() + PAYLOAD_LENGTH_EXTRA_BYTES + 8) * AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
-    uint64_t iterations = std::numeric_limits<uint64_t>::max() / concurent_threads_supported;
-    uint64_t vnonce[concurent_threads_supported];
+    unsigned int numthreads = std::thread::hardware_concurrency() - 1;
+    if(numthreads <= 0)
+        numthreads = 1;
 
     std::vector<std::thread> threads;
+    uint64_t vnonce[numthreads];
+    uint64_t iterations = std::numeric_limits<uint64_t>::max() / numthreads;
 
     tflag = false;
-    for(unsigned int i = 0; i < concurent_threads_supported; i++)
-    {
-        threads.push_back(std::thread(do_generate_nonce_parallel_worker, payload_hash, target, i * iterations, iterations, &vnonce[i]));
-    }
+
+    for(unsigned int i = 0; i < numthreads; i++)
+        threads.push_back(std::thread(do_generate_nonce_parallel_worker, payload_hash, target, i * iterations, iterations, &vnonce[i]));    
 
     for(auto& thread : threads)
         thread.join();
 
-    for(unsigned int i = 0; i < concurent_threads_supported; i++)
-    {
-        if(vnonce[i])
-        {
-            nonce = vnonce[i];
-            break;
-        }
-    }
+    for(unsigned int i = 0; i < numthreads; i++)
+        if(vnonce[i])        
+            return vnonce[i];
+    return 0;
 }
 
 } // namespace internal
 
 uint64_t generate_nonce(const SecureVector& payload, bool parallel)
-{
-    uint64_t nonce;
+{    
+    SecureVector payload_hash = bm::hash::sha512(payload);
+    uint64_t target = std::numeric_limits<uint64_t>::max() / ((payload.size() + PAYLOAD_LENGTH_EXTRA_BYTES + 8) * AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
 
     if(parallel)
-        internal::do_generate_nonce_parallel(payload, nonce);
-    else
-        internal::do_generate_nonce(payload, nonce);
-
-    return nonce;
+        return internal::do_generate_nonce_parallel(payload_hash, target);
+    return internal::do_generate_nonce(payload_hash, target);
 }
 
 bool validate_nonce(const SecureVector& payload)
 {
-    if (payload.size() < 2)
+    if (payload.size() < sizeof(uint64_t))
         return false;
 
-    int offset;
-    SecureVector v, initial_payload;
-    uint64_t trials_test, nonce = decode::varint(payload.data(), offset);
-
-    std::copy(payload.begin() + offset, payload.end(), std::back_inserter(initial_payload));
-
+    SecureVector initial_payload;
+    uint64_t trials_test, nonce = *((uint64_t*)payload.data());
+    initial_payload.assign(payload.begin() + sizeof(uint64_t), payload.end());
     SecureVector initial_hash = bm::hash::sha512(initial_payload);
     uint64_t target = std::numeric_limits<uint64_t>::max() / ((initial_payload.size() + PAYLOAD_LENGTH_EXTRA_BYTES + 8) * AVERAGE_PROOF_OF_WORK_NONCE_TRIALS_PER_BYTE);
 
-    v = bm::encode::varint(nonce);
-    std::copy(initial_hash.begin(), initial_hash.end(), std::back_inserter(v));
-    v = bm::hash::sha512(bm::hash::sha512(v));
-    std::memcpy(&trials_test, v.data(), 8);
+    SecureVector v(sizeof(uint64_t) + initial_hash.size());
+    memcpy(v.data() + sizeof(uint64_t), initial_hash.data(), initial_hash.size());
+    *((uint64_t*)v.data()) = nonce;
+
+    SecureVector vx = bm::hash::sha512(bm::hash::sha512(v));
+    trials_test = big_to_host_64(*vx.data());
 
     return trials_test <= target;
 }

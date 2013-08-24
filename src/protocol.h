@@ -20,6 +20,11 @@
 #define PROTO_H
 
 #include <stdint.h>
+#include "btypes.h"
+
+namespace bm {
+
+namespace proto {
 
 // Message encodings
 enum {
@@ -28,14 +33,17 @@ enum {
     BM_ENCODING_SIMPLE
 };
 
-// Message header
-struct message_header_struct {
+// Message
+struct Message
+{
     uint32_t magic;
     char command[12];
     uint32_t length;
-    uint32_t checksum;
+    uint32_t checksum;    
+
+    ByteVector& serialize();
+    bool deserialize(const ByteVector& packet);
 };
-typedef struct message_header_struct message_header;
 
 // Network address
 struct net_addr_struct {
@@ -63,5 +71,9 @@ struct bm_version_header_struct {
     uint64_t nonce;
 };
 typedef struct version_header_struct version_header;
+
+} // namespace proto
+
+} // namespace bm
 
 #endif

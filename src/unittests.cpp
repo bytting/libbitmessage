@@ -228,38 +228,25 @@ static void test_pow()
 
     cout << "\n=== TEST POW ===\n\n";
 
-    bm::SecureVector payload;
+    bm::SecureVector payload = bm::random::bytes(1000);
 
-    string test_file = "cipher";
-    ifstream fin(test_file.c_str(), ios::in | ios::binary | ios::ate);
-    if (!fin.is_open())
-    {
-        cout << "Unable to open file " << test_file << ". Skipping pow test" << endl;
-    }
-    else
-    {
-        payload.resize(fin.tellg());
-        fin.seekg(0, ios::beg);
-        fin.read((char*)payload.data(), payload.size());
-        fin.close();
+    //ProfilerStart("profile-test");
+    time_point<system_clock> start_time = system_clock::now();
 
-        ProfilerStart("profile-test");
-        time_point<system_clock> start_time = system_clock::now();
+    uint64_t nonce = bm::pow::generate_nonce(payload, true);
 
-        uint64_t nonce = bm::pow::generate_nonce(payload, false);
+    time_point<system_clock> end_time = system_clock::now();
+    //ProfilerStop();
 
-        time_point<system_clock> end_time = system_clock::now();
-        ProfilerStop();
+    cout << "Generated nonce " << nonce << " in " << duration_cast<milliseconds>(end_time - start_time).count() << " ms" << endl;
 
-        cout << "Generated nonce " << nonce << " in " << duration_cast<milliseconds>(end_time - start_time).count() << " ms" << endl;
+    bm::SecureVector new_payload(sizeof(uint64_t) + payload.size());
+    memcpy(new_payload.data() + sizeof(uint64_t), payload.data(), payload.size());
+    *((uint64_t*)new_payload.data()) = host_to_big_64(nonce);
 
-        bm::SecureVector new_payload = bm::encode::varint(nonce);
-        new_payload += payload;
+    assert(bm::pow::validate_nonce(new_payload));
 
-        assert(bm::pow::validate_nonce(new_payload));
-
-        // FIXME: test bogus nonce
-    }
+    // FIXME: test bogus nonce
 
     cout << "\n=== OK ===\n" << endl;
 }
