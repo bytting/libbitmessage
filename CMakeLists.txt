@@ -20,12 +20,14 @@ add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/Modules/)
 
+# Botan 1.11
 exec_program("botan-config-1.11 --cflags" OUTPUT_VARIABLE BOTAN_CXXFLAGS)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BOTAN_CXXFLAGS}")
-exec_program("botan-config-1.11 --libs" OUTPUT_VARIABLE BOTAN_LIBS)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BOTAN_LIBS}")
-
-message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+#exec_program("botan-config-1.11 --libs" OUTPUT_VARIABLE BOTAN_LIBS)
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BOTAN_LIBS}")
+target_link_libraries(${PROJECT_NAME} botan-1.11)
 
 # Google Performance Tools
 target_link_libraries(${PROJECT_NAME} profiler)
+
+#message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS_DEBUG}")
